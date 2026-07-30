@@ -350,6 +350,7 @@ GameObject:
   m_Component:
   - component: {fileID: 701059099}
   - component: {fileID: 701059098}
+  - component: {fileID: 701059200}
   m_Layer: 0
   m_Name: ralph
   m_TagString: Untagged
@@ -431,6 +432,20 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &701059200
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 701059097}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f5be67c60db74696a65096ace406719d, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  data: {fileID: 11400000, guid: 9af4ac81ad70455c8c7d847836fa2037, type: 2}
+  shootPoint: {fileID: 0}
 --- !u!1 &1372316475
 GameObject:
   m_ObjectHideFlags: 0
@@ -441,6 +456,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1372316477}
   - component: {fileID: 1372316476}
+  - component: {fileID: 1372316500}
   m_Layer: 0
   m_Name: izzy
   m_TagString: Untagged
@@ -522,6 +538,20 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1372316500
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1372316475}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f5be67c60db74696a65096ace406719d, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  data: {fileID: 11400000, guid: b1b2c63f8fa24937a1036d3d82dde185, type: 2}
+  shootPoint: {fileID: 0}
 --- !u!1 &1989432477
 GameObject:
   m_ObjectHideFlags: 0
@@ -532,6 +562,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1989432479}
   - component: {fileID: 1989432478}
+  - component: {fileID: 1989432500}
   m_Layer: 0
   m_Name: court
   m_TagString: Untagged
@@ -613,6 +644,20 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1989432500
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1989432477}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f5be67c60db74696a65096ace406719d, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  data: {fileID: 11400000, guid: f733933698073824ea204d90e4acfc91, type: 2}
+  shootPoint: {fileID: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

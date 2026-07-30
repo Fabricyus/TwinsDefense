@@ -1,0 +1,47 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 41b6ddd0a40663d44a16da476bacd5e3, type: 3}
+  m_Name: IzzyFireWitch
+  m_EditorClassIdentifier:
+  towerDisplayName: Izzy Fire Witch
+  character: 0
+  variant: 2
+  description: Area fire damage that ignites enemies, burning for 3 damage per
+    second over 4 seconds within a 1.5 radius. Unlocked from Izzy Base for 30 Gems.
+  gemCost: 0
+  upgradeCost: 0
+  damage: 8
+  fireRate: 0.8
+  range: 4
+  towerPrefab: {fileID: 0}
+  projectilePrefab: {fileID: 0}
+  icon: {fileID: 0}
+  effectType: 2
+  effectStats:
+    pierceCount: 0
+    aoeRadius: 1.5
+    dotDamagePerSecond: 3
+    dotDuration: 4
+    stunDuration: 0
+    slowPercent: 0
+    slowDuration: 0
+    shatterBonusDamage: 0
+    chainTargets: 0
+    chainDamagePercentOfMaxHP: 0
+    lifeDrainPercent: 0
+    vulnerabilityAmpPercent: 0
+    vulnerabilityDuration: 0
+    auraRadius: 0
+    auraDamageBonusPercent: 0
+    auraRangeBonusPercent: 0
+    auraAttackSpeedBonusPercent: 0
+    auraSlowOnEnemiesPercent: 0
