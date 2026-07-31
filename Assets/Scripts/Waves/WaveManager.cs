@@ -20,8 +20,8 @@ namespace TwinsDefense.Waves
 
         [Header("Spawning")]
         [SerializeField] private Transform enemySpawnPoint;
-        [Tooltip("Final placeholder waypoint enemies walk toward. Real Tilemap path comes in a later pass.")]
-        [SerializeField] private Transform pathEnd;
+        [Tooltip("Ordered waypoints enemies walk through after spawning, ending at the base.")]
+        [SerializeField] private Transform[] pathWaypoints;
 
         private int currentWaveIndex;
 
@@ -104,7 +104,7 @@ public void StartNextWave()
                 return;
             }
 
-            enemy.waypoints = pathEnd != null ? new[] { pathEnd } : Array.Empty<Transform>();
+            enemy.waypoints = pathWaypoints ?? Array.Empty<Transform>();
 
             void HandleResolved()
             {
