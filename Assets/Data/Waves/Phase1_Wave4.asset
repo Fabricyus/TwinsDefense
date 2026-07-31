@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8778c3c6615bfa94ea8ff77770a482bb, type: 3}
+  m_Name: Phase1_Wave4
+  m_EditorClassIdentifier: Assembly-CSharp::TwinsDefense.Data.WaveData
+  waveNumber: 4
+  entries:
+  - enemyData: {fileID: 11400000, guid: 17687b89cf3a85a4e8f089764b5cbcb2, type: 2}
+    count: 4
+    spawnInterval: 1
+  - enemyData: {fileID: 11400000, guid: b45f1fbd06c06114a93dcfa4695e6a60, type: 2}
+    count: 4
+    spawnInterval: 1
+  delayBeforeStart: 5
+  isMidBossWave: 0
+  isFinalBossWave: 0
