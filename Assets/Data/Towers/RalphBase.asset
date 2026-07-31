@@ -11,18 +11,18 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 41b6ddd0a40663d44a16da476bacd5e3, type: 3}
   m_Name: RalphBase
-  m_EditorClassIdentifier:
+  m_EditorClassIdentifier: 
   towerDisplayName: Ralph
   character: 2
   variant: 8
-  description: Passive aura granting nearby towers +10% damage within a 4-unit
-    radius. Upgrade for 25 Gems to unlock a talent-tree evolution.
+  description: Passive aura granting nearby towers +10% damage within a 4-unit radius.
+    Upgrade for 25 Gems to unlock a talent-tree evolution.
   gemCost: 15
   upgradeCost: 25
   damage: 0
   fireRate: 0
   range: 4
-  towerPrefab: {fileID: 0}
+  towerPrefab: {fileID: 100000, guid: e5198495a7ca4970bbd444ad85acdcb3, type: 3}
   projectilePrefab: {fileID: 0}
   icon: {fileID: 0}
   effectType: 7
@@ -45,3 +45,28 @@ MonoBehaviour:
     auraRangeBonusPercent: 0
     auraAttackSpeedBonusPercent: 0
     auraSlowOnEnemiesPercent: 0
+  starLevels:
+  - starIndex: 2
+    gemCost: 75
+    damageMultiplier: 1.2
+    rangeMultiplier: 1.1
+    fireRateMultiplier: 1
+  - starIndex: 3
+    gemCost: 150
+    damageMultiplier: 1.45
+    rangeMultiplier: 1.1
+    fireRateMultiplier: 1.15
+  - starIndex: 4
+    gemCost: 300
+    damageMultiplier: 1.85
+    rangeMultiplier: 1.25
+    fireRateMultiplier: 1.25
+  - starIndex: 5
+    gemCost: 700
+    damageMultiplier: 3.3
+    rangeMultiplier: 1.55
+    fireRateMultiplier: 1.55
+  subclassNames:
+  - The Priest
+  - The Paladin
+  - The Cute

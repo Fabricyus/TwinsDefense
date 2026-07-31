@@ -31,5 +31,9 @@ namespace TwinsDefense.Data
 
         /// <summary>Flavor text / lore description shown in UI or bestiary.</summary>
         [TextArea] public string description;
+
+        /// <summary>Prefab instantiated by the WaveManager when spawning this enemy type.</summary>
+        public GameObject enemyPrefab;
+
     }
 }

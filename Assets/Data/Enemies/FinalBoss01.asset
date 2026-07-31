@@ -19,3 +19,4 @@ MonoBehaviour:
   damageToBase: 5
   gemReward: 50
   description: 
+  enemyPrefab: {fileID: 3715295271693316356, guid: 294e6cb7821ad76489c84bf060376082, type: 3}
