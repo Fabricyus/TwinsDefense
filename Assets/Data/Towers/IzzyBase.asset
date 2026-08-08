@@ -23,7 +23,7 @@ MonoBehaviour:
   fireRate: 1
   range: 5
   towerPrefab: {fileID: 100000, guid: 642118125fce475cbbb10168e88afee0, type: 3}
-  projectilePrefab: {fileID: 0}
+  projectilePrefab: {fileID: 100000, guid: 7ab94eab73bb72f44814dd38f60e1f79, type: 3}
   icon: {fileID: 0}
   effectType: 0
   effectStats:

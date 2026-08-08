@@ -15,7 +15,7 @@ MonoBehaviour:
   enemyName: Brute
   type: 2
   maxHealth: 60
-  moveSpeed: 1.5
+  moveSpeed: 1
   damageToBase: 2
   gemReward: 5
   description: 

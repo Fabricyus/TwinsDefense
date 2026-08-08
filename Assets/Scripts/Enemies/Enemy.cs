@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TwinsDefense.Data;
@@ -19,8 +20,16 @@ namespace TwinsDefense.Enemies
         [Tooltip("Ordered waypoints defining the fixed path this enemy follows.")]
         public Transform[] waypoints;
 
+        [Header("Hit Feedback")]
+        [SerializeField] private SpriteRenderer spriteRenderer;
+        [Tooltip("Swapped in on hit, replacing the sprite's own colors with solid white for the flash. Tinting .color toward white does nothing when the sprite's base colors are already near-white.")]
+        [SerializeField] private Material flashMaterial;
+        [SerializeField] private float flashDuration = 0.08f;
+
         private float currentHealth;
         private int currentWaypointIndex;
+        private Material baseMaterial;
+        private Coroutine flashRoutine;
 
         /// <summary>All currently active enemies, used by towers for range queries without per-enemy colliders.</summary>
         public static readonly HashSet<Enemy> Active = new HashSet<Enemy>();
@@ -34,6 +43,16 @@ namespace TwinsDefense.Enemies
 
         private void Start()
         {
+            if (spriteRenderer == null)
+            {
+                spriteRenderer = GetComponent<SpriteRenderer>();
+            }
+
+            if (spriteRenderer != null)
+            {
+                baseMaterial = spriteRenderer.sharedMaterial;
+            }
+
             if (data == null)
             {
                 Debug.LogWarning($"{name}: Enemy has no EnemyData assigned.", this);
@@ -93,6 +112,7 @@ public void MoveAlongPath()
 public void TakeDamage(float amount)
         {
             currentHealth -= amount;
+            TriggerHitFlash();
 
             if (currentHealth <= 0f)
             {
@@ -105,6 +125,26 @@ public void TakeDamage(float amount)
                 OnEnemyDefeated?.Invoke();
                 Destroy(gameObject);
             }
+        }
+
+        private void TriggerHitFlash()
+        {
+            if (spriteRenderer == null || flashMaterial == null) return;
+
+            if (flashRoutine != null)
+            {
+                StopCoroutine(flashRoutine);
+            }
+
+            flashRoutine = StartCoroutine(HitFlashRoutine());
+        }
+
+        private IEnumerator HitFlashRoutine()
+        {
+            spriteRenderer.material = flashMaterial;
+            yield return new WaitForSeconds(flashDuration);
+            spriteRenderer.material = baseMaterial;
+            flashRoutine = null;
         }
     }
 }

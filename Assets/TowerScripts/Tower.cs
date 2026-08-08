@@ -1,6 +1,7 @@
 using UnityEngine;
 using System;
 using TwinsDefense.Enemies;
+using TwinsDefense.Towers;
 
 
 namespace TwinsDefense.Data
@@ -45,17 +46,34 @@ namespace TwinsDefense.Data
         }
 
         /// <summary>
-        /// TODO: implement real targeting/attack logic once the enemy and wave
-        /// systems exist — find the closest/first enemy within data.range,
-        /// fire from shootPoint, and apply data.effectType via data.effectStats.
+        /// TODO: apply data.effectType via data.effectStats once subclass VFX exist —
+        /// currently every tower deals plain damage, either instantly or via a projectile.
         /// </summary>
 public void Attack()
         {
             Enemy target = FindNearestEnemyInRange();
 
-            if (target != null)
+            if (target == null) return;
+
+            float amount = data.damage * damageMultiplier;
+
+            if (data.projectilePrefab != null)
             {
-                target.TakeDamage(data.damage * damageMultiplier);
+                GameObject instance = Instantiate(data.projectilePrefab, shootPoint.position, Quaternion.identity);
+                Projectile projectile = instance.GetComponent<Projectile>();
+
+                if (projectile != null)
+                {
+                    projectile.Launch(target, amount);
+                }
+                else
+                {
+                    target.TakeDamage(amount);
+                }
+            }
+            else
+            {
+                target.TakeDamage(amount);
             }
         }
 

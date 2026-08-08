@@ -28,7 +28,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.8, y: 1.8, z: 1.8}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -82,8 +82,8 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 7482667652216324306, guid: 953e07f47052f314abf4765236231e0e, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Sprite: {fileID: -1146946219, guid: cf5ab18e05429c44ab411069aee41dfd, type: 3}
+  m_Color: {r: 0.85, g: 0.55, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -106,3 +106,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::TwinsDefense.Enemies.Enemy
   data: {fileID: 11400000, guid: 25decd4e62f71a84f85ccece1208ab7c, type: 2}
   waypoints: []
+  spriteRenderer: {fileID: 8693368262577422704}
+  flashMaterial: {fileID: 2100000, guid: c1667c594f604fcfa434697212c0c2eb, type: 2}
+  flashDuration: 0.08
