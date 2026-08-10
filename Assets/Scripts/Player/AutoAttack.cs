@@ -22,6 +22,12 @@ namespace TwinsDefense.Player
         [Tooltip("Origin the projectile spawns from. Defaults to this transform if left unassigned.")]
         [SerializeField] private Transform firePoint;
 
+        [Header("Critical Hit")]
+        [Tooltip("Placeholder base value — final per-character/upgrade-card balancing is tuned later.")]
+        [Range(0f, 1f)]
+        [SerializeField] private float critChance = 0.1f;
+        [SerializeField] private float critMultiplier = 2f;
+
         private float attackTimer;
 
         private void Start()
@@ -52,12 +58,15 @@ namespace TwinsDefense.Player
 
             Vector2 direction = ((Vector2)target.transform.position - (Vector2)firePoint.position).normalized;
 
+            bool isCrit = Random.value < critChance;
+            float finalDamage = isCrit ? damage * critMultiplier : damage;
+
             GameObject instance = Instantiate(projectilePrefab, firePoint.position, Quaternion.identity);
             Projectile projectile = instance.GetComponent<Projectile>();
 
             if (projectile != null)
             {
-                projectile.Launch(direction, damage, projectileSpeed);
+                projectile.Launch(direction, finalDamage, projectileSpeed, isCrit);
             }
         }
 

@@ -2,6 +2,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TwinsDefense.VFX;
+using TwinsDefense.Economy;
 
 namespace TwinsDefense.Enemies
 {
@@ -19,9 +21,23 @@ namespace TwinsDefense.Enemies
 
         [Header("Hit Feedback")]
         [SerializeField] private SpriteRenderer spriteRenderer;
+        //[SerializeField] private GameObject deathPrefab;
         [Tooltip("Swapped in on hit, replacing the sprite's own colors with solid white for the flash. Tinting .color toward white does nothing when the sprite's base colors are already near-white.")]
         [SerializeField] private Material flashMaterial;
         [SerializeField] private float flashDuration = 0.08f;
+        [SerializeField] private Vector3 damagePopupOffset = new Vector3(0f, 0.4f, 0f);
+
+        [Header("Coin Drop")]
+        [SerializeField] private GameObject coinPrefab;
+        [SerializeField] private int minCoinDrop = 1;
+        [SerializeField] private int maxCoinDrop = 3;
+        [SerializeField] private float coinScatterRadius = 0.4f;
+
+        [Header("Exp Drop")]
+        [SerializeField] private GameObject expPrefab;
+        [SerializeField] private int minExpDrop = 1;
+        [SerializeField] private int maxExpDrop = 2;
+        [SerializeField] private float expScatterRadius = 0.4f;
 
         private float currentHealth;
         private Transform player;
@@ -87,15 +103,46 @@ namespace TwinsDefense.Enemies
         }
 
         /// <summary>Applies damage to this enemy, defeating it once health reaches zero.</summary>
-        public void TakeDamage(float amount)
+        public void TakeDamage(float amount, bool isCrit = false)
         {
             currentHealth -= amount;
             TriggerHitFlash();
+            DamagePopupSpawner.Spawn(transform.position + damagePopupOffset, amount, isCrit);
 
             if (currentHealth <= 0f)
             {
                 OnEnemyDefeated?.Invoke();
+                //GameObject tmp = Instantiate(deathPrefab, transform.position + (Vector3)this.gameObject.transform.position, Quaternion.identity);
+                //Destroy(tmp, 0.11f);
+                DropCoins();
+                DropExp();
                 Destroy(gameObject);
+            }
+        }
+
+        private void DropCoins()
+        {
+            if (coinPrefab == null) return;
+
+            int coinCount = UnityEngine.Random.Range(minCoinDrop, maxCoinDrop + 1);
+
+            for (int i = 0; i < coinCount; i++)
+            {
+                Vector2 offset = UnityEngine.Random.insideUnitCircle * coinScatterRadius;
+                Instantiate(coinPrefab, transform.position + (Vector3)offset, Quaternion.identity);
+            }
+        }
+
+        private void DropExp()
+        {
+            if (expPrefab == null) return;
+
+            int expCount = UnityEngine.Random.Range(minExpDrop, maxExpDrop + 1);
+
+            for (int i = 0; i < expCount; i++)
+            {
+                Vector2 offset = UnityEngine.Random.insideUnitCircle * expScatterRadius;
+                Instantiate(expPrefab, transform.position + (Vector3)offset, Quaternion.identity);
             }
         }
 

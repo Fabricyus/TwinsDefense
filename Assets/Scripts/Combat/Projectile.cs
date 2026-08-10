@@ -16,6 +16,7 @@ namespace TwinsDefense.Combat
         private Vector2 direction;
         private float speed;
         private float damage;
+        private bool isCrit;
         private float lifeTimer;
 
         private void Awake()
@@ -28,11 +29,12 @@ namespace TwinsDefense.Combat
         }
 
         /// <summary>Assigns this projectile's travel direction, damage and speed right after Instantiate.</summary>
-        public void Launch(Vector2 direction, float damage, float speed)
+        public void Launch(Vector2 direction, float damage, float speed, bool isCrit = false)
         {
             this.direction = direction.normalized;
             this.damage = damage;
             this.speed = speed;
+            this.isCrit = isCrit;
 
             transform.rotation = Quaternion.Euler(0f, 0f, Mathf.Atan2(this.direction.y, this.direction.x) * Mathf.Rad2Deg);
         }
@@ -55,7 +57,7 @@ namespace TwinsDefense.Combat
             ArenaEnemy enemy = other.GetComponent<ArenaEnemy>();
             if (enemy == null) return;
 
-            enemy.TakeDamage(damage);
+            enemy.TakeDamage(damage, isCrit);
             Destroy(gameObject);
         }
     }
