@@ -1,0 +1,66 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1bb0195df803a4043bc813d092bb2567, type: 3}
+  m_Name: court_4
+  m_EditorClassIdentifier: Assembly-CSharp::TwinsDefense.Data.CharacterMetaData
+  characterId: 1
+  tier: 4
+  slotId: court_4
+  displayName: Dark Court
+  description: 100% chance on hit to chain to a nearby enemy. Starts each run with
+    +1 Pierce.
+  icon: {fileID: -2131950970, guid: cf5ab18e05429c44ab411069aee41dfd, type: 3}
+  lockedSilhouette: {fileID: 885167995, guid: cf5ab18e05429c44ab411069aee41dfd, type: 3}
+  baseStats:
+    damage: 5
+    attackFireRate: 1
+    projectileSpeed: 10
+    critChance: 0.1
+    critDamage: 2
+    extraProjectileCount: 0
+    pierceCount: 1
+    attackRange: 5
+    areaOfEffect: 1
+    maxHP: 100
+    defense: 1
+    hpRegen: 0
+    iFrameDuration: 0.5
+    moveSpeed: 5
+    pickupRadius: 3
+    xpGainMultiplier: 1
+    coinGainMultiplier: 1
+  animatorController: {fileID: 9100000, guid: cb8f5066c5b218b4980f6f15684ff68d, type: 2}
+  projectilePrefab: {fileID: 3435300922814392574, guid: ad31d171cf7341c48bbcbd525b76c4f4, type: 3}
+  isRotatingProjectile: 1
+  procFxPrefab: {fileID: 0}
+  passiveEffects:
+  - effectType: 7
+    value: 0
+    procChancePercent: 100
+    damageMultiplier: 0
+    runStartStat: 0
+    runStartStatValue: 0
+  - effectType: 3
+    value: 0
+    procChancePercent: 0
+    damageMultiplier: 0
+    runStartStat: 2
+    runStartStatValue: 1
+  unlockCondition:
+    type: 3
+    requiredLevel: 0
+    requiredCardId: 
+    requiredCount: 0
+    requiredBossLevel: 30
+    requiredCharacterTier: 3
+  attackStarsMax: 5
+  defenseStarsMax: 3

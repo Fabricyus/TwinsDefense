@@ -141,5 +141,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 19b280a4a8b72b643b82dcefea62b733, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TwinsDefense.Economy.Exp
-  attractSpeed: 8
-  collectDistance: 0.25
+  attractSpeed: 15
+  collectDistance: 0.125

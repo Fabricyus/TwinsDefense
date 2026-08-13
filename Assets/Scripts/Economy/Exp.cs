@@ -1,5 +1,6 @@
 using UnityEngine;
 using TwinsDefense.Progression;
+using TwinsDefense.Player;
 
 namespace TwinsDefense.Economy
 {
@@ -36,7 +37,13 @@ namespace TwinsDefense.Economy
 
         private void Collect()
         {
-            LevelManager.Instance?.AddExp();
+            float multiplier = 1f;
+            if (target != null && target.TryGetComponent(out PlayerStats stats))
+            {
+                multiplier = stats.xpGainMultiplier;
+            }
+
+            LevelManager.Instance?.AddExp(multiplier);
             Destroy(gameObject);
         }
     }

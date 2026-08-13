@@ -8,23 +8,30 @@ namespace TwinsDefense.Player
     /// Open arena, no grid/pathing — the player can move in any direction.
     /// </summary>
     [RequireComponent(typeof(Rigidbody2D))]
+    [RequireComponent(typeof(PlayerStats))]
     public class PlayerController : MonoBehaviour
     {
-        [Header("Movement")]
-        [SerializeField] private float moveSpeed = 5f;
-
         [Header("Visuals")]
         [SerializeField] private Animator animator;
         [SerializeField] private SpriteRenderer spriteRenderer;
 
+        [Header("Knockback")]
+        [Tooltip("How long movement input is overridden by the knockback velocity after a hit.")]
+        [SerializeField] private float knockbackDuration = 0.15f;
+
         private Rigidbody2D rb;
+        private PlayerStats stats;
         private Vector2 moveInput;
+        private Vector2 knockbackVelocity;
+        private float knockbackTimer;
 
         private void Awake()
         {
             rb = GetComponent<Rigidbody2D>();
             rb.gravityScale = 0f;
             rb.freezeRotation = true;
+
+            stats = GetComponent<PlayerStats>();
 
             if (animator == null)
             {
@@ -82,7 +89,21 @@ namespace TwinsDefense.Player
 
         private void FixedUpdate()
         {
-            rb.linearVelocity = moveInput.normalized * moveSpeed;
+            if (knockbackTimer > 0f)
+            {
+                knockbackTimer -= Time.fixedDeltaTime;
+                rb.linearVelocity = knockbackVelocity;
+                return;
+            }
+
+            rb.linearVelocity = moveInput.normalized * stats.moveSpeed;
+        }
+
+        /// <summary>Overrides movement input with a short burst away from the hit source. Called by PlayerHealth on TakeDamage.</summary>
+        public void ApplyKnockback(Vector2 direction, float force)
+        {
+            knockbackVelocity = direction.normalized * force;
+            knockbackTimer = knockbackDuration;
         }
     }
 }

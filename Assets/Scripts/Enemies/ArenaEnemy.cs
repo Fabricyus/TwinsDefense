@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using TwinsDefense.VFX;
 using TwinsDefense.Economy;
+using TwinsDefense.Player;
+using TwinsDefense.Progression;
 
 namespace TwinsDefense.Enemies
 {
@@ -18,6 +20,8 @@ namespace TwinsDefense.Enemies
         [Header("Stats")]
         [SerializeField] private float maxHealth = 10f;
         [SerializeField] private float moveSpeed = 2f;
+        [Tooltip("Flat HP added on spawn for each player level (e.g. 2 -> HP = maxHealth + level * 2).")]
+        [SerializeField] private float hpPerLevel = 2f;
 
         [Header("Hit Feedback")]
         [SerializeField] private SpriteRenderer spriteRenderer;
@@ -39,10 +43,22 @@ namespace TwinsDefense.Enemies
         [SerializeField] private int maxExpDrop = 2;
         [SerializeField] private float expScatterRadius = 0.4f;
 
+        [Header("Contact Damage")]
+        [SerializeField] private float contactDamage = 5f;
+        [SerializeField] private float contactDamageInterval = 1f;
+        [Tooltip("Brief circle flash spawned under the enemy each time contact damage actually lands.")]
+        [SerializeField] private GameObject attackCirclePrefab;
+        [SerializeField] private Vector3 attackCircleOffset = new Vector3(0f, -0.15f, 0f);
+        [SerializeField] private float knockbackForce = 6f;
+        [SerializeField] private float knockbackDuration = 0.15f;
+
         private float currentHealth;
         private Transform player;
         private Material baseMaterial;
         private Coroutine flashRoutine;
+        private float contactDamageTimer;
+        private Vector2 knockbackVelocity;
+        private float knockbackTimer;
 
         /// <summary>All currently active arena enemies, used by AutoAttack for nearest-target queries.</summary>
         public static readonly HashSet<ArenaEnemy> Active = new HashSet<ArenaEnemy>();
@@ -52,7 +68,8 @@ namespace TwinsDefense.Enemies
 
         private void Awake()
         {
-            currentHealth = maxHealth;
+            int level = LevelManager.Instance != null ? LevelManager.Instance.CurrentLevel : 0;
+            currentHealth = maxHealth + level * hpPerLevel;
         }
 
         private void Start()
@@ -88,6 +105,14 @@ namespace TwinsDefense.Enemies
         {
             if (player == null) return;
 
+            if (knockbackTimer > 0f)
+            {
+                knockbackTimer -= Time.deltaTime;
+                transform.position += (Vector3)(knockbackVelocity * Time.deltaTime);
+                FaceTarget();
+                return;
+            }
+
             Vector2 direction = ((Vector2)player.position - (Vector2)transform.position).normalized;
             transform.position += (Vector3)(direction * moveSpeed * Time.deltaTime);
 
@@ -102,6 +127,50 @@ namespace TwinsDefense.Enemies
             spriteRenderer.flipX = transform.position.x > player.position.x;
         }
 
+        /// <summary>Ticks contact damage into the player's actual hurtbox (not the wider pickup-magnet trigger) while overlapping it.</summary>
+        private void OnTriggerStay2D(Collider2D other)
+        {
+            if (player == null || !other.TryGetComponent(out PlayerHurtbox hurtbox)) return;
+
+            contactDamageTimer += Time.deltaTime;
+
+            if (contactDamageTimer >= contactDamageInterval)
+            {
+                contactDamageTimer = 0f;
+                hurtbox.Health.TakeDamage(contactDamage, transform.position);
+                SpawnAttackCircle();
+                ApplyKnockback();
+            }
+        }
+
+        private void SpawnAttackCircle()
+        {
+            if (attackCirclePrefab == null) return;
+
+            Instantiate(attackCirclePrefab, transform.position + attackCircleOffset, Quaternion.identity);
+        }
+
+        /// <summary>Bounces this enemy back away from the player after landing a contact hit, instead of stacking on top of them.</summary>
+        private void ApplyKnockback()
+        {
+            Vector2 pushDirection = (Vector2)transform.position - (Vector2)player.position;
+            if (pushDirection.sqrMagnitude < 0.0001f)
+            {
+                pushDirection = Vector2.up;
+            }
+
+            knockbackVelocity = pushDirection.normalized * knockbackForce;
+            knockbackTimer = knockbackDuration;
+        }
+
+        private void OnTriggerExit2D(Collider2D other)
+        {
+            if (other.TryGetComponent(out PlayerHurtbox _))
+            {
+                contactDamageTimer = 0f;
+            }
+        }
+
         /// <summary>Applies damage to this enemy, defeating it once health reaches zero.</summary>
         public void TakeDamage(float amount, bool isCrit = false)
         {
@@ -112,6 +181,7 @@ namespace TwinsDefense.Enemies
             if (currentHealth <= 0f)
             {
                 OnEnemyDefeated?.Invoke();
+                RunStats.Instance?.RegisterKill();
                 //GameObject tmp = Instantiate(deathPrefab, transform.position + (Vector3)this.gameObject.transform.position, Quaternion.identity);
                 //Destroy(tmp, 0.11f);
                 DropCoins();

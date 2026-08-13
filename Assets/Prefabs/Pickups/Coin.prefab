@@ -143,4 +143,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::TwinsDefense.Economy.Coin
   coinValue: 10
   attractSpeed: 8
-  collectDistance: 0.25
+  collectDistance: 0.125

@@ -10,10 +10,10 @@ GameObject:
   m_Component:
   - component: {fileID: 1883680675522273833}
   - component: {fileID: 2378919284934925025}
-  - component: {fileID: 8407365562158122617}
   - component: {fileID: 1883680675522273001}
   - component: {fileID: 6769330092559642248}
   - component: {fileID: 5629367834663963616}
+  - component: {fileID: 2937334888906184238}
   m_Layer: 0
   m_Name: Brute
   m_TagString: Untagged
@@ -95,23 +95,6 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
---- !u!114 &8407365562158122617
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8145285541225827023}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d557b7d9f4a436b409dc34a778cbff26, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::TwinsDefense.Enemies.Enemy
-  data: {fileID: 11400000, guid: 17687b89cf3a85a4e8f089764b5cbcb2, type: 2}
-  waypoints: []
-  spriteRenderer: {fileID: 2378919284934925025}
-  flashMaterial: {fileID: 2100000, guid: c1667c594f604fcfa434697212c0c2eb, type: 2}
-  flashDuration: 0.08
 --- !u!95 &1883680675522273001
 Animator:
   serializedVersion: 7
@@ -146,20 +129,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c126ca808f8c8e449b63f2f879f51f30, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TwinsDefense.Enemies.ArenaEnemy
-  maxHealth: 10
-  moveSpeed: 2
+  maxHealth: 6
+  moveSpeed: 3
+  hpPerLevel: 2
   spriteRenderer: {fileID: 2378919284934925025}
   flashMaterial: {fileID: 2100000, guid: c1667c594f604fcfa434697212c0c2eb, type: 2}
   flashDuration: 0.08
   damagePopupOffset: {x: 0, y: 0.4, z: 0}
   coinPrefab: {fileID: 7111050784376350238, guid: b50d0666ef65b07438c05d428613a84b, type: 3}
-  minCoinDrop: 1
-  maxCoinDrop: 3
+  minCoinDrop: 0
+  maxCoinDrop: 2
   coinScatterRadius: 0.4
   expPrefab: {fileID: 9057018707013673740, guid: 3216e519b4593dc478890adcfaf60b0d, type: 3}
-  minExpDrop: 1
+  minExpDrop: 0
   maxExpDrop: 2
   expScatterRadius: 0.4
+  contactDamage: 20
+  contactDamageInterval: 0.1
+  attackCirclePrefab: {fileID: 1207100161955173088, guid: 69fa1d047f51e8149a67c302fe54e4fc, type: 3}
+  attackCircleOffset: {x: 0, y: -0.15, z: 0}
+  knockbackForce: 8
+  knockbackDuration: 0.2
 --- !u!70 &5629367834663963616
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
@@ -197,3 +187,30 @@ CapsuleCollider2D:
   m_Offset: {x: 0, y: -0.15}
   m_Size: {x: 0.39, y: 0.7}
   m_Direction: 0
+--- !u!50 &2937334888906184238
+Rigidbody2D:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8145285541225827023}
+  m_BodyType: 1
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
+  m_GravityScale: 0
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
+  m_Constraints: 0

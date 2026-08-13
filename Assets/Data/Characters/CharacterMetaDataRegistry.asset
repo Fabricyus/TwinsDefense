@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ab9a2a9fa7a34704970493878e2dbf2c, type: 3}
+  m_Name: CharacterMetaDataRegistry
+  m_EditorClassIdentifier: Assembly-CSharp::TwinsDefense.Data.CharacterMetaDataRegistry
+  characters:
+  - {fileID: 11400000, guid: cfa9a238ba6cec84e9fe75c23936fabf, type: 2}
+  - {fileID: 11400000, guid: 6e0a7ea033bbd1d46937778b2b0c25c6, type: 2}
+  - {fileID: 11400000, guid: b992930cf019f4240b4b521d93a47197, type: 2}
+  - {fileID: 11400000, guid: 5121b01f2f1aee94f97eb58952ebe74e, type: 2}
+  - {fileID: 11400000, guid: 86d8a8c38d3868443b72d84c41301d96, type: 2}
+  - {fileID: 11400000, guid: 8258bfe8573b1ad49b1278e86a15eede, type: 2}
+  - {fileID: 11400000, guid: c84d30c094b06fa4a9ba7fbcae98cf31, type: 2}
+  - {fileID: 11400000, guid: 07f77bbd02d464b418c9403c8f918ce8, type: 2}
+  - {fileID: 11400000, guid: 82ba52708d6dc784db92eddc8983b9ce, type: 2}
+  - {fileID: 11400000, guid: 25ad37ba8e57ef0459fae85f83804f8c, type: 2}
+  - {fileID: 11400000, guid: 82e912f9ce4fd574bab298f4454f509e, type: 2}
+  - {fileID: 11400000, guid: 9da19ae3287bc044fb8a304886215543, type: 2}

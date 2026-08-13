@@ -1,4 +1,6 @@
 using UnityEngine;
+using TwinsDefense.Player;
+using TwinsDefense.Progression;
 
 namespace TwinsDefense.Economy
 {
@@ -36,7 +38,14 @@ namespace TwinsDefense.Economy
 
         private void Collect()
         {
-            CoinManager.Instance?.Add(coinValue);
+            float multiplier = 1f;
+            if (target != null && target.TryGetComponent(out PlayerStats stats))
+            {
+                multiplier = stats.coinGainMultiplier;
+            }
+
+            CoinManager.Instance?.Add(Mathf.RoundToInt(coinValue * multiplier));
+            RunStats.Instance?.RegisterCoinCollected();
             Destroy(gameObject);
         }
     }
