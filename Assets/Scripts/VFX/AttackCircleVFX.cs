@@ -28,7 +28,8 @@ namespace TwinsDefense.VFX
             Destroy(gameObject, lifetime);
         }
 
-        private static Sprite GetCircleSprite()
+        /// <summary>Generates (and caches) a soft-edged white circle sprite — reused by other VFX (e.g. ReaperHazardCircle) that need a circle with no art asset.</summary>
+        public static Sprite GetCircleSprite()
         {
             if (cachedCircleSprite != null) return cachedCircleSprite;
 

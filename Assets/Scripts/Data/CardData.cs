@@ -27,7 +27,9 @@ namespace TwinsDefense.Data
         MoveSpeed,
         PickupRadius,
         XPGain,
-        CoinGain
+        CoinGain,
+        InstantHeal,
+        ExplodeOnKillChance // appended at the end — existing assets serialize this enum as an int, inserting earlier would remap them
     }
 
     /// <summary>
@@ -49,6 +51,13 @@ namespace TwinsDefense.Data
         public CardEffectType effectType;
         public float value; // placeholder, designer tunes in Inspector
         public bool isPercentage;
+
+        [Header("Special Card (dual buff/debuff)")]
+        [Tooltip("If true, secondEffectType/secondValue is also applied when this card is picked (a debuff paired with the effect above as the buff). Used for milestone special-card drafts — see CardDraftService.RollSpecialCards.")]
+        public bool isSpecial;
+        public CardEffectType secondEffectType;
+        public float secondValue;
+        public bool secondIsPercentage;
 
         [Header("Rarity & Rolling")]
         public CardRarity rarity = CardRarity.Common;

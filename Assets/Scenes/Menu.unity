@@ -797,6 +797,7 @@ GameObject:
   - component: {fileID: 1356745445}
   - component: {fileID: 1356745450}
   - component: {fileID: 1356745449}
+  - component: {fileID: 1356745451}
   m_Layer: 5
   m_Name: btn
   m_TagString: Untagged
@@ -1017,6 +1018,20 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &1356745451
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1356745443}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fec23520fc11b444089a3e3a9bf4acd7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TwinsDefense.UI.ButtonHoverScale
+  hoverScale: 1.1
+  animDuration: 0.12
 --- !u!1 &1480204009
 GameObject:
   m_ObjectHideFlags: 0
@@ -1415,6 +1430,7 @@ GameObject:
   - component: {fileID: 1778417765}
   - component: {fileID: 1778417770}
   - component: {fileID: 1778417769}
+  - component: {fileID: 1778417771}
   m_Layer: 5
   m_Name: btn
   m_TagString: Untagged
@@ -1635,6 +1651,20 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &1778417771
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1778417763}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fec23520fc11b444089a3e3a9bf4acd7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TwinsDefense.UI.ButtonHoverScale
+  hoverScale: 1.1
+  animDuration: 0.12
 --- !u!1 &1799470959
 GameObject:
   m_ObjectHideFlags: 0

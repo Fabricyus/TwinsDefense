@@ -57,11 +57,19 @@ namespace TwinsDefense.Systems
         }
 
         [System.Serializable]
+        private class SpecialCardPickEntry
+        {
+            public CharacterId character;
+            public int count;
+        }
+
+        [System.Serializable]
         private class SaveData
         {
             public List<LevelEntry> levels = new List<LevelEntry>();
             public List<CardPickEntry> cardPicks = new List<CardPickEntry>();
             public List<BossKillEntry> bossKills = new List<BossKillEntry>();
+            public List<SpecialCardPickEntry> specialCardPicks = new List<SpecialCardPickEntry>();
         }
 
         private SaveData data;
@@ -107,6 +115,12 @@ namespace TwinsDefense.Systems
                         && e.bossLevel == condition.requiredBossLevel
                         && e.characterTier == condition.requiredCharacterTier);
 
+                case UnlockConditionType.AccumulateSpecialCardPicks:
+                {
+                    SpecialCardPickEntry entry = data.specialCardPicks.Find(e => e.character == meta.characterId);
+                    return entry != null && entry.count >= condition.requiredCount;
+                }
+
                 default:
                     return false;
             }
@@ -137,6 +151,23 @@ namespace TwinsDefense.Systems
             if (entry == null)
             {
                 data.cardPicks.Add(new CardPickEntry { character = character, cardId = cardId, count = 1 });
+            }
+            else
+            {
+                entry.count++;
+            }
+
+            Save();
+        }
+
+        /// <summary>Counts a pick toward AccumulateSpecialCardPicks — call only when the picked card is special (isSpecial), regardless of which one.</summary>
+        public void ReportSpecialCardPicked(CharacterId character)
+        {
+            SpecialCardPickEntry entry = data.specialCardPicks.Find(e => e.character == character);
+
+            if (entry == null)
+            {
+                data.specialCardPicks.Add(new SpecialCardPickEntry { character = character, count = 1 });
             }
             else
             {

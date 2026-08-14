@@ -16,23 +16,23 @@ MonoBehaviour:
   tier: 1
   slotId: ralph_1
   displayName: Ralph
-  description: Starts each run with +2 base Defense.
+  description: Ralph gains +2 Defense per level.
   icon: {fileID: 6092078167180830944, guid: cf5ab18e05429c44ab411069aee41dfd, type: 3}
   lockedSilhouette: {fileID: 6092078167180830944, guid: cf5ab18e05429c44ab411069aee41dfd, type: 3}
   baseStats:
-    damage: 5
-    attackFireRate: 1
+    damage: 25
+    attackFireRate: 1.8
     projectileSpeed: 10
     critChance: 0.1
     critDamage: 2
     extraProjectileCount: 0
     pierceCount: 0
-    attackRange: 5
+    attackRange: 4.2
     areaOfEffect: 1
     maxHP: 100
     defense: 5
     hpRegen: 0
-    iFrameDuration: 0.5
+    iFrameDuration: 0
     moveSpeed: 5
     pickupRadius: 3
     xpGainMultiplier: 1
@@ -42,12 +42,15 @@ MonoBehaviour:
   isRotatingProjectile: 1
   procFxPrefab: {fileID: 0}
   passiveEffects:
-  - effectType: 3
-    value: 0
+  - effectType: 8
+    value: 2
     procChancePercent: 0
     damageMultiplier: 0
-    runStartStat: 4
-    runStartStatValue: 2
+    procMagnitudePercent: 0
+    procDurationSeconds: 0
+    explosionColor: {r: 1, g: 0.55, b: 0.1, a: 1}
+    runStartStat: 0
+    runStartStatValue: 0
   unlockCondition:
     type: 0
     requiredLevel: 0

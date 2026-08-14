@@ -1,9 +1,12 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 using TMPro;
 using TwinsDefense.Player;
 using TwinsDefense.Progression;
 using TwinsDefense.Economy;
+using TwinsDefense.Systems;
 
 namespace TwinsDefense.UI
 {
@@ -41,9 +44,15 @@ namespace TwinsDefense.UI
         [SerializeField] private float statAnimTime = 0.3f;
         [SerializeField] private float totalDelay = 3f;
 
+        [Header("Return to Menu")]
+        [Tooltip("Scene loaded when the player clicks anywhere after the total has finished revealing.")]
+        [SerializeField] private string characterSelectionSceneName = "CharacterSelection";
+
         private CanvasGroup summaryCanvasGroup;
         private PlayerHealth playerHealth;
+        private CameraFollow cameraFollow;
         private bool hasTriggered;
+        private bool canReturnToCharacterSelection;
         private int finalTotal;
 
         private void Awake()
@@ -70,6 +79,8 @@ namespace TwinsDefense.UI
             {
                 playerHealth.OnPlayerDied += HandlePlayerDied;
             }
+
+            cameraFollow = FindAnyObjectByType<CameraFollow>();
         }
 
         private void OnDestroy()
@@ -80,15 +91,36 @@ namespace TwinsDefense.UI
             }
         }
 
+        private void Update()
+        {
+            if (!canReturnToCharacterSelection) return;
+
+            Mouse mouse = Mouse.current;
+            if (mouse != null && mouse.leftButton.wasPressedThisFrame)
+            {
+                ReturnToCharacterSelection();
+            }
+        }
+
         private void HandlePlayerDied()
         {
             if (hasTriggered) return;
             hasTriggered = true;
 
             Time.timeScale = 0f;
+            // Stops the hit-shake dead instead of leaving it stuck re-randomizing forever —
+            // shakeTimer only counts down via Time.deltaTime, which freezes once we pause above.
+            cameraFollow?.StopShake();
             PopulateStats();
             gameOverPanel.SetActive(true);
             PlaySequence();
+        }
+
+        /// <summary>Resets timeScale (frozen at 0 since death) before leaving, so Character Selection doesn't load paused.</summary>
+        private void ReturnToCharacterSelection()
+        {
+            Time.timeScale = 1f;
+            SceneManager.LoadScene(characterSelectionSceneName);
         }
 
         private void PopulateStats()
@@ -148,6 +180,11 @@ namespace TwinsDefense.UI
             }
 
             RevealTotal();
+
+            // Matches RevealTotal's own count-up tween time, so the click-anywhere
+            // gate only opens once the player has actually seen the final number.
+            yield return new WaitForSecondsRealtime(1f);
+            canReturnToCharacterSelection = true;
         }
 
         private void RevealSummaryPanel()

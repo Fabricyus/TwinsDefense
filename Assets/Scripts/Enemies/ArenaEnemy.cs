@@ -25,7 +25,6 @@ namespace TwinsDefense.Enemies
 
         [Header("Hit Feedback")]
         [SerializeField] private SpriteRenderer spriteRenderer;
-        //[SerializeField] private GameObject deathPrefab;
         [Tooltip("Swapped in on hit, replacing the sprite's own colors with solid white for the flash. Tinting .color toward white does nothing when the sprite's base colors are already near-white.")]
         [SerializeField] private Material flashMaterial;
         [SerializeField] private float flashDuration = 0.08f;
@@ -52,13 +51,31 @@ namespace TwinsDefense.Enemies
         [SerializeField] private float knockbackForce = 6f;
         [SerializeField] private float knockbackDuration = 0.15f;
 
+        [Header("Movement")]
+        [Tooltip("If true, locks onto the player's position once at spawn and walks that fixed straight line forever, instead of continuously chasing the player like most enemies.")]
+        [SerializeField] private bool moveInStraightLine = false;
+
+        /// <summary>Exposed so companion scripts (e.g. BombEnemy) can reuse the same contact-hit VFX instead of duplicating the reference.</summary>
+        public GameObject AttackCirclePrefab => attackCirclePrefab;
+        public Vector3 AttackCircleOffset => attackCircleOffset;
+
+        /// <summary>Current health as a 0-1 fraction of this spawn's effective max (maxHealth + level scaling) — used by bosses to gate phase transitions.</summary>
+        public float HealthPercent01 => effectiveMaxHealth > 0f ? currentHealth / effectiveMaxHealth : 0f;
+
         private float currentHealth;
+        private float effectiveMaxHealth;
+        private bool isInvulnerable;
         private Transform player;
+        private Vector2 lockedDirection;
         private Material baseMaterial;
         private Coroutine flashRoutine;
         private float contactDamageTimer;
         private Vector2 knockbackVelocity;
         private float knockbackTimer;
+        private float slowMultiplier = 1f;
+        private float slowTimer;
+        private float stunTimer;
+        private SlowTrailVFX slowTrail;
 
         /// <summary>All currently active arena enemies, used by AutoAttack for nearest-target queries.</summary>
         public static readonly HashSet<ArenaEnemy> Active = new HashSet<ArenaEnemy>();
@@ -69,7 +86,8 @@ namespace TwinsDefense.Enemies
         private void Awake()
         {
             int level = LevelManager.Instance != null ? LevelManager.Instance.CurrentLevel : 0;
-            currentHealth = maxHealth + level * hpPerLevel;
+            effectiveMaxHealth = maxHealth + level * hpPerLevel;
+            currentHealth = effectiveMaxHealth;
         }
 
         private void Start()
@@ -78,6 +96,11 @@ namespace TwinsDefense.Enemies
             if (playerObject != null)
             {
                 player = playerObject.transform;
+            }
+
+            if (moveInStraightLine && player != null)
+            {
+                lockedDirection = ((Vector2)player.position - (Vector2)transform.position).normalized;
             }
 
             if (spriteRenderer == null)
@@ -113,16 +136,66 @@ namespace TwinsDefense.Enemies
                 return;
             }
 
-            Vector2 direction = ((Vector2)player.position - (Vector2)transform.position).normalized;
-            transform.position += (Vector3)(direction * moveSpeed * Time.deltaTime);
+            if (stunTimer > 0f)
+            {
+                stunTimer -= Time.deltaTime;
+                FaceTarget();
+                return;
+            }
+
+            if (slowTimer > 0f)
+            {
+                slowTimer -= Time.deltaTime;
+                if (slowTimer <= 0f)
+                {
+                    slowMultiplier = 1f;
+
+                    if (slowTrail != null)
+                    {
+                        slowTrail.StopAndFade();
+                        slowTrail = null;
+                    }
+                }
+            }
+
+            Vector2 direction = moveInStraightLine ? lockedDirection : ((Vector2)player.position - (Vector2)transform.position).normalized;
+            transform.position += (Vector3)(direction * moveSpeed * slowMultiplier * Time.deltaTime);
 
             FaceTarget();
+        }
+
+        /// <summary>Stuns this enemy for the given duration (refreshes rather than stacks if already stunned).</summary>
+        public void ApplyStun(float duration)
+        {
+            stunTimer = Mathf.Max(stunTimer, duration);
+        }
+
+        /// <summary>Slows this enemy's move speed by percent (0-100) for duration seconds. Keeps the strongest slow active instead of stacking multiple procs. Spawns (or extends) an icy trail VFX for as long as the slow is active.</summary>
+        public void ApplySlow(float percent, float duration)
+        {
+            float multiplier = 1f - Mathf.Clamp(percent, 0f, 100f) / 100f;
+            slowMultiplier = Mathf.Min(slowMultiplier, multiplier);
+            slowTimer = Mathf.Max(slowTimer, duration);
+
+            if (slowTrail == null)
+            {
+                slowTrail = SlowTrailVFX.Attach(transform);
+            }
         }
 
         /// <summary>Flips the sprite horizontally so the enemy faces the player, using a simple X-position comparison instead of sprite-facing math.</summary>
         private void FaceTarget()
         {
             if (spriteRenderer == null) return;
+
+            if (moveInStraightLine)
+            {
+                if (lockedDirection.x != 0f)
+                {
+                    spriteRenderer.flipX = lockedDirection.x < 0f;
+                }
+                return;
+            }
 
             spriteRenderer.flipX = transform.position.x > player.position.x;
         }
@@ -171,9 +244,17 @@ namespace TwinsDefense.Enemies
             }
         }
 
+        /// <summary>While true, TakeDamage is a no-op — used by boss phases (e.g. ReaperEnemy's hazard-field phase) that shouldn't be interruptible.</summary>
+        public void SetInvulnerable(bool invulnerable)
+        {
+            isInvulnerable = invulnerable;
+        }
+
         /// <summary>Applies damage to this enemy, defeating it once health reaches zero.</summary>
         public void TakeDamage(float amount, bool isCrit = false)
         {
+            if (isInvulnerable) return;
+
             currentHealth -= amount;
             TriggerHitFlash();
             DamagePopupSpawner.Spawn(transform.position + damagePopupOffset, amount, isCrit);
@@ -182,8 +263,7 @@ namespace TwinsDefense.Enemies
             {
                 OnEnemyDefeated?.Invoke();
                 RunStats.Instance?.RegisterKill();
-                //GameObject tmp = Instantiate(deathPrefab, transform.position + (Vector3)this.gameObject.transform.position, Quaternion.identity);
-                //Destroy(tmp, 0.11f);
+                DeathSmokeVFX.Spawn(transform.position);
                 DropCoins();
                 DropExp();
                 Destroy(gameObject);

@@ -153,8 +153,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 250, y: -357.8}
-  m_SizeDelta: {x: 473.2115, y: 139.3981}
+  m_AnchoredPosition: {x: 250, y: -328.93}
+  m_SizeDelta: {x: 473.2115, y: 211.57}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2487448
 CanvasRenderer:
@@ -213,10 +213,10 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 40
+  m_fontSize: 61.45
   m_fontSizeBase: 40
   m_fontWeight: 400
-  m_enableAutoSizing: 0
+  m_enableAutoSizing: 1
   m_fontSizeMin: 18
   m_fontSizeMax: 72
   m_fontStyle: 1
@@ -290,9 +290,9 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 140225855}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 50, y: -50}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 50, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &34653664
@@ -345,6 +345,7 @@ GameObject:
   - component: {fileID: 54512233}
   - component: {fileID: 54512232}
   - component: {fileID: 54512234}
+  - component: {fileID: 54512235}
   m_Layer: 5
   m_Name: Image
   m_TagString: Untagged
@@ -454,6 +455,20 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &54512235
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 54512230}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fec23520fc11b444089a3e3a9bf4acd7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TwinsDefense.UI.ButtonHoverScale
+  hoverScale: 1.1
+  animDuration: 0.12
 --- !u!21 &56987794
 Material:
   serializedVersion: 8
@@ -703,7 +718,7 @@ RectTransform:
   m_Children:
   - {fileID: 2130789121}
   - {fileID: 34653663}
-  - {fileID: 297346567}
+  - {fileID: 1369493142}
   m_Father: {fileID: 1342845734}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -750,6 +765,7 @@ GameObject:
   - component: {fileID: 145046152}
   - component: {fileID: 145046154}
   - component: {fileID: 145046155}
+  - component: {fileID: 145046156}
   m_Layer: 5
   m_Name: slotCharacter (3)
   m_TagString: Untagged
@@ -874,6 +890,20 @@ MonoBehaviour:
   selectedColor: {r: 1, g: 0.85, b: 0.4, a: 1}
   normalColor: {r: 1, g: 1, b: 1, a: 1}
   lockedMaterial: {fileID: 2100000, guid: c1667c594f604fcfa434697212c0c2eb, type: 2}
+--- !u!114 &145046156
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 145046150}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fec23520fc11b444089a3e3a9bf4acd7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TwinsDefense.UI.ButtonHoverScale
+  hoverScale: 1.1
+  animDuration: 0.12
 --- !u!1 &149125940
 GameObject:
   m_ObjectHideFlags: 0
@@ -1289,6 +1319,7 @@ GameObject:
   - component: {fileID: 258226154}
   - component: {fileID: 258226156}
   - component: {fileID: 258226157}
+  - component: {fileID: 258226158}
   m_Layer: 5
   m_Name: slotCharacter (10)
   m_TagString: Untagged
@@ -1413,6 +1444,20 @@ MonoBehaviour:
   selectedColor: {r: 1, g: 0.85, b: 0.4, a: 1}
   normalColor: {r: 1, g: 1, b: 1, a: 1}
   lockedMaterial: {fileID: 2100000, guid: c1667c594f604fcfa434697212c0c2eb, type: 2}
+--- !u!114 &258226158
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 258226152}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fec23520fc11b444089a3e3a9bf4acd7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TwinsDefense.UI.ButtonHoverScale
+  hoverScale: 1.1
+  animDuration: 0.12
 --- !u!1 &276369347
 GameObject:
   m_ObjectHideFlags: 0
@@ -1518,81 +1563,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
---- !u!1 &297346566
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 297346567}
-  - component: {fileID: 297346568}
-  - component: {fileID: 297346569}
-  m_Layer: 5
-  m_Name: stats
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!224 &297346567
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 297346566}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 140225855}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 72.20334, y: -50}
-  m_SizeDelta: {x: 50, y: 50}
-  m_Pivot: {x: 0.5, y: 0.5}
---- !u!222 &297346568
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 297346566}
-  m_CullTransparentMesh: 1
---- !u!114 &297346569
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 297346566}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
-  m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 0.90821296, b: 0, a: 1}
-  m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_Sprite: {fileID: 1731825198272069549, guid: cf5ab18e05429c44ab411069aee41dfd, type: 3}
-  m_Type: 0
-  m_PreserveAspect: 0
-  m_FillCenter: 1
-  m_FillMethod: 4
-  m_FillAmount: 1
-  m_FillClockwise: 1
-  m_FillOrigin: 0
-  m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
 --- !u!1 &303550546
 GameObject:
   m_ObjectHideFlags: 0
@@ -2094,9 +2064,9 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 1309270890}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 41.61, y: -50}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 50, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &542830045
@@ -2114,81 +2084,6 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 542830043}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
-  m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_Sprite: {fileID: 1731825198272069549, guid: cf5ab18e05429c44ab411069aee41dfd, type: 3}
-  m_Type: 0
-  m_PreserveAspect: 0
-  m_FillCenter: 1
-  m_FillMethod: 4
-  m_FillAmount: 1
-  m_FillClockwise: 1
-  m_FillOrigin: 0
-  m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
---- !u!1 &568091146
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 568091147}
-  - component: {fileID: 568091148}
-  - component: {fileID: 568091149}
-  m_Layer: 5
-  m_Name: stats
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!224 &568091147
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 568091146}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1309270890}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 91.44, y: -50}
-  m_SizeDelta: {x: 50, y: 50}
-  m_Pivot: {x: 0.5, y: 0.5}
---- !u!222 &568091148
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 568091146}
-  m_CullTransparentMesh: 1
---- !u!114 &568091149
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 568091146}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
@@ -2333,6 +2228,7 @@ GameObject:
   - component: {fileID: 785400223}
   - component: {fileID: 785400222}
   - component: {fileID: 785400221}
+  - component: {fileID: 785400225}
   m_Layer: 5
   m_Name: btnPlay
   m_TagString: Untagged
@@ -2442,6 +2338,20 @@ RectTransform:
   m_AnchoredPosition: {x: 202.2893, y: -375.5}
   m_SizeDelta: {x: 319.7521, y: 100.59}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &785400225
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 785400220}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fec23520fc11b444089a3e3a9bf4acd7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TwinsDefense.UI.ButtonHoverScale
+  hoverScale: 1.1
+  animDuration: 0.12
 --- !u!1 &857929435
 GameObject:
   m_ObjectHideFlags: 0
@@ -3107,6 +3017,7 @@ GameObject:
   - component: {fileID: 1293700101}
   - component: {fileID: 1293700103}
   - component: {fileID: 1293700104}
+  - component: {fileID: 1293700105}
   m_Layer: 5
   m_Name: slotCharacter (5)
   m_TagString: Untagged
@@ -3231,6 +3142,20 @@ MonoBehaviour:
   selectedColor: {r: 1, g: 0.85, b: 0.4, a: 1}
   normalColor: {r: 1, g: 1, b: 1, a: 1}
   lockedMaterial: {fileID: 2100000, guid: c1667c594f604fcfa434697212c0c2eb, type: 2}
+--- !u!114 &1293700105
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1293700099}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fec23520fc11b444089a3e3a9bf4acd7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TwinsDefense.UI.ButtonHoverScale
+  hoverScale: 1.1
+  animDuration: 0.12
 --- !u!1 &1304753134
 GameObject:
   m_ObjectHideFlags: 0
@@ -3400,9 +3325,6 @@ RectTransform:
   - {fileID: 1649678313}
   - {fileID: 542830044}
   - {fileID: 1965662188}
-  - {fileID: 1950026067}
-  - {fileID: 568091147}
-  - {fileID: 1412440784}
   m_Father: {fileID: 2011622277}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -3449,6 +3371,7 @@ GameObject:
   - component: {fileID: 1341927913}
   - component: {fileID: 1341927915}
   - component: {fileID: 1341927916}
+  - component: {fileID: 1341927917}
   m_Layer: 5
   m_Name: slotCharacter (11)
   m_TagString: Untagged
@@ -3573,6 +3496,20 @@ MonoBehaviour:
   selectedColor: {r: 1, g: 0.85, b: 0.4, a: 1}
   normalColor: {r: 1, g: 1, b: 1, a: 1}
   lockedMaterial: {fileID: 2100000, guid: c1667c594f604fcfa434697212c0c2eb, type: 2}
+--- !u!114 &1341927917
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1341927911}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fec23520fc11b444089a3e3a9bf4acd7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TwinsDefense.UI.ButtonHoverScale
+  hoverScale: 1.1
+  animDuration: 0.12
 --- !u!1 &1342845733
 GameObject:
   m_ObjectHideFlags: 0
@@ -3649,7 +3586,7 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1342845733}
   m_CullTransparentMesh: 1
---- !u!1 &1412440783
+--- !u!1 &1369493141
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -3657,57 +3594,49 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 1412440784}
-  - component: {fileID: 1412440785}
-  - component: {fileID: 1412440786}
+  - component: {fileID: 1369493142}
+  - component: {fileID: 1369493144}
+  - component: {fileID: 1369493143}
   m_Layer: 5
-  m_Name: stats
+  m_Name: stats (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!224 &1412440784
+--- !u!224 &1369493142
 RectTransform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1412440783}
+  m_GameObject: {fileID: 1369493141}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1309270890}
+  m_Father: {fileID: 140225855}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 108.05, y: -50}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 50, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!222 &1412440785
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1412440783}
-  m_CullTransparentMesh: 1
---- !u!114 &1412440786
+--- !u!114 &1369493143
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1412440783}
+  m_GameObject: {fileID: 1369493141}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 0.90821296, b: 0, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -3724,6 +3653,14 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!222 &1369493144
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1369493141}
+  m_CullTransparentMesh: 1
 --- !u!1 &1421029622
 GameObject:
   m_ObjectHideFlags: 0
@@ -3737,6 +3674,7 @@ GameObject:
   - component: {fileID: 1421029624}
   - component: {fileID: 1421029626}
   - component: {fileID: 1421029627}
+  - component: {fileID: 1421029628}
   m_Layer: 5
   m_Name: slotCharacter (1)
   m_TagString: Untagged
@@ -3861,6 +3799,20 @@ MonoBehaviour:
   selectedColor: {r: 1, g: 0.85, b: 0.4, a: 1}
   normalColor: {r: 1, g: 1, b: 1, a: 1}
   lockedMaterial: {fileID: 2100000, guid: c1667c594f604fcfa434697212c0c2eb, type: 2}
+--- !u!114 &1421029628
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1421029622}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fec23520fc11b444089a3e3a9bf4acd7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TwinsDefense.UI.ButtonHoverScale
+  hoverScale: 1.1
+  animDuration: 0.12
 --- !u!1 &1481966928
 GameObject:
   m_ObjectHideFlags: 0
@@ -3874,6 +3826,7 @@ GameObject:
   - component: {fileID: 1481966930}
   - component: {fileID: 1481966932}
   - component: {fileID: 1481966933}
+  - component: {fileID: 1481966934}
   m_Layer: 5
   m_Name: slotCharacter (7)
   m_TagString: Untagged
@@ -3998,6 +3951,20 @@ MonoBehaviour:
   selectedColor: {r: 1, g: 0.85, b: 0.4, a: 1}
   normalColor: {r: 1, g: 1, b: 1, a: 1}
   lockedMaterial: {fileID: 2100000, guid: c1667c594f604fcfa434697212c0c2eb, type: 2}
+--- !u!114 &1481966934
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1481966928}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fec23520fc11b444089a3e3a9bf4acd7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TwinsDefense.UI.ButtonHoverScale
+  hoverScale: 1.1
+  animDuration: 0.12
 --- !u!1 &1537073420
 GameObject:
   m_ObjectHideFlags: 0
@@ -4197,9 +4164,9 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 1309270890}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 25, y: -50}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 50, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1649678314
@@ -4377,81 +4344,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1808565867}
   m_CullTransparentMesh: 1
---- !u!1 &1950026066
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1950026067}
-  - component: {fileID: 1950026068}
-  - component: {fileID: 1950026069}
-  m_Layer: 5
-  m_Name: stats
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!224 &1950026067
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1950026066}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1309270890}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 74.83, y: -50}
-  m_SizeDelta: {x: 50, y: 50}
-  m_Pivot: {x: 0.5, y: 0.5}
---- !u!222 &1950026068
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1950026066}
-  m_CullTransparentMesh: 1
---- !u!114 &1950026069
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1950026066}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
-  m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_Sprite: {fileID: 1731825198272069549, guid: cf5ab18e05429c44ab411069aee41dfd, type: 3}
-  m_Type: 0
-  m_PreserveAspect: 0
-  m_FillCenter: 1
-  m_FillMethod: 4
-  m_FillAmount: 1
-  m_FillClockwise: 1
-  m_FillOrigin: 0
-  m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
 --- !u!1 &1965662187
 GameObject:
   m_ObjectHideFlags: 0
@@ -4484,9 +4376,9 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 1309270890}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 58.22, y: -50}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 50, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1965662189
@@ -4540,6 +4432,7 @@ GameObject:
   - component: {fileID: 1980260737}
   - component: {fileID: 1980260739}
   - component: {fileID: 1980260740}
+  - component: {fileID: 1980260741}
   m_Layer: 5
   m_Name: slotCharacter (8)
   m_TagString: Untagged
@@ -4664,6 +4557,20 @@ MonoBehaviour:
   selectedColor: {r: 1, g: 0.85, b: 0.4, a: 1}
   normalColor: {r: 1, g: 1, b: 1, a: 1}
   lockedMaterial: {fileID: 2100000, guid: c1667c594f604fcfa434697212c0c2eb, type: 2}
+--- !u!114 &1980260741
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1980260735}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fec23520fc11b444089a3e3a9bf4acd7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TwinsDefense.UI.ButtonHoverScale
+  hoverScale: 1.1
+  animDuration: 0.12
 --- !u!1 &1981854405
 GameObject:
   m_ObjectHideFlags: 0
@@ -4677,6 +4584,7 @@ GameObject:
   - component: {fileID: 1981854407}
   - component: {fileID: 1981854409}
   - component: {fileID: 1981854410}
+  - component: {fileID: 1981854411}
   m_Layer: 5
   m_Name: slotCharacter (6)
   m_TagString: Untagged
@@ -4801,6 +4709,20 @@ MonoBehaviour:
   selectedColor: {r: 1, g: 0.85, b: 0.4, a: 1}
   normalColor: {r: 1, g: 1, b: 1, a: 1}
   lockedMaterial: {fileID: 2100000, guid: c1667c594f604fcfa434697212c0c2eb, type: 2}
+--- !u!114 &1981854411
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1981854405}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fec23520fc11b444089a3e3a9bf4acd7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TwinsDefense.UI.ButtonHoverScale
+  hoverScale: 1.1
+  animDuration: 0.12
 --- !u!1 &2011622276
 GameObject:
   m_ObjectHideFlags: 0
@@ -4890,6 +4812,7 @@ GameObject:
   - component: {fileID: 2024464200}
   - component: {fileID: 2024464202}
   - component: {fileID: 2024464203}
+  - component: {fileID: 2024464204}
   m_Layer: 5
   m_Name: slotCharacter (4)
   m_TagString: Untagged
@@ -5014,6 +4937,20 @@ MonoBehaviour:
   selectedColor: {r: 1, g: 0.85, b: 0.4, a: 1}
   normalColor: {r: 1, g: 1, b: 1, a: 1}
   lockedMaterial: {fileID: 2100000, guid: c1667c594f604fcfa434697212c0c2eb, type: 2}
+--- !u!114 &2024464204
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2024464198}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fec23520fc11b444089a3e3a9bf4acd7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TwinsDefense.UI.ButtonHoverScale
+  hoverScale: 1.1
+  animDuration: 0.12
 --- !u!1 &2046320629
 GameObject:
   m_ObjectHideFlags: 0
@@ -5027,6 +4964,7 @@ GameObject:
   - component: {fileID: 2046320631}
   - component: {fileID: 2046320633}
   - component: {fileID: 2046320634}
+  - component: {fileID: 2046320635}
   m_Layer: 5
   m_Name: slotCharacter (9)
   m_TagString: Untagged
@@ -5151,6 +5089,20 @@ MonoBehaviour:
   selectedColor: {r: 1, g: 0.85, b: 0.4, a: 1}
   normalColor: {r: 1, g: 1, b: 1, a: 1}
   lockedMaterial: {fileID: 2100000, guid: c1667c594f604fcfa434697212c0c2eb, type: 2}
+--- !u!114 &2046320635
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2046320629}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fec23520fc11b444089a3e3a9bf4acd7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TwinsDefense.UI.ButtonHoverScale
+  hoverScale: 1.1
+  animDuration: 0.12
 --- !u!1 &2051900873
 GameObject:
   m_ObjectHideFlags: 0
@@ -5164,6 +5116,7 @@ GameObject:
   - component: {fileID: 2051900875}
   - component: {fileID: 2051900877}
   - component: {fileID: 2051900878}
+  - component: {fileID: 2051900879}
   m_Layer: 5
   m_Name: slotCharacter
   m_TagString: Untagged
@@ -5288,6 +5241,20 @@ MonoBehaviour:
   selectedColor: {r: 1, g: 0.85, b: 0.4, a: 1}
   normalColor: {r: 1, g: 1, b: 1, a: 1}
   lockedMaterial: {fileID: 2100000, guid: c1667c594f604fcfa434697212c0c2eb, type: 2}
+--- !u!114 &2051900879
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2051900873}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fec23520fc11b444089a3e3a9bf4acd7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TwinsDefense.UI.ButtonHoverScale
+  hoverScale: 1.1
+  animDuration: 0.12
 --- !u!1 &2062648162
 GameObject:
   m_ObjectHideFlags: 0
@@ -5396,13 +5363,13 @@ MonoBehaviour:
   - {fileID: 1649678315}
   - {fileID: 542830046}
   - {fileID: 1965662190}
-  - {fileID: 1950026069}
-  - {fileID: 568091149}
-  - {fileID: 1412440786}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   defensePips:
   - {fileID: 2130789123}
   - {fileID: 34653665}
-  - {fileID: 297346569}
+  - {fileID: 0}
   filledPipColor: {r: 1, g: 1, b: 1, a: 1}
   emptyPipColor: {r: 1, g: 1, b: 1, a: 0.35}
   starTrack:
@@ -5413,6 +5380,8 @@ MonoBehaviour:
   - {fileID: 339572600}
   lockedStarSprite: {fileID: 6326231466481203021, guid: ae6723659cdcc1344a983b7c7789cfbf, type: 3}
   unlockedStarSprite: {fileID: -6859001260349468157, guid: ae6723659cdcc1344a983b7c7789cfbf, type: 3}
+  starPunchScaleAmount: {x: 0.4, y: 0.4, z: 0}
+  starPunchDuration: 0.3
   upgradeButton: {fileID: 54512234}
   upgradeCostText: {fileID: 149125943}
   playButton: {fileID: 785400221}
@@ -5429,6 +5398,7 @@ GameObject:
   - component: {fileID: 2069891023}
   - component: {fileID: 2069891025}
   - component: {fileID: 2069891026}
+  - component: {fileID: 2069891027}
   m_Layer: 5
   m_Name: slotCharacter (2)
   m_TagString: Untagged
@@ -5553,6 +5523,20 @@ MonoBehaviour:
   selectedColor: {r: 1, g: 0.85, b: 0.4, a: 1}
   normalColor: {r: 1, g: 1, b: 1, a: 1}
   lockedMaterial: {fileID: 2100000, guid: c1667c594f604fcfa434697212c0c2eb, type: 2}
+--- !u!114 &2069891027
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2069891021}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fec23520fc11b444089a3e3a9bf4acd7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TwinsDefense.UI.ButtonHoverScale
+  hoverScale: 1.1
+  animDuration: 0.12
 --- !u!1 &2130789120
 GameObject:
   m_ObjectHideFlags: 0
@@ -5585,9 +5569,9 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 140225855}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 27.796667, y: -50}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 50, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2130789122

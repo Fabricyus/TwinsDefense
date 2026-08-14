@@ -30,5 +30,8 @@ namespace TwinsDefense.Player
         public float pickupRadius = 3f;
         public float xpGainMultiplier = 1f;
         public float coinGainMultiplier = 1f;
+
+        /// <summary>Flat percentage chance (0-100) added on top of the character's own ExplodeOnKill passive, if any — see AutoAttack.ResolveOnHitPassives.</summary>
+        public float explodeOnKillChance = 0f;
     }
 }

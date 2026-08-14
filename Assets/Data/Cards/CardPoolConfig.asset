@@ -30,6 +30,17 @@ MonoBehaviour:
   - {fileID: 11400000, guid: d5338ed3339841b4880a7f52f7fa0afe, type: 2}
   - {fileID: 11400000, guid: e1697e241f0f6c74da95a6107c51ea6d, type: 2}
   - {fileID: 11400000, guid: 19c7814dd31ca904aabd2807c1699866, type: 2}
+  - {fileID: 11400000, guid: e21476cf6ee28a84d8ceb1b334861de1, type: 2}
+  - {fileID: 11400000, guid: 961b89aba9b0d0042a058b2daff01db1, type: 2}
+  - {fileID: 11400000, guid: c9661917cec28dc42acf7c09d56ceebe, type: 2}
+  - {fileID: 11400000, guid: c2a737d89a8ccc8428df3cae69574077, type: 2}
+  - {fileID: 11400000, guid: c32fa4b9790a78e4cb15492f3e66600c, type: 2}
+  - {fileID: 11400000, guid: 2d55af367f0ea2447943619ee915cfeb, type: 2}
+  - {fileID: 11400000, guid: 8978aff9c85ba634e9f240ac30490b20, type: 2}
+  - {fileID: 11400000, guid: b50edd1e5a777054591506a27c62820f, type: 2}
+  - {fileID: 11400000, guid: 4aa53a504824e7644b2b5f0b7d7c33ae, type: 2}
+  - {fileID: 11400000, guid: 37c56b9d54988c14bb042ef8503bcc30, type: 2}
+  - {fileID: 11400000, guid: da29b5f0d3388eb4e9d8900f2b650bf7, type: 2}
   commonWeight: 60
   rareWeight: 30
   epicWeight: 10

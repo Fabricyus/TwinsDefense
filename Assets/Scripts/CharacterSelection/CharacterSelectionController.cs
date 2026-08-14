@@ -31,6 +31,18 @@ namespace TwinsDefense.CharacterSelection
 
         private void Start()
         {
+            RefreshSlots();
+
+            detailPanel.OnUpgradeClicked += HandleUpgradeClicked;
+            detailPanel.OnPlayClicked += HandlePlayClicked;
+
+            int defaultIndex = slots.FindIndex(s => s.isUnlocked);
+            SelectIndex(defaultIndex >= 0 ? defaultIndex : 0);
+        }
+
+        /// <summary>Re-fetches the slot list and re-wires every grid icon to it. Must run after any change that replaces the slots list (e.g. an upgrade purchase) — CharacterSlotData has no value equality, so a CharacterSlotUI left holding a stale instance would never be found again by HandleSlotClicked's list lookup.</summary>
+        private void RefreshSlots()
+        {
             slots = provider.GetAllSlots();
 
             for (int i = 0; i < slotUIs.Length; i++)
@@ -42,12 +54,6 @@ namespace TwinsDefense.CharacterSelection
                     slotUIs[i].Setup(slots[i], HandleSlotClicked);
                 }
             }
-
-            detailPanel.OnUpgradeClicked += HandleUpgradeClicked;
-            detailPanel.OnPlayClicked += HandlePlayClicked;
-
-            int defaultIndex = slots.FindIndex(s => s.isUnlocked);
-            SelectIndex(defaultIndex >= 0 ? defaultIndex : 0);
         }
 
         private void HandleSlotClicked(CharacterSlotData data)
@@ -72,9 +78,10 @@ namespace TwinsDefense.CharacterSelection
         {
             provider.RequestUpgrade(slots[selectedIndex].slotId);
 
-            // Re-fetch so the detail panel picks up the new star count/next cost immediately.
-            slots = provider.GetAllSlots();
-            detailPanel.Populate(slots[selectedIndex]);
+            // Re-fetch so the detail panel picks up the new star count/next cost immediately,
+            // and re-wire the grid icons to the fresh list (see RefreshSlots).
+            RefreshSlots();
+            detailPanel.Populate(slots[selectedIndex], animateStarChange: true);
         }
 
         private void HandlePlayClicked()

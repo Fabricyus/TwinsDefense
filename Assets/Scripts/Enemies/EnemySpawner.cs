@@ -8,8 +8,8 @@ namespace TwinsDefense.Enemies
     /// <summary>
     /// Continuously spawns enemies at random positions on a ring around the
     /// player, always outside camera view. Spawn interval shrinks and the
-    /// Sprinter starts appearing as the player's level rises, and a boss
-    /// enemy is spawned every few levels.
+    /// Sprinter starts appearing as the player's level rises, and a scaling
+    /// wave of bosses is spawned every few levels (see HandleLevelChanged).
     /// </summary>
     public class EnemySpawner : MonoBehaviour
     {
@@ -32,9 +32,26 @@ namespace TwinsDefense.Enemies
         [Range(0f, 1f)]
         [SerializeField] private float sprinterSpawnChance = 0.3f;
 
+        [Header("Bomb Pack")]
+        [SerializeField] private GameObject bombPackPrefab;
+        [SerializeField] private GameObject bombPackSlowPrefab;
+        [Tooltip("Player level at which bomb packs start appearing in the spawn pool.")]
+        [SerializeField] private int bombPackUnlockLevel = 8;
+        [Tooltip("Chance to spawn a bomb pack instead of the normal enemy, once unlocked (rolled independently for each of the two pack prefabs).")]
+        [Range(0f, 1f)]
+        [SerializeField] private float bombPackSpawnChance = 0.05f;
+
+        [Header("Diamond")]
+        [SerializeField] private GameObject diamondPrefab;
+        [Tooltip("Player level at which Diamond starts appearing in the spawn pool.")]
+        [SerializeField] private int diamondUnlockLevel = 15;
+        [Tooltip("Chance to spawn a Diamond instead of the normal enemy, once unlocked.")]
+        [Range(0f, 1f)]
+        [SerializeField] private float diamondSpawnChance = 0.1f;
+
         [Header("Boss")]
         [SerializeField] private GameObject bossPrefab;
-        [Tooltip("A boss is spawned every time the player's level is a multiple of this value.")]
+        [Tooltip("A wave of bosses spawns every time the player's level is a multiple of this value, with the wave size scaling as level / this value (e.g. level 10 -> 1 boss, level 20 -> 2, level 30 -> 3).")]
         [SerializeField] private int bossLevelInterval = 10;
 
         private Transform player;
@@ -63,10 +80,13 @@ namespace TwinsDefense.Enemies
             }
         }
 
-        /// <summary>Drops a boss into the arena whenever the player reaches a level that's a multiple of bossLevelInterval.</summary>
+        /// <summary>Drops a scaling wave of bosses into the arena whenever the player reaches a level that's a multiple of bossLevelInterval — e.g. with the default interval of 10, level 10 spawns 1, level 20 spawns 2, level 30 spawns 3.</summary>
         private void HandleLevelChanged(int level)
         {
-            if (level > 0 && bossPrefab != null && level % bossLevelInterval == 0)
+            if (level <= 0 || bossPrefab == null || level % bossLevelInterval != 0) return;
+
+            int bossCount = level / bossLevelInterval;
+            for (int i = 0; i < bossCount; i++)
             {
                 GameObject boss = SpawnAtRing(bossPrefab);
                 HookBossDefeatReport(boss, level);
@@ -109,6 +129,23 @@ namespace TwinsDefense.Enemies
             if (level >= sprinterUnlockLevel && sprinterPrefab != null && Random.value < sprinterSpawnChance)
             {
                 prefabToSpawn = sprinterPrefab;
+            }
+
+            if (level >= bombPackUnlockLevel)
+            {
+                if (bombPackPrefab != null && Random.value < bombPackSpawnChance)
+                {
+                    prefabToSpawn = bombPackPrefab;
+                }
+                else if (bombPackSlowPrefab != null && Random.value < bombPackSpawnChance)
+                {
+                    prefabToSpawn = bombPackSlowPrefab;
+                }
+            }
+
+            if (level >= diamondUnlockLevel && diamondPrefab != null && Random.value < diamondSpawnChance)
+            {
+                prefabToSpawn = diamondPrefab;
             }
 
             SpawnAtRing(prefabToSpawn);

@@ -16,9 +16,13 @@ MonoBehaviour:
   displayName: Second Wind
   description: 
   icon: {fileID: 0}
-  effectType: 11
-  value: 0.5
+  effectType: 17
+  value: 20
   isPercentage: 0
+  isSpecial: 0
+  secondEffectType: 0
+  secondValue: 0
+  secondIsPercentage: 0
   rarity: 1
   rollWeight: 1
   maxStacks: 0

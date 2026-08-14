@@ -20,6 +20,12 @@ namespace TwinsDefense.UI
     {
         [SerializeField] private TextMeshProUGUI descriptionText;
 
+        [Header("Card Frame")]
+        [Tooltip("Left unassigned, resolved via GetComponent on first Awake (the frame Image lives on this same GameObject).")]
+        [SerializeField] private Image cardFrameImage;
+        [Tooltip("Swapped in in place of the frame's default sprite while a special (buff+debuff) card is shown.")]
+        [SerializeField] private Sprite specialCardSprite;
+
         [Header("Animation")]
         [SerializeField] private float hoverScale = 1.1f;
         [SerializeField] private float hoverAnimDuration = 0.12f;
@@ -34,6 +40,7 @@ namespace TwinsDefense.UI
         private Vector3 baseScale;
         private Coroutine scaleRoutine;
         private bool isPicked;
+        private Sprite defaultCardFrameSprite;
 
         private void Awake()
         {
@@ -43,6 +50,16 @@ namespace TwinsDefense.UI
             if (descriptionText == null)
             {
                 descriptionText = GetComponentInChildren<TextMeshProUGUI>();
+            }
+
+            if (cardFrameImage == null)
+            {
+                cardFrameImage = GetComponent<Image>();
+            }
+
+            if (cardFrameImage != null)
+            {
+                defaultCardFrameSprite = cardFrameImage.sprite;
             }
 
             button.onClick.AddListener(HandleClick);
@@ -57,6 +74,11 @@ namespace TwinsDefense.UI
             button.interactable = true;
             transform.localScale = baseScale;
             descriptionText.text = BuildDescription(card);
+
+            if (cardFrameImage != null)
+            {
+                cardFrameImage.sprite = card.isSpecial && specialCardSprite != null ? specialCardSprite : defaultCardFrameSprite;
+            }
         }
 
         public void OnPointerEnter(PointerEventData eventData)
@@ -129,9 +151,22 @@ namespace TwinsDefense.UI
 
         private static string BuildDescription(CardData card)
         {
-            string sign = card.value >= 0f ? "+" : string.Empty;
-            string amount = card.isPercentage ? $"{sign}{card.value:0.#}%" : $"{sign}{card.value:0.#}";
-            return $"{card.displayName}\n{amount} {EffectLabel(card.effectType)}";
+            string primaryLine = FormatEffectLine(card.value, card.isPercentage, card.effectType);
+
+            if (!card.isSpecial)
+            {
+                return $"{card.displayName}\n{primaryLine}";
+            }
+
+            string secondaryLine = FormatEffectLine(card.secondValue, card.secondIsPercentage, card.secondEffectType);
+            return $"{card.displayName}\n{primaryLine}\n{secondaryLine}";
+        }
+
+        private static string FormatEffectLine(float value, bool isPercentage, CardEffectType effectType)
+        {
+            string sign = value >= 0f ? "+" : string.Empty;
+            string amount = isPercentage ? $"{sign}{value:0.#}%" : $"{sign}{value:0.#}";
+            return $"{amount} {EffectLabel(effectType)}";
         }
 
         private static string EffectLabel(CardEffectType effectType)
@@ -155,6 +190,8 @@ namespace TwinsDefense.UI
                 case CardEffectType.PickupRadius: return "Pickup Radius";
                 case CardEffectType.XPGain: return "XP Gain";
                 case CardEffectType.CoinGain: return "Coin Gain";
+                case CardEffectType.InstantHeal: return "HP";
+                case CardEffectType.ExplodeOnKillChance: return "Explode Chance";
                 default: return effectType.ToString();
             }
         }

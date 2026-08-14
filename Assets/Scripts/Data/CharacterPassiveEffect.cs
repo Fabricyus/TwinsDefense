@@ -11,7 +11,9 @@ namespace TwinsDefense.Data
         StunOnHit,
         SlowOnHit,
         ThunderStrikeOnHit,
-        ChainOnHit
+        ChainOnHit,
+        DefensePerLevel,     // appended at the end — existing assets serialize this enum as an int, inserting earlier would remap them
+        ExplodeOnKill        // chance to AoE-damage nearby enemies when a kill lands
     }
 
     public enum RunStartStatType
@@ -34,12 +36,19 @@ namespace TwinsDefense.Data
     {
         public CharacterPassiveEffectType effectType;
 
-        [Header("Generic value (multiplier, flat HP/level, etc.)")]
-        public float value; // e.g. 2 for "x2 gold", 10 for "10 HP per level" — placeholder-friendly, designer-editable
+        [Header("Generic value (percent/level, flat HP or Defense/level, etc.)")]
+        public float value; // e.g. 2 for "+2% gold per level", 10 for "+10 HP per level" — placeholder-friendly, designer-editable
 
-        [Header("Proc-based effects (Stun/Slow/Thunder/Chain)")]
+        [Header("Proc-based effects (Stun/Slow/Thunder/Chain/ExplodeOnKill)")]
         [Range(0f, 100f)] public float procChancePercent;
-        public float damageMultiplier; // e.g. 3.0 for "300% damage", only relevant for ThunderStrikeOnHit
+        [Tooltip("ThunderStrikeOnHit: multiplier on player damage (e.g. 3.0 = 300%). ExplodeOnKill: fraction of player damage dealt as AoE (e.g. 0.5 = half).")]
+        public float damageMultiplier;
+        [Tooltip("SlowOnHit only: how much to slow the target's move speed by, 0-100.")]
+        public float procMagnitudePercent;
+        [Tooltip("StunOnHit/SlowOnHit only: how long the effect lasts, in seconds.")]
+        public float procDurationSeconds;
+        [Tooltip("ExplodeOnKill only: tint of the explosion particle burst (e.g. blue for an icy character).")]
+        public Color explosionColor = new Color(1f, 0.55f, 0.1f, 1f);
 
         [Header("Run-start flat bonus")]
         public RunStartStatType runStartStat;

@@ -20,6 +20,24 @@ MonoBehaviour:
     damage).
   icon: {fileID: -941399721, guid: cf5ab18e05429c44ab411069aee41dfd, type: 3}
   lockedSilhouette: {fileID: -941399721, guid: cf5ab18e05429c44ab411069aee41dfd, type: 3}
+  baseStats:
+    damage: 25
+    attackFireRate: 1.8
+    projectileSpeed: 10
+    critChance: 0.1
+    critDamage: 2
+    extraProjectileCount: 0
+    pierceCount: 0
+    attackRange: 4.2
+    areaOfEffect: 1
+    maxHP: 100
+    defense: 1
+    hpRegen: 0
+    iFrameDuration: 0
+    moveSpeed: 5
+    pickupRadius: 3
+    xpGainMultiplier: 1
+    coinGainMultiplier: 1
   animatorController: {fileID: 9100000, guid: dad3fb0760d7bd0419109767994845c0, type: 2}
   projectilePrefab: {fileID: 3435300922814392574, guid: 79bff2f0e0557e449ab551c75292f348, type: 3}
   isRotatingProjectile: 1
@@ -29,12 +47,15 @@ MonoBehaviour:
     value: 0
     procChancePercent: 10
     damageMultiplier: 3
+    procMagnitudePercent: 0
+    procDurationSeconds: 0
+    explosionColor: {r: 1, g: 0.55, b: 0.1, a: 1}
     runStartStat: 0
     runStartStatValue: 0
   unlockCondition:
-    type: 2
+    type: 4
     requiredLevel: 0
-    requiredCardId: vital_boost
+    requiredCardId: 
     requiredCount: 10
     requiredBossLevel: 0
     requiredCharacterTier: 0

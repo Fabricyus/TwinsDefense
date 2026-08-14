@@ -19,6 +19,10 @@ MonoBehaviour:
   effectType: 7
   value: 10
   isPercentage: 1
+  isSpecial: 0
+  secondEffectType: 0
+  secondValue: 0
+  secondIsPercentage: 0
   rarity: 0
   rollWeight: 1
   maxStacks: 0

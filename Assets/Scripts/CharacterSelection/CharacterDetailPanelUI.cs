@@ -28,6 +28,9 @@ namespace TwinsDefense.CharacterSelection
         [SerializeField] private Image[] starTrack;
         [SerializeField] private Sprite lockedStarSprite;
         [SerializeField] private Sprite unlockedStarSprite;
+        [Tooltip("Punch-scale played on a star icon the moment its sprite flips to unlocked (see Populate's animateStarChange).")]
+        [SerializeField] private Vector3 starPunchScaleAmount = new Vector3(0.4f, 0.4f, 0f);
+        [SerializeField] private float starPunchDuration = 0.3f;
 
         [Header("Upgrade")]
         [SerializeField] private Button upgradeButton;
@@ -45,8 +48,8 @@ namespace TwinsDefense.CharacterSelection
             playButton.onClick.AddListener(() => OnPlayClicked?.Invoke());
         }
 
-        /// <summary>Locked tiers still show name/description (to preview the unlock) but disable Upgrade and Play.</summary>
-        public void Populate(CharacterSlotData data)
+        /// <summary>Locked tiers still show name/description (to preview the unlock) but disable Upgrade and Play. Set animateStarChange when this Populate follows an actual star purchase, so the newly-unlocked star punches instead of just switching sprite (a plain slot-selection refresh should stay silent).</summary>
+        public void Populate(CharacterSlotData data, bool animateStarChange = false)
         {
             nameText.text = data.displayName;
             descriptionText.text = data.description;
@@ -55,7 +58,7 @@ namespace TwinsDefense.CharacterSelection
 
             SetPipTrack(attackPips, data.attackStars, data.attackStarsMax);
             SetPipTrack(defensePips, data.defenseStars, data.defenseStarsMax);
-            SetStarTrack(data.attackStars);
+            SetStarTrack(data.attackStars, animateStarChange);
 
             bool isMaxed = data.upgradeCost < 0;
             upgradeButton.interactable = data.isUnlocked && !isMaxed;
@@ -68,6 +71,8 @@ namespace TwinsDefense.CharacterSelection
         {
             for (int i = 0; i < pips.Length; i++)
             {
+                if (pips[i] == null) continue; // track can have fewer pip icons wired up than the stat's max
+
                 bool withinMax = i < max;
                 pips[i].gameObject.SetActive(withinMax);
                 if (withinMax)
@@ -77,12 +82,23 @@ namespace TwinsDefense.CharacterSelection
             }
         }
 
-        /// <summary>Swaps each of the 5 star icons' source sprite between locked/unlocked based on purchased Attack Stars.</summary>
-        private void SetStarTrack(int purchasedStars)
+        /// <summary>Swaps each of the 5 star icons' source sprite between locked/unlocked based on purchased Attack Stars, punch-scaling any star that flips to unlocked this call while animate is true.</summary>
+        private void SetStarTrack(int purchasedStars, bool animate)
         {
             for (int i = 0; i < starTrack.Length; i++)
             {
-                starTrack[i].sprite = i < purchasedStars ? unlockedStarSprite : lockedStarSprite;
+                bool shouldBeUnlocked = i < purchasedStars;
+                bool wasUnlocked = starTrack[i].sprite == unlockedStarSprite;
+
+                starTrack[i].sprite = shouldBeUnlocked ? unlockedStarSprite : lockedStarSprite;
+
+                if (animate && shouldBeUnlocked && !wasUnlocked)
+                {
+                    iTween.PunchScale(starTrack[i].gameObject, iTween.Hash(
+                        "amount", starPunchScaleAmount,
+                        "time", starPunchDuration
+                    ));
+                }
             }
         }
     }

@@ -13,7 +13,7 @@ namespace TwinsDefense.Systems
     /// </summary>
     public class CardDraftService
     {
-        /// <summary>Rolls up to <paramref name="count"/> unique, eligible cards from the pool.</summary>
+        /// <summary>Rolls up to <paramref name="count"/> unique, eligible cards from the pool. Special (buff+debuff) cards are excluded — those only appear via RollSpecialCards.</summary>
         public List<CardData> RollCards(int count, CardPoolConfig pool, RunCardState state, string activeCharacterId)
         {
             List<CardData> eligible = GetEligibleCards(pool, state, activeCharacterId);
@@ -36,6 +36,38 @@ namespace TwinsDefense.Systems
             return drafted;
         }
 
+        /// <summary>
+        /// Rolls up to <paramref name="count"/> unique, eligible special (buff+debuff) cards, uniformly at
+        /// random — specials don't use the rarity-weighted system since they're all equally "special".
+        /// </summary>
+        public List<CardData> RollSpecialCards(int count, CardPoolConfig pool, RunCardState state)
+        {
+            List<CardData> eligible = new List<CardData>();
+
+            if (pool != null && pool.allCards != null)
+            {
+                foreach (CardData card in pool.allCards)
+                {
+                    if (card == null || !card.isSpecial) continue;
+                    if (card.maxStacks > 0 && state.GetTimesPicked(card.cardId) >= card.maxStacks) continue;
+
+                    eligible.Add(card);
+                }
+            }
+
+            List<CardData> drafted = new List<CardData>();
+            int drawCount = Mathf.Min(count, eligible.Count);
+
+            for (int i = 0; i < drawCount; i++)
+            {
+                int index = UnityEngine.Random.Range(0, eligible.Count);
+                drafted.Add(eligible[index]);
+                eligible.RemoveAt(index); // no duplicates within the same draft
+            }
+
+            return drafted;
+        }
+
         private List<CardData> GetEligibleCards(CardPoolConfig pool, RunCardState state, string activeCharacterId)
         {
             List<CardData> eligible = new List<CardData>();
@@ -44,7 +76,7 @@ namespace TwinsDefense.Systems
 
             foreach (CardData card in pool.allCards)
             {
-                if (card == null) continue;
+                if (card == null || card.isSpecial) continue; // specials only ever appear via RollSpecialCards
 
                 if (card.maxStacks > 0 && state.GetTimesPicked(card.cardId) >= card.maxStacks) continue;
 

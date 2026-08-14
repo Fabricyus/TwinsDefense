@@ -106,8 +106,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c126ca808f8c8e449b63f2f879f51f30, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TwinsDefense.Enemies.ArenaEnemy
-  maxHealth: 100
+  maxHealth: 30
   moveSpeed: 2
+  hpPerLevel: 6
   spriteRenderer: {fileID: 8092556171513575466}
   flashMaterial: {fileID: 2100000, guid: c1667c594f604fcfa434697212c0c2eb, type: 2}
   flashDuration: 0.08
@@ -126,6 +127,7 @@ MonoBehaviour:
   attackCircleOffset: {x: 0, y: -0.15, z: 0}
   knockbackForce: 6
   knockbackDuration: 0.15
+  moveInStraightLine: 0
 --- !u!50 &6920144584025868640
 Rigidbody2D:
   serializedVersion: 5

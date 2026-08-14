@@ -52,9 +52,24 @@ namespace TwinsDefense.Player
             if (stats != null)
             {
                 ApplyBaseStats(Current.baseStats);
+                ApplyPurchasedStars(CharacterStarUpgrades.Instance.GetStars(Current.slotId));
+            }
+        }
 
-                int purchasedStars = CharacterStarUpgrades.Instance.GetStars(Current.slotId);
-                stats.damage += purchasedStars;
+        /// <summary>Each purchased Attack Star gives +1 flat damage and +15% Attack Fire Rate; reaching star 3 and star 5 each additionally grant +1 Projectile (so 5 stars = +2 Projectiles total).</summary>
+        private void ApplyPurchasedStars(int purchasedStars)
+        {
+            stats.damage += purchasedStars;
+            stats.attackFireRate *= 1f + purchasedStars * 0.15f;
+
+            if (purchasedStars >= 3)
+            {
+                stats.extraProjectileCount += 1f;
+            }
+
+            if (purchasedStars >= 5)
+            {
+                stats.extraProjectileCount += 1f;
             }
         }
 

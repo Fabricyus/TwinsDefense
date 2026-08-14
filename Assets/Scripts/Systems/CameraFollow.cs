@@ -31,6 +31,17 @@ namespace TwinsDefense.Systems
             shakeMagnitude = magnitude;
         }
 
+        /// <summary>
+        /// Cancels any in-progress shake immediately. Needed because shakeTimer only
+        /// counts down via Time.deltaTime, which freezes at Time.timeScale = 0 — without
+        /// this, a shake caught mid-decay by a pause (e.g. the Game Over screen) would
+        /// stay stuck re-randomizing its offset forever instead of settling.
+        /// </summary>
+        public void StopShake()
+        {
+            shakeTimer = 0f;
+        }
+
         private void LateUpdate()
         {
             if (target == null)
