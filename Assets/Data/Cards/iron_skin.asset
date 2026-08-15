@@ -17,8 +17,8 @@ MonoBehaviour:
   description: 
   icon: {fileID: 0}
   effectType: 10
-  value: 5
-  isPercentage: 1
+  value: 15
+  isPercentage: 0
   isSpecial: 0
   secondEffectType: 0
   secondValue: 0
@@ -27,3 +27,4 @@ MonoBehaviour:
   rollWeight: 1
   maxStacks: 0
   restrictedToCharacterIds: []
+  minStarsRequired: 0

@@ -22,12 +22,15 @@ namespace TwinsDefense.Progression
         [Tooltip("Fraction expPerPickup shrinks by for each level gained (e.g. 0.12 = 12% less per level).")]
         [Range(0f, 1f)]
         [SerializeField] private float expPerPickupDecayPerLevel = 0.12f;
+        [Tooltip("expPerPickup never decays below this fraction of its starting value (e.g. 0.35 = decay stops at 35%) — without a floor, compounding decay makes late-run levels need thousands of kills.")]
+        [Range(0f, 1f)]
+        [SerializeField] private float expPerPickupFloorFraction = 0.25f;
 
         public int CurrentLevel { get; private set; }
         public float CurrentExp { get; private set; }
 
-        /// <summary>Current XP granted per pickup, after applying the per-level decay.</summary>
-        public float CurrentExpPerPickup => expPerPickup * Mathf.Pow(1f - expPerPickupDecayPerLevel, CurrentLevel);
+        /// <summary>Current XP granted per pickup, after applying the per-level decay, floored at expPerPickupFloorFraction of the starting value.</summary>
+        public float CurrentExpPerPickup => expPerPickup * Mathf.Max(expPerPickupFloorFraction, Mathf.Pow(1f - expPerPickupDecayPerLevel, CurrentLevel));
 
         /// <summary>Raised whenever CurrentLevel changes, so UI can refresh without polling.</summary>
         public event Action<int> OnLevelChanged;
@@ -72,6 +75,16 @@ namespace TwinsDefense.Progression
             {
                 TriggerLevelUp();
             }
+        }
+
+        /// <summary>Instantly fills the XP bar to 100% and triggers a level-up — used as a boss-kill reward instead of a normal Exp pickup.</summary>
+        public void CompleteCurrentLevelExp()
+        {
+            if (CurrentExp >= 1f) return;
+
+            CurrentExp = 1f;
+            OnExpChanged?.Invoke(CurrentExp);
+            TriggerLevelUp();
         }
 
         private void TriggerLevelUp()

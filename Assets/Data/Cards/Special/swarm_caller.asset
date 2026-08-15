@@ -17,13 +17,14 @@ MonoBehaviour:
   description: 
   icon: {fileID: 0}
   effectType: 5
-  value: 2
+  value: 1
   isPercentage: 0
   isSpecial: 1
   secondEffectType: 0
-  secondValue: -40
+  secondValue: -25
   secondIsPercentage: 1
   rarity: 2
   rollWeight: 1
   maxStacks: 0
   restrictedToCharacterIds: []
+  minStarsRequired: 0

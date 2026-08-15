@@ -2,6 +2,7 @@ using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using TwinsDefense.UI;
 
 namespace TwinsDefense.CharacterSelection
 {
@@ -39,18 +40,34 @@ namespace TwinsDefense.CharacterSelection
         [Header("Play")]
         [SerializeField] private Button playButton;
 
+        [Header("Upgrade Tooltip")]
+        [Tooltip("Shows a preview of the next star's rewards while hovering the Upgrade button.")]
+        [SerializeField] private StarUpgradeTooltipUI upgradeTooltip;
+        [Tooltip("Pointer relay on the Upgrade button GameObject (CharacterDetailPanelUI doesn't sit on that GameObject, so it can't implement IPointerEnter/ExitHandler directly).")]
+        [SerializeField] private PointerHoverRelay upgradeButtonHoverRelay;
+
         public event Action OnUpgradeClicked;
         public event Action OnPlayClicked;
+
+        private CharacterSlotData currentData;
 
         private void Awake()
         {
             upgradeButton.onClick.AddListener(() => OnUpgradeClicked?.Invoke());
             playButton.onClick.AddListener(() => OnPlayClicked?.Invoke());
+
+            if (upgradeButtonHoverRelay != null)
+            {
+                upgradeButtonHoverRelay.OnEnter += () => upgradeTooltip?.Show(currentData);
+                upgradeButtonHoverRelay.OnExit += () => upgradeTooltip?.Hide();
+            }
         }
 
         /// <summary>Locked tiers still show name/description (to preview the unlock) but disable Upgrade and Play. Set animateStarChange when this Populate follows an actual star purchase, so the newly-unlocked star punches instead of just switching sprite (a plain slot-selection refresh should stay silent).</summary>
         public void Populate(CharacterSlotData data, bool animateStarChange = false)
         {
+            currentData = data;
+
             nameText.text = data.displayName;
             descriptionText.text = data.description;
             portraitImage.sprite = data.icon;

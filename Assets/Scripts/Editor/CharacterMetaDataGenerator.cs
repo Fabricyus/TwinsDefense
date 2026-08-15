@@ -98,18 +98,17 @@ namespace TwinsDefense.EditorTools
             procChancePercent = procChancePercent
         };
 
-        private static CharacterPassiveEffect ExplodeOnKill(float procChancePercent, float damageMultiplier) => new CharacterPassiveEffect
+        /// <summary>Damage is always 100% of the killed enemy's own max HP (see Projectile.RollExplodeOnKill) — no per-character multiplier anymore.</summary>
+        private static CharacterPassiveEffect ExplodeOnKill(float procChancePercent) => new CharacterPassiveEffect
         {
             effectType = CharacterPassiveEffectType.ExplodeOnKill,
-            procChancePercent = procChancePercent,
-            damageMultiplier = damageMultiplier
+            procChancePercent = procChancePercent
         };
 
-        private static CharacterPassiveEffect ExplodeOnKill(float procChancePercent, float damageMultiplier, Color explosionColor) => new CharacterPassiveEffect
+        private static CharacterPassiveEffect ExplodeOnKill(float procChancePercent, Color explosionColor) => new CharacterPassiveEffect
         {
             effectType = CharacterPassiveEffectType.ExplodeOnKill,
             procChancePercent = procChancePercent,
-            damageMultiplier = damageMultiplier,
             explosionColor = explosionColor
         };
 
@@ -152,48 +151,48 @@ namespace TwinsDefense.EditorTools
                 new List<CharacterPassiveEffect> { GoldPerLevelMultiplier(2f) },
                 UnlockNone()),
 
-            new CharacterDef("izzy_2", CharacterId.Izzy, 2, "Izzy Blaze", "Starts each run with +1 base Area of Effect. 10% chance to explode a killed enemy, dealing half your current damage to nearby enemies.",
-                new List<CharacterPassiveEffect> { RunStartBonus(RunStartStatType.AreaOfEffect, 1f), ExplodeOnKill(10f, 0.5f) },
+            new CharacterDef("izzy_2", CharacterId.Izzy, 2, "Izzy Blaze", "Starts each run with +1 base Area of Effect. 10% chance to explode a killed enemy for damage equal to its own health, chain-killing nearby enemies (no XP from those kills).",
+                new List<CharacterPassiveEffect> { RunStartBonus(RunStartStatType.AreaOfEffect, 1f), ExplodeOnKill(10f) },
                 UnlockAtLevel(10)),
 
-            new CharacterDef("izzy_3", CharacterId.Izzy, 3, "Izzy Archer", "Starts each run with +1 base Pierce.",
-                new List<CharacterPassiveEffect> { RunStartBonus(RunStartStatType.Pierce, 1f) },
+            new CharacterDef("izzy_3", CharacterId.Izzy, 3, "Izzy Archer", "Starts each run with +1 base Pierce. 10% chance to explode a killed enemy for damage equal to its own health, chain-killing nearby enemies (no XP from those kills).",
+                new List<CharacterPassiveEffect> { RunStartBonus(RunStartStatType.Pierce, 1f), ExplodeOnKill(10f) },
                 UnlockBySpecialCardPicks(10)),
 
-            new CharacterDef("izzy_4", CharacterId.Izzy, 4, "Izzy PopStar", "Attacks have a 5% chance to stun the target for 1 second. Starts each run with +2 Projectiles.",
-                new List<CharacterPassiveEffect> { StunOnHit(5f, 1f), RunStartBonus(RunStartStatType.Projectiles, 2f) },
+            new CharacterDef("izzy_4", CharacterId.Izzy, 4, "Izzy PopStar", "Attacks have a 5% chance to stun the target for 1 second. Starts each run with +2 Projectiles. 10% chance to explode a killed enemy for damage equal to its own health, chain-killing nearby enemies (no XP from those kills).",
+                new List<CharacterPassiveEffect> { StunOnHit(5f, 1f), RunStartBonus(RunStartStatType.Projectiles, 2f), ExplodeOnKill(10f) },
                 UnlockByBossKill(30, 3)),
 
             new CharacterDef("court_1", CharacterId.Court, 1, "Court", "Court gains ×2 more EXP per level.",
                 new List<CharacterPassiveEffect> { XPPerLevelMultiplier(2f) },
                 UnlockNone()),
 
-            new CharacterDef("court_2", CharacterId.Court, 2, "Frost Court", "15% chance on hit to slow the target by 20% for a few seconds. 10% chance to explode a killed enemy in a burst of frost, dealing half your current damage to nearby enemies.",
-                new List<CharacterPassiveEffect> { SlowOnHit(15f, 20f, 2f), ExplodeOnKill(10f, 0.5f, new Color(0.4f, 0.75f, 1f, 1f)) },
+            new CharacterDef("court_2", CharacterId.Court, 2, "Frost Court", "15% chance on hit to slow the target by 20% for a few seconds. 10% chance to explode a killed enemy in a burst of frost for damage equal to its own health, chain-killing nearby enemies (no XP from those kills).",
+                new List<CharacterPassiveEffect> { SlowOnHit(15f, 20f, 2f), ExplodeOnKill(10f, new Color(0.4f, 0.75f, 1f, 1f)) },
                 UnlockAtLevel(10)),
 
-            new CharacterDef("court_3", CharacterId.Court, 3, "Court Reader", "10% chance on hit to strike the enemy with a thunder bolt (300% damage).",
-                new List<CharacterPassiveEffect> { ThunderStrikeOnHit(10f, 3f) },
+            new CharacterDef("court_3", CharacterId.Court, 3, "Court Reader", "10% chance on hit to strike the enemy with a thunder bolt (300% damage). 10% chance to explode a killed enemy for damage equal to its own health, chain-killing nearby enemies (no XP from those kills).",
+                new List<CharacterPassiveEffect> { ThunderStrikeOnHit(10f, 3f), ExplodeOnKill(10f) },
                 UnlockBySpecialCardPicks(10)),
 
-            new CharacterDef("court_4", CharacterId.Court, 4, "Dark Court", "100% chance on hit to chain to a nearby enemy. Starts each run with +1 Pierce.",
-                new List<CharacterPassiveEffect> { ChainOnHit(100f), RunStartBonus(RunStartStatType.Pierce, 1f) },
+            new CharacterDef("court_4", CharacterId.Court, 4, "Dark Court", "100% chance on hit to chain to a nearby enemy. Starts each run with +1 Pierce. 10% chance to explode a killed enemy for damage equal to its own health, chain-killing nearby enemies (no XP from those kills).",
+                new List<CharacterPassiveEffect> { ChainOnHit(100f), RunStartBonus(RunStartStatType.Pierce, 1f), ExplodeOnKill(10f) },
                 UnlockByBossKill(30, 3)),
 
             new CharacterDef("ralph_1", CharacterId.Ralph, 1, "Ralph", "Ralph gains +2 Defense per level.",
                 new List<CharacterPassiveEffect> { DefensePerLevel(2f) },
                 UnlockNone()),
 
-            new CharacterDef("ralph_2", CharacterId.Ralph, 2, "Priest Ralph", "Gains 10 HP per level.",
-                new List<CharacterPassiveEffect> { HPPerLevel(10f) },
+            new CharacterDef("ralph_2", CharacterId.Ralph, 2, "Priest Ralph", "Gains 10 HP per level. 10% chance to explode a killed enemy for damage equal to its own health, chain-killing nearby enemies (no XP from those kills).",
+                new List<CharacterPassiveEffect> { HPPerLevel(10f), ExplodeOnKill(10f) },
                 UnlockAtLevel(10)),
 
-            new CharacterDef("ralph_3", CharacterId.Ralph, 3, "Paladin Ralph", "10% chance on hit to strike the enemy with a holy thunder bolt (300% damage).",
-                new List<CharacterPassiveEffect> { ThunderStrikeOnHit(10f, 3f) },
+            new CharacterDef("ralph_3", CharacterId.Ralph, 3, "Paladin Ralph", "10% chance on hit to strike the enemy with a holy thunder bolt (300% damage). 10% chance to explode a killed enemy for damage equal to its own health, chain-killing nearby enemies (no XP from those kills).",
+                new List<CharacterPassiveEffect> { ThunderStrikeOnHit(10f, 3f), ExplodeOnKill(10f) },
                 UnlockBySpecialCardPicks(10)),
 
-            new CharacterDef("ralph_4", CharacterId.Ralph, 4, "Cute Ralph", "100% chance on hit to slow the enemy by 5%. 10% chance on hit to strike the enemy with a fat heart (300% damage).",
-                new List<CharacterPassiveEffect> { SlowOnHit(100f, 5f, 2f), ThunderStrikeOnHit(10f, 3f) },
+            new CharacterDef("ralph_4", CharacterId.Ralph, 4, "Cute Ralph", "100% chance on hit to slow the enemy by 5%. 10% chance on hit to strike the enemy with a fat heart (300% damage). 10% chance to explode a killed enemy for damage equal to its own health, chain-killing nearby enemies (no XP from those kills).",
+                new List<CharacterPassiveEffect> { SlowOnHit(100f, 5f, 2f), ThunderStrikeOnHit(10f, 3f), ExplodeOnKill(10f) },
                 UnlockByBossKill(30, 3)),
         };
 

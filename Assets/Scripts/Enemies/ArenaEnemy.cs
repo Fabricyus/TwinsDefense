@@ -20,8 +20,9 @@ namespace TwinsDefense.Enemies
         [Header("Stats")]
         [SerializeField] private float maxHealth = 10f;
         [SerializeField] private float moveSpeed = 2f;
-        [Tooltip("Flat HP added on spawn for each player level (e.g. 2 -> HP = maxHealth + level * 2).")]
-        [SerializeField] private float hpPerLevel = 2f;
+        [Tooltip("Multiplies maxHealth based on the player's level at spawn — a flattened curve (e.g. 1.0x at level 0 up to ~2.2x at level 30) keeps trash HP from snowballing, unlike bosses which can scale much harder.")]
+        [SerializeField] private AnimationCurve hpMultiplierByLevel = new AnimationCurve(
+            new Keyframe(0f, 1f), new Keyframe(10f, 1.3f), new Keyframe(20f, 1.6f), new Keyframe(30f, 2.2f));
 
         [Header("Hit Feedback")]
         [SerializeField] private SpriteRenderer spriteRenderer;
@@ -44,6 +45,9 @@ namespace TwinsDefense.Enemies
 
         [Header("Contact Damage")]
         [SerializeField] private float contactDamage = 5f;
+        [Tooltip("Multiplies contactDamage based on the player's level at spawn — kept much flatter than hpMultiplierByLevel, so late-run trash threatens by surrounding the player, not by one hit taking half their bar.")]
+        [SerializeField] private AnimationCurve damageMultiplierByLevel = new AnimationCurve(
+            new Keyframe(0f, 1f), new Keyframe(10f, 1.15f), new Keyframe(20f, 1.4f), new Keyframe(30f, 1.8f));
         [SerializeField] private float contactDamageInterval = 1f;
         [Tooltip("Brief circle flash spawned under the enemy each time contact damage actually lands.")]
         [SerializeField] private GameObject attackCirclePrefab;
@@ -62,8 +66,12 @@ namespace TwinsDefense.Enemies
         /// <summary>Current health as a 0-1 fraction of this spawn's effective max (maxHealth + level scaling) — used by bosses to gate phase transitions.</summary>
         public float HealthPercent01 => effectiveMaxHealth > 0f ? currentHealth / effectiveMaxHealth : 0f;
 
+        /// <summary>This spawn's effective max HP — used by ExplodeOnKill to scale explosion damage to 100% of the dying enemy's own health.</summary>
+        public float EffectiveMaxHealth => effectiveMaxHealth;
+
         private float currentHealth;
         private float effectiveMaxHealth;
+        private float effectiveContactDamage;
         private bool isInvulnerable;
         private Transform player;
         private Vector2 lockedDirection;
@@ -76,6 +84,8 @@ namespace TwinsDefense.Enemies
         private float slowTimer;
         private float stunTimer;
         private SlowTrailVFX slowTrail;
+        private float speedMultiplier = 1f;
+        private float damageTakenMultiplier = 1f;
 
         /// <summary>All currently active arena enemies, used by AutoAttack for nearest-target queries.</summary>
         public static readonly HashSet<ArenaEnemy> Active = new HashSet<ArenaEnemy>();
@@ -83,11 +93,15 @@ namespace TwinsDefense.Enemies
         /// <summary>Raised when this enemy's health reaches zero.</summary>
         public event Action OnEnemyDefeated;
 
+        /// <summary>Raised whenever currentHealth changes (HealthPercent01, 0-1), so UI like boss HP bars can refresh without polling.</summary>
+        public event Action<float> OnHealthChanged;
+
         private void Awake()
         {
             int level = LevelManager.Instance != null ? LevelManager.Instance.CurrentLevel : 0;
-            effectiveMaxHealth = maxHealth + level * hpPerLevel;
+            effectiveMaxHealth = maxHealth * Mathf.Max(0f, hpMultiplierByLevel.Evaluate(level));
             currentHealth = effectiveMaxHealth;
+            effectiveContactDamage = contactDamage * Mathf.Max(0f, damageMultiplierByLevel.Evaluate(level));
         }
 
         private void Start()
@@ -159,7 +173,7 @@ namespace TwinsDefense.Enemies
             }
 
             Vector2 direction = moveInStraightLine ? lockedDirection : ((Vector2)player.position - (Vector2)transform.position).normalized;
-            transform.position += (Vector3)(direction * moveSpeed * slowMultiplier * Time.deltaTime);
+            transform.position += (Vector3)(direction * moveSpeed * slowMultiplier * speedMultiplier * Time.deltaTime);
 
             FaceTarget();
         }
@@ -210,7 +224,7 @@ namespace TwinsDefense.Enemies
             if (contactDamageTimer >= contactDamageInterval)
             {
                 contactDamageTimer = 0f;
-                hurtbox.Health.TakeDamage(contactDamage, transform.position);
+                hurtbox.Health.TakeDamage(effectiveContactDamage, transform.position);
                 SpawnAttackCircle();
                 ApplyKnockback();
             }
@@ -250,14 +264,28 @@ namespace TwinsDefense.Enemies
             isInvulnerable = invulnerable;
         }
 
-        /// <summary>Applies damage to this enemy, defeating it once health reaches zero.</summary>
-        public void TakeDamage(float amount, bool isCrit = false)
+        /// <summary>Multiplies this enemy's base move speed (compounds with slow) — used by boss phases that permanently speed up (e.g. SkullBoss's enrage phase).</summary>
+        public void SetSpeedMultiplier(float multiplier)
+        {
+            speedMultiplier = Mathf.Max(0f, multiplier);
+        }
+
+        /// <summary>Multiplies incoming damage before it's applied — used by boss phases that harden defense (e.g. SkullBoss's enrage phase, where 0.5 = takes half damage).</summary>
+        public void SetDamageTakenMultiplier(float multiplier)
+        {
+            damageTakenMultiplier = Mathf.Max(0f, multiplier);
+        }
+
+        /// <summary>Applies damage to this enemy, defeating it once health reaches zero. grantsExp false skips the XP drop (only coins) — used for ExplodeOnKill splash kills, which shouldn't reward XP the same as a direct kill.</summary>
+        public void TakeDamage(float amount, bool isCrit = false, bool grantsExp = true)
         {
             if (isInvulnerable) return;
 
-            currentHealth -= amount;
+            float appliedDamage = amount * damageTakenMultiplier;
+            currentHealth -= appliedDamage;
             TriggerHitFlash();
-            DamagePopupSpawner.Spawn(transform.position + damagePopupOffset, amount, isCrit);
+            DamagePopupSpawner.Spawn(transform.position + damagePopupOffset, appliedDamage, isCrit);
+            OnHealthChanged?.Invoke(HealthPercent01);
 
             if (currentHealth <= 0f)
             {
@@ -265,9 +293,24 @@ namespace TwinsDefense.Enemies
                 RunStats.Instance?.RegisterKill();
                 DeathSmokeVFX.Spawn(transform.position);
                 DropCoins();
-                DropExp();
+
+                if (grantsExp)
+                {
+                    DropExp();
+                }
+
                 Destroy(gameObject);
             }
+        }
+
+        /// <summary>Instantly defeats this enemy without dropping coins/XP — used to clear the arena when a boss spawns, so the fight is boss-vs-player only.</summary>
+        public void HitKill()
+        {
+            currentHealth = 0f;
+            OnEnemyDefeated?.Invoke();
+            RunStats.Instance?.RegisterKill();
+            DeathSmokeVFX.Spawn(transform.position);
+            Destroy(gameObject);
         }
 
         private void DropCoins()

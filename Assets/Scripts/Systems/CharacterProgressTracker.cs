@@ -126,6 +126,26 @@ namespace TwinsDefense.Systems
             }
         }
 
+        /// <summary>Highest level ever reached playing this character (any tier), 0 if never played — used by the Achievements panel to show live progress toward ReachLevelFirstTime unlocks.</summary>
+        public int GetHighestLevel(CharacterId character)
+        {
+            LevelEntry entry = data.levels.Find(e => e.character == character);
+            return entry != null ? entry.highestLevel : 0;
+        }
+
+        /// <summary>Special (buff+debuff) cards picked so far while playing this character, 0 if none — used by the Achievements panel to show live progress toward AccumulateSpecialCardPicks unlocks.</summary>
+        public int GetSpecialCardPickCount(CharacterId character)
+        {
+            SpecialCardPickEntry entry = data.specialCardPicks.Find(e => e.character == character);
+            return entry != null ? entry.count : 0;
+        }
+
+        /// <summary>Whether this exact boss-level/tier kill has already been reported — used by the Achievements panel to show live progress toward KillBossAtTier unlocks.</summary>
+        public bool HasKilledBossAtTier(CharacterId character, int bossLevel, int characterTier)
+        {
+            return data.bossKills.Exists(e => e.character == character && e.bossLevel == bossLevel && e.characterTier == characterTier);
+        }
+
         public void ReportLevelReached(CharacterId character, int level)
         {
             LevelEntry entry = data.levels.Find(e => e.character == character);

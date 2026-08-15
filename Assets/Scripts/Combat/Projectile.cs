@@ -28,7 +28,6 @@ namespace TwinsDefense.Combat
         public float chainChancePercent;
 
         public float explodeOnKillChancePercent;
-        public float explodeOnKillDamage;
         public Color explodeOnKillColor;
     }
 
@@ -175,13 +174,20 @@ namespace TwinsDefense.Combat
             }
         }
 
-        /// <summary>AoE-damages nearby enemies (excluding the one that just died) around a kill, scaled by the player's current Area of Effect. No-op if the proc doesn't roll.</summary>
+        /// <summary>
+        /// AoE-damages nearby enemies (excluding the one that just died) around a kill, scaled by
+        /// the player's current Area of Effect. No-op if the proc doesn't roll. Damage equals 100%
+        /// of the killed enemy's own max HP — usually enough to one-shot same-tier neighbors too,
+        /// chain-reacting through a whole pack. Enemies killed by this splash don't drop XP (only
+        /// coins), so this can't be farmed for XP the way a direct kill can.
+        /// </summary>
         private void RollExplodeOnKill(ArenaEnemy killedEnemy)
         {
             if (onHitPassives.explodeOnKillChancePercent <= 0f || Random.value * 100f >= onHitPassives.explodeOnKillChancePercent) return;
 
             Vector2 position = killedEnemy.transform.position;
             float radius = explodeOnKillRadius * areaOfEffectScale;
+            float explosionDamage = killedEnemy.EffectiveMaxHealth;
 
             ExplosionVFX.Spawn(position, radius, onHitPassives.explodeOnKillColor);
 
@@ -192,7 +198,7 @@ namespace TwinsDefense.Combat
             {
                 if (hit.TryGetComponent(out ArenaEnemy other) && other != killedEnemy && damagedEnemies.Add(other))
                 {
-                    other.TakeDamage(onHitPassives.explodeOnKillDamage);
+                    other.TakeDamage(explosionDamage, grantsExp: false);
                 }
             }
         }

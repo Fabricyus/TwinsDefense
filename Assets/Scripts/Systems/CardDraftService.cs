@@ -14,9 +14,9 @@ namespace TwinsDefense.Systems
     public class CardDraftService
     {
         /// <summary>Rolls up to <paramref name="count"/> unique, eligible cards from the pool. Special (buff+debuff) cards are excluded — those only appear via RollSpecialCards.</summary>
-        public List<CardData> RollCards(int count, CardPoolConfig pool, RunCardState state, string activeCharacterId)
+        public List<CardData> RollCards(int count, CardPoolConfig pool, RunCardState state, string activeCharacterId, int activeCharacterStars = 0)
         {
-            List<CardData> eligible = GetEligibleCards(pool, state, activeCharacterId);
+            List<CardData> eligible = GetEligibleCards(pool, state, activeCharacterId, activeCharacterStars);
             List<CardData> drafted = new List<CardData>();
 
             if (eligible.Count < count)
@@ -68,7 +68,7 @@ namespace TwinsDefense.Systems
             return drafted;
         }
 
-        private List<CardData> GetEligibleCards(CardPoolConfig pool, RunCardState state, string activeCharacterId)
+        private List<CardData> GetEligibleCards(CardPoolConfig pool, RunCardState state, string activeCharacterId, int activeCharacterStars)
         {
             List<CardData> eligible = new List<CardData>();
 
@@ -82,6 +82,8 @@ namespace TwinsDefense.Systems
 
                 if (card.restrictedToCharacterIds != null && card.restrictedToCharacterIds.Length > 0
                     && Array.IndexOf(card.restrictedToCharacterIds, activeCharacterId) < 0) continue;
+
+                if (card.minStarsRequired > 0 && activeCharacterStars < card.minStarsRequired) continue;
 
                 eligible.Add(card);
             }

@@ -10,20 +10,22 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 896fd27a9be12f04f99236e47bab1415, type: 3}
-  m_Name: golden_touch
+  m_Name: twin_flame
   m_EditorClassIdentifier: Assembly-CSharp::TwinsDefense.Data.CardData
-  cardId: golden_touch
-  displayName: Golden Touch
+  cardId: twin_flame
+  displayName: Twin Flame
   description: 
   icon: {fileID: 0}
-  effectType: 16
-  value: 10
+  effectType: 3
+  value: 20
   isPercentage: 1
   isSpecial: 0
   secondEffectType: 0
   secondValue: 0
   secondIsPercentage: 0
-  rarity: 1
+  rarity: 2
   rollWeight: 1
-  maxStacks: 0
-  restrictedToCharacterIds: []
+  maxStacks: 1
+  restrictedToCharacterIds:
+  - izzy_1
+  minStarsRequired: 3

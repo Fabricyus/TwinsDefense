@@ -17,7 +17,9 @@ MonoBehaviour:
   slotId: ralph_4
   displayName: Cute Ralph
   description: 100% chance on hit to slow the enemy by 5%. 10% chance on hit to strike
-    the enemy with a fat heart (300% damage).
+    the enemy with a fat heart (300% damage). 10% chance to explode a killed enemy
+    for damage equal to its own health, chain-killing nearby enemies (no XP from
+    those kills).
   icon: {fileID: 786287686, guid: cf5ab18e05429c44ab411069aee41dfd, type: 3}
   lockedSilhouette: {fileID: 786287686, guid: cf5ab18e05429c44ab411069aee41dfd, type: 3}
   baseStats:
@@ -39,7 +41,8 @@ MonoBehaviour:
     xpGainMultiplier: 1
     coinGainMultiplier: 1
   animatorController: {fileID: 9100000, guid: 25b8cebbf7ae90e4aaadafb3181c7fdc, type: 2}
-  projectilePrefab: {fileID: 3435300922814392574, guid: 79bff2f0e0557e449ab551c75292f348, type: 3}
+  idleSprite: {fileID: -7652519397274514749, guid: b58b9a20d049b1546abce127fafd4db5, type: 3}
+  projectilePrefab: {fileID: 3435300922814392574, guid: 28f93043ffe79484799c1d1956fa491d, type: 3}
   isRotatingProjectile: 1
   procFxPrefab: {fileID: 5025171881367236574, guid: f2f0180821728cc44ae5f7b9a004dd88, type: 3}
   passiveEffects:
@@ -49,13 +52,22 @@ MonoBehaviour:
     damageMultiplier: 0
     procMagnitudePercent: 5
     procDurationSeconds: 2
-    explosionColor: {r: 1, g: 0.55, b: 0.1, a: 1}
+    explosionColor: {r: 0.9005465, g: 0.5235849, b: 1, a: 1}
     runStartStat: 0
     runStartStatValue: 0
   - effectType: 6
     value: 0
     procChancePercent: 10
     damageMultiplier: 3
+    procMagnitudePercent: 0
+    procDurationSeconds: 0
+    explosionColor: {r: 1, g: 0.0990566, b: 0.61039126, a: 1}
+    runStartStat: 0
+    runStartStatValue: 0
+  - effectType: 9
+    value: 0
+    procChancePercent: 10
+    damageMultiplier: 0
     procMagnitudePercent: 0
     procDurationSeconds: 0
     explosionColor: {r: 1, g: 0.55, b: 0.1, a: 1}

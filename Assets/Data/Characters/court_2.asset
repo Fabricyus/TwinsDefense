@@ -16,8 +16,9 @@ MonoBehaviour:
   tier: 2
   slotId: court_2
   displayName: Frost Court
-  description: 15% chance on hit to slow the target for a few seconds. 20% chance
-    to explode a killed enemy.
+  description: 15% chance on hit to slow the target by 20% for a few seconds. 10%
+    chance to explode a killed enemy in a burst of frost for damage equal to its
+    own health, chain-killing nearby enemies (no XP from those kills).
   icon: {fileID: -8022603239838021816, guid: cf5ab18e05429c44ab411069aee41dfd, type: 3}
   lockedSilhouette: {fileID: -8022603239838021816, guid: cf5ab18e05429c44ab411069aee41dfd, type: 3}
   baseStats:
@@ -39,6 +40,7 @@ MonoBehaviour:
     xpGainMultiplier: 1
     coinGainMultiplier: 1
   animatorController: {fileID: 9100000, guid: 92b859a081c5b544797b6752d4418e26, type: 2}
+  idleSprite: {fileID: 1188174278, guid: 42f69e6526bc94e40a35d57fd047324b, type: 3}
   projectilePrefab: {fileID: 3435300922814392574, guid: d87bcbbfca8843846bde44f44dd700e6, type: 3}
   isRotatingProjectile: 0
   procFxPrefab: {fileID: 0}
@@ -55,7 +57,7 @@ MonoBehaviour:
   - effectType: 9
     value: 0
     procChancePercent: 20
-    damageMultiplier: 0.5
+    damageMultiplier: 0
     procMagnitudePercent: 0
     procDurationSeconds: 0
     explosionColor: {r: 0.4, g: 0.75, b: 1, a: 1}

@@ -27,6 +27,8 @@ namespace TwinsDefense.Data
 
         [Header("Animation")]
         public RuntimeAnimatorController animatorController;
+        [Tooltip("First frame of the walk clip inside animatorController — shown while the player is standing still instead of leaving the Animator frozen on whatever frame it was disabled on. Populated by Tools/TwinsDefense/Extract Idle Sprites.")]
+        public Sprite idleSprite;
 
         [Header("Combat")]
         public GameObject projectilePrefab;

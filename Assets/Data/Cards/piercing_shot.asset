@@ -25,5 +25,6 @@ MonoBehaviour:
   secondIsPercentage: 0
   rarity: 2
   rollWeight: 1
-  maxStacks: 0
+  maxStacks: 4
   restrictedToCharacterIds: []
+  minStarsRequired: 0

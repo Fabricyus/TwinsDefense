@@ -71,5 +71,7 @@ namespace TwinsDefense.Data
         [Header("Character Restriction (optional)")]
         [Tooltip("Leave empty to allow all characters")]
         public string[] restrictedToCharacterIds;
+        [Tooltip("Minimum Star Upgrades purchased for the active character/tier before this card can be drafted (0 = no requirement). Only meaningful combined with restrictedToCharacterIds — a Star-exclusive card.")]
+        public int minStarsRequired = 0;
     }
 }

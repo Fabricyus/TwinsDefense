@@ -17,6 +17,8 @@ MonoBehaviour:
   slotId: court_3
   displayName: Court Reader
   description: 10% chance on hit to strike the enemy with a thunder bolt (300% damage).
+    10% chance to explode a killed enemy for damage equal to its own health, chain-killing
+    nearby enemies (no XP from those kills).
   icon: {fileID: -1923827032, guid: cf5ab18e05429c44ab411069aee41dfd, type: 3}
   lockedSilhouette: {fileID: 885167995, guid: cf5ab18e05429c44ab411069aee41dfd, type: 3}
   baseStats:
@@ -38,6 +40,7 @@ MonoBehaviour:
     xpGainMultiplier: 1
     coinGainMultiplier: 1
   animatorController: {fileID: 9100000, guid: 3bfa108c24af91a4aa76c91548639584, type: 2}
+  idleSprite: {fileID: 8721726619197532075, guid: 8bc8a46a9c353f24688c2c0bcd86169b, type: 3}
   projectilePrefab: {fileID: 3435300922814392574, guid: b5d0b3e6667be264f93cc46c09d7faeb, type: 3}
   isRotatingProjectile: 1
   procFxPrefab: {fileID: 612752071162849513, guid: 40c98f342bd9b254a906bf961fc5dd40, type: 3}
@@ -46,6 +49,15 @@ MonoBehaviour:
     value: 0
     procChancePercent: 10
     damageMultiplier: 3
+    procMagnitudePercent: 0
+    procDurationSeconds: 0
+    explosionColor: {r: 0.49411768, g: 0.83921576, b: 0.98823535, a: 1}
+    runStartStat: 0
+    runStartStatValue: 0
+  - effectType: 9
+    value: 0
+    procChancePercent: 10
+    damageMultiplier: 0
     procMagnitudePercent: 0
     procDurationSeconds: 0
     explosionColor: {r: 1, g: 0.55, b: 0.1, a: 1}

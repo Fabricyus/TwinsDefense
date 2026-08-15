@@ -109,7 +109,48 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::TwinsDefense.Enemies.ArenaEnemy
   maxHealth: 150
   moveSpeed: 2
-  hpPerLevel: 2
+  hpMultiplierByLevel:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 10
+      value: 1.3
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 20
+      value: 1.6
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 30
+      value: 2.2
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
   spriteRenderer: {fileID: 7867930657142406448}
   flashMaterial: {fileID: 2100000, guid: c1667c594f604fcfa434697212c0c2eb, type: 2}
   flashDuration: 0.08
@@ -119,10 +160,52 @@ MonoBehaviour:
   maxCoinDrop: 1
   coinScatterRadius: 0.4
   expPrefab: {fileID: 9057018707013673740, guid: 3216e519b4593dc478890adcfaf60b0d, type: 3}
-  minExpDrop: 1
-  maxExpDrop: 1
+  minExpDrop: 0
+  maxExpDrop: 2
   expScatterRadius: 0.4
   contactDamage: 3
+  damageMultiplierByLevel:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 10
+      value: 1.15
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 20
+      value: 1.4
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 30
+      value: 1.8
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
   contactDamageInterval: 1
   attackCirclePrefab: {fileID: 1207100161955173088, guid: 69fa1d047f51e8149a67c302fe54e4fc, type: 3}
   attackCircleOffset: {x: 0, y: -0.15, z: 0}

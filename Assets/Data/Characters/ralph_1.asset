@@ -38,6 +38,7 @@ MonoBehaviour:
     xpGainMultiplier: 1
     coinGainMultiplier: 1
   animatorController: {fileID: 9100000, guid: ba0ea4b3b54c2724ca06f3e268bc87bd, type: 2}
+  idleSprite: {fileID: 483629896703998542, guid: 37b0d6621a2c69e4faa4f4a0bc2df797, type: 3}
   projectilePrefab: {fileID: 3435300922814392574, guid: 79bff2f0e0557e449ab551c75292f348, type: 3}
   isRotatingProjectile: 1
   procFxPrefab: {fileID: 0}

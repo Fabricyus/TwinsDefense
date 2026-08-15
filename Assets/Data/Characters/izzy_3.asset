@@ -16,7 +16,9 @@ MonoBehaviour:
   tier: 3
   slotId: izzy_3
   displayName: Izzy Archer
-  description: Starts each run with +1 base Pierce.
+  description: Starts each run with +1 base Pierce. 10% chance to explode a killed
+    enemy for damage equal to its own health, chain-killing nearby enemies (no XP
+    from those kills).
   icon: {fileID: 2143726237, guid: cf5ab18e05429c44ab411069aee41dfd, type: 3}
   lockedSilhouette: {fileID: 2143726237, guid: cf5ab18e05429c44ab411069aee41dfd, type: 3}
   baseStats:
@@ -38,6 +40,7 @@ MonoBehaviour:
     xpGainMultiplier: 1
     coinGainMultiplier: 1
   animatorController: {fileID: 9100000, guid: 1c79e7c9ba5905c4c8ab4a46a09fb207, type: 2}
+  idleSprite: {fileID: 9072943788591918166, guid: 8bc8a46a9c353f24688c2c0bcd86169b, type: 3}
   projectilePrefab: {fileID: 3435300922814392574, guid: 4fd20459bfeb97245bf7048ce52437af, type: 3}
   isRotatingProjectile: 0
   procFxPrefab: {fileID: 0}
@@ -48,9 +51,18 @@ MonoBehaviour:
     damageMultiplier: 0
     procMagnitudePercent: 0
     procDurationSeconds: 0
-    explosionColor: {r: 1, g: 0.55, b: 0.1, a: 1}
+    explosionColor: {r: 0.02745098, g: 0.55, b: 0.1, a: 1}
     runStartStat: 2
     runStartStatValue: 1
+  - effectType: 9
+    value: 0
+    procChancePercent: 10
+    damageMultiplier: 0
+    procMagnitudePercent: 0
+    procDurationSeconds: 0
+    explosionColor: {r: 0.22725397, g: 0.754717, b: 0, a: 1}
+    runStartStat: 0
+    runStartStatValue: 0
   unlockCondition:
     type: 4
     requiredLevel: 0

@@ -1,4 +1,5 @@
 using UnityEngine;
+using TwinsDefense.Environment;
 
 namespace TwinsDefense.Systems
 {
@@ -7,16 +8,23 @@ namespace TwinsDefense.Systems
     /// own Z so 2D rendering/sorting is unaffected. Runs in LateUpdate so it always
     /// reacts after the target's FixedUpdate/Update movement for that frame.
     /// </summary>
+    [RequireComponent(typeof(Camera))]
     public class CameraFollow : MonoBehaviour
     {
         [SerializeField] private Transform target;
         [SerializeField] private Vector2 offset = Vector2.zero;
         [SerializeField] private float smoothTime = 0.15f;
 
+        private Camera cam;
         private Vector3 velocity = Vector3.zero;
         private float shakeTimer;
         private float shakeDuration;
         private float shakeMagnitude;
+
+        private void Awake()
+        {
+            cam = GetComponent<Camera>();
+        }
 
         public void SetTarget(Transform newTarget)
         {
@@ -61,6 +69,14 @@ namespace TwinsDefense.Systems
                 shakeTimer -= Time.deltaTime;
                 Vector2 shakeOffset = Random.insideUnitCircle * shakeMagnitude * (shakeTimer / shakeDuration);
                 transform.position += (Vector3)shakeOffset;
+            }
+
+            if (ArenaBounds.Instance != null)
+            {
+                float halfHeight = cam.orthographicSize;
+                float halfWidth = halfHeight * cam.aspect;
+                Vector2 clamped = ArenaBounds.Instance.Clamp(transform.position, halfWidth, halfHeight);
+                transform.position = new Vector3(clamped.x, clamped.y, transform.position.z);
             }
         }
     }

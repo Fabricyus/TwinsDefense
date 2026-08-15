@@ -2,6 +2,7 @@ using UnityEngine;
 using TwinsDefense.Enemies;
 using TwinsDefense.Combat;
 using TwinsDefense.Data;
+using TwinsDefense.VFX;
 
 namespace TwinsDefense.Player
 {
@@ -23,6 +24,12 @@ namespace TwinsDefense.Player
         [SerializeField] private float extraProjectileSpreadAngle = 15f;
         [Tooltip("Random +/- swing applied to each hit's damage before crit, so consecutive hits aren't perfectly uniform.")]
         [SerializeField] private float damageVariance = 2f;
+
+        [Header("Extra Projectile Falloff")]
+        [Tooltip("Damage multiplier reduction applied to each projectile beyond the first two (base shot + first Extra Projectile stack) in a multi-shot volley.")]
+        [SerializeField] private float extraProjectileDamageFalloff = 0.2f;
+        [Tooltip("Floor for the per-projectile damage multiplier, so heavily stacked multi-shot builds don't drop to near-zero per shot.")]
+        [SerializeField] private float minExtraProjectileDamageMultiplier = 0.5f;
 
         private PlayerStats stats;
         private PlayerCharacterData characterData;
@@ -75,7 +82,8 @@ namespace TwinsDefense.Player
             {
                 float angleOffset = (i - (totalProjectiles - 1) / 2f) * extraProjectileSpreadAngle;
                 Vector2 fireDirection = angleOffset == 0f ? direction : RotateDegrees(direction, angleOffset);
-                FireProjectile(prefab, fireDirection, finalDamage, isCrit);
+                float projectileDamage = finalDamage * ExtraProjectileDamageMultiplier(i);
+                FireProjectile(prefab, fireDirection, projectileDamage, isCrit);
             }
         }
 
@@ -104,12 +112,29 @@ namespace TwinsDefense.Player
 
                 projectile.Launch(direction, damage, stats.projectileSpeed, isCrit, pierceCount, stats.areaOfEffect, isRotatingProjectile, onHitPassives);
             }
+
+            ApplyStarCosmeticTrail(instance);
         }
 
-        /// <summary>Reads the selected character's on-hit passives (ThunderStrike/Stun/Slow/Chain/ExplodeOnKill) from its passiveEffects list, plus any ExplodeOnKillChance stacked on from cards.</summary>
+        /// <summary>Star Upgrade cosmetic (3+ stars): dyes the projectile's existing trail (if its prefab already has one baked in, e.g. an evolved form) or adds one on the fly — never changes gameplay, just the color/presence of a cast trail.</summary>
+        private void ApplyStarCosmeticTrail(GameObject projectileInstance)
+        {
+            if (!stats.hasStarCosmeticTrail) return;
+
+            ProjectileTrailVFX trail = projectileInstance.GetComponent<ProjectileTrailVFX>();
+            if (trail == null)
+            {
+                trail = projectileInstance.AddComponent<ProjectileTrailVFX>();
+            }
+
+            trail.Configure(stats.starCosmeticTrailColor);
+        }
+
+        /// <summary>Reads the selected character's on-hit passives (ThunderStrike/Stun/Slow/Chain/ExplodeOnKill) from its passiveEffects list, plus any ExplodeOnKillChance stacked on from cards. Star Upgrades strengthen the character's own passive — never a card-granted proc — via stats.passiveProcChanceBonus/passiveMagnitudeBonusPercent, applied below wherever a value comes from the character's own CharacterPassiveEffect.</summary>
         private OnHitPassiveEffects ResolveOnHitPassives()
         {
             var passives = new OnHitPassiveEffects();
+            float magnitudeMultiplier = 1f + stats.passiveMagnitudeBonusPercent / 100f;
 
             if (characterData == null || characterData.Current == null)
             {
@@ -122,32 +147,32 @@ namespace TwinsDefense.Player
             CharacterPassiveEffect thunder = effects.Find(e => e.effectType == CharacterPassiveEffectType.ThunderStrikeOnHit);
             if (thunder != null)
             {
-                passives.thunderChancePercent = thunder.procChancePercent;
+                passives.thunderChancePercent = thunder.procChancePercent + stats.passiveProcChanceBonus;
                 // Treated as a guaranteed crit: the passive's own multiplier (e.g. 300%) stacks additively with
                 // the player's current critDamage stat, so Crit Damage cards make this proc hit harder too.
-                passives.thunderBonusDamage = stats.damage * (thunder.damageMultiplier + stats.critDamage);
+                passives.thunderBonusDamage = stats.damage * (thunder.damageMultiplier * magnitudeMultiplier + stats.critDamage);
                 passives.thunderFxPrefab = characterData.Current.procFxPrefab;
             }
 
             CharacterPassiveEffect stun = effects.Find(e => e.effectType == CharacterPassiveEffectType.StunOnHit);
             if (stun != null)
             {
-                passives.stunChancePercent = stun.procChancePercent;
-                passives.stunDurationSeconds = stun.procDurationSeconds;
+                passives.stunChancePercent = stun.procChancePercent + stats.passiveProcChanceBonus;
+                passives.stunDurationSeconds = stun.procDurationSeconds * magnitudeMultiplier;
             }
 
             CharacterPassiveEffect slow = effects.Find(e => e.effectType == CharacterPassiveEffectType.SlowOnHit);
             if (slow != null)
             {
-                passives.slowChancePercent = slow.procChancePercent;
-                passives.slowMagnitudePercent = slow.procMagnitudePercent;
-                passives.slowDurationSeconds = slow.procDurationSeconds;
+                passives.slowChancePercent = slow.procChancePercent + stats.passiveProcChanceBonus;
+                passives.slowMagnitudePercent = Mathf.Min(100f, slow.procMagnitudePercent * magnitudeMultiplier);
+                passives.slowDurationSeconds = slow.procDurationSeconds * magnitudeMultiplier;
             }
 
             CharacterPassiveEffect chain = effects.Find(e => e.effectType == CharacterPassiveEffectType.ChainOnHit);
             if (chain != null)
             {
-                passives.chainChancePercent = chain.procChancePercent;
+                passives.chainChancePercent = chain.procChancePercent + stats.passiveProcChanceBonus;
             }
 
             CharacterPassiveEffect explodeOnKill = effects.Find(e => e.effectType == CharacterPassiveEffectType.ExplodeOnKill);
@@ -156,21 +181,26 @@ namespace TwinsDefense.Player
             return passives;
         }
 
-        /// <summary>Chance stacks additively between the character's own ExplodeOnKill passive (if any) and PlayerStats.explodeOnKillChance (from cards); damage and explosion color always use the character's own passive when present, otherwise the fixed 50%/orange cards grant on their own.</summary>
+        /// <summary>Chance stacks additively between the character's own ExplodeOnKill passive (if any, boosted by Star Upgrades) and PlayerStats.explodeOnKillChance (from cards, never boosted by stars); explosion color always uses the character's own passive when present, otherwise the fixed orange cards grant on their own. Damage is no longer derived from the player's stats at all (no magnitude to boost) — Projectile.RollExplodeOnKill scales it to 100% of whichever enemy actually dies.</summary>
         private void ResolveExplodeOnKill(CharacterPassiveEffect explodeOnKill, ref OnHitPassiveEffects passives)
         {
-            const float cardOnlyDamageMultiplier = 0.5f;
             Color cardOnlyColor = new Color(1f, 0.55f, 0.1f, 1f);
 
-            float chancePercent = (explodeOnKill != null ? explodeOnKill.procChancePercent : 0f) + stats.explodeOnKillChance;
+            float nativeChance = explodeOnKill != null ? explodeOnKill.procChancePercent + stats.passiveProcChanceBonus : 0f;
+            float chancePercent = nativeChance + stats.explodeOnKillChance;
             if (chancePercent <= 0f) return;
 
-            float damageMultiplier = explodeOnKill != null ? explodeOnKill.damageMultiplier : cardOnlyDamageMultiplier;
-            Color color = explodeOnKill != null ? explodeOnKill.explosionColor : cardOnlyColor;
-
             passives.explodeOnKillChancePercent = chancePercent;
-            passives.explodeOnKillDamage = stats.damage * damageMultiplier;
-            passives.explodeOnKillColor = color;
+            passives.explodeOnKillColor = explodeOnKill != null ? explodeOnKill.explosionColor : cardOnlyColor;
+        }
+
+        /// <summary>Damage multiplier for the i-th projectile (0-indexed) in a multi-shot volley. The first two projectiles (base shot + first Extra Projectile stack) deal full damage; each additional projectile beyond that falls off by extraProjectileDamageFalloff per step, floored at minExtraProjectileDamageMultiplier — keeps stacking Extra Projectile sources strong without letting it be an uncapped DPS multiplier.</summary>
+        private float ExtraProjectileDamageMultiplier(int projectileIndex)
+        {
+            if (projectileIndex <= 1) return 1f;
+
+            float falloffSteps = projectileIndex - 1;
+            return Mathf.Max(minExtraProjectileDamageMultiplier, 1f - falloffSteps * extraProjectileDamageFalloff);
         }
 
         private static Vector2 RotateDegrees(Vector2 vector, float degrees)

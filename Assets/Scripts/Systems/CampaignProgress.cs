@@ -1,0 +1,65 @@
+using UnityEngine;
+
+namespace TwinsDefense.Systems
+{
+    /// <summary>
+    /// Persistent "boss rush" milestone gate, separate from a normal run:
+    /// the first time the player ever reaches level 10, the run ends early
+    /// as a win and level 20 unlocks. Once unlocked, killing the level-20
+    /// boss (the skull) also ends the run as a win, and does so 3 times
+    /// before level 30 unlocks — after that, killing the skull no longer
+    /// ends the run early, letting the player push on to the real final
+    /// boss. Backed directly by PlayerPrefs — same placeholder-persistence
+    /// rationale as PlayerWallet/CharacterProgressTracker (no project save
+    /// system exists yet).
+    /// </summary>
+    public static class CampaignProgress
+    {
+        private const string Level20UnlockedKey = "TwinsDefense.Campaign.Level20Unlocked";
+        private const string Level30UnlockedKey = "TwinsDefense.Campaign.Level30Unlocked";
+        private const string SkullKillCountKey = "TwinsDefense.Campaign.SkullKillCount";
+        private const string GameCompletedKey = "TwinsDefense.Campaign.GameCompleted";
+
+        /// <summary>How many level-20 boss kills are needed to unlock level 30.</summary>
+        public const int SkullKillsRequiredForLevel30 = 3;
+
+        public static bool Level20Unlocked => PlayerPrefs.GetInt(Level20UnlockedKey, 0) == 1;
+        public static bool Level30Unlocked => PlayerPrefs.GetInt(Level30UnlockedKey, 0) == 1;
+        public static int SkullKillCount => PlayerPrefs.GetInt(SkullKillCountKey, 0);
+        public static bool GameCompleted => PlayerPrefs.GetInt(GameCompletedKey, 0) == 1;
+
+        /// <summary>Called once, the first time the player reaches level 10.</summary>
+        public static void UnlockLevel20()
+        {
+            if (Level20Unlocked) return;
+
+            PlayerPrefs.SetInt(Level20UnlockedKey, 1);
+            PlayerPrefs.Save();
+        }
+
+        /// <summary>Increments the level-20 boss kill counter, unlocking level 30 once it reaches SkullKillsRequiredForLevel30. Safe to keep calling after that — it just stops mattering.</summary>
+        public static void ReportSkullKilled()
+        {
+            if (Level30Unlocked) return;
+
+            int count = SkullKillCount + 1;
+            PlayerPrefs.SetInt(SkullKillCountKey, count);
+
+            if (count >= SkullKillsRequiredForLevel30)
+            {
+                PlayerPrefs.SetInt(Level30UnlockedKey, 1);
+            }
+
+            PlayerPrefs.Save();
+        }
+
+        /// <summary>Called once, when the final boss (highest level in bossSpawns, today the magpie at level 30) is defeated.</summary>
+        public static void ReportGameCompleted()
+        {
+            if (GameCompleted) return;
+
+            PlayerPrefs.SetInt(GameCompletedKey, 1);
+            PlayerPrefs.Save();
+        }
+    }
+}

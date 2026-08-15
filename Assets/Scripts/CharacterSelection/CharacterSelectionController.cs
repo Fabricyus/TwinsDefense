@@ -90,5 +90,10 @@ namespace TwinsDefense.CharacterSelection
             SelectedRunContext.Instance.SetSelection(selected.characterId, selected.tier);
             SceneManager.LoadScene("Arena Run");
         }
+
+        public void OnBackClicked()
+        {
+            SceneManager.LoadScene("Menu");
+        }
     }
 }

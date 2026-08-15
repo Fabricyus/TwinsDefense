@@ -56,21 +56,25 @@ namespace TwinsDefense.Player
             }
         }
 
-        /// <summary>Each purchased Attack Star gives +1 flat damage and +15% Attack Fire Rate; reaching star 3 and star 5 each additionally grant +1 Projectile (so 5 stars = +2 Projectiles total).</summary>
+        /// <summary>
+        /// Each purchased Star gives +1 flat damage, +15% Attack Fire Rate, and +1 Star Projectile
+        /// (so purchasedStars == starProjectileCount 1:1 — 1 star fires 1 Star Projectile per
+        /// volley, 5 stars fires 5) — see StarProjectileLauncher, a separate low-damage boomerang
+        /// shot fired on its own cooldown, not another AutoAttack projectile. On top of those flat
+        /// stats, every star also: strengthens the character's own on-hit passive (+2% proc
+        /// chance, +8% magnitude per star — never a card-granted proc), and at 3+ stars unlocks a
+        /// cosmetic cast trail on fired projectiles. See AutoAttack for where both are applied.
+        /// </summary>
         private void ApplyPurchasedStars(int purchasedStars)
         {
             stats.damage += purchasedStars;
             stats.attackFireRate *= 1f + purchasedStars * 0.15f;
+            stats.starProjectileCount = purchasedStars;
 
-            if (purchasedStars >= 3)
-            {
-                stats.extraProjectileCount += 1f;
-            }
-
-            if (purchasedStars >= 5)
-            {
-                stats.extraProjectileCount += 1f;
-            }
+            stats.passiveProcChanceBonus = purchasedStars * 2f;
+            stats.passiveMagnitudeBonusPercent = purchasedStars * 8f;
+            stats.hasStarCosmeticTrail = purchasedStars >= 3;
+            stats.hasFiveStarAura = purchasedStars >= 5;
         }
 
         /// <summary>Overwrites PlayerStats' inspector defaults with this character tier's starting values.</summary>

@@ -31,6 +31,8 @@ namespace TwinsDefense.UI
         [SerializeField] private GameObject gameOverPanel;
         [SerializeField] private TextMeshProUGUI gameOverTxt;
         [SerializeField] private RectTransform summaryPanel;
+        [Tooltip("Forced inactive before a Mission Complete ending plays — a milestone kill/level-up can grant XP that also completes the level bar (e.g. LevelManager.CompleteCurrentLevelExp on a boss kill), which would otherwise pop the draft on top of the ending.")]
+        [SerializeField] private GameObject levelUpCardsPanel;
 
         [Header("Summary Stats")]
         [SerializeField] private TextMeshProUGUI monsterTxt;
@@ -104,8 +106,30 @@ namespace TwinsDefense.UI
 
         private void HandlePlayerDied()
         {
+            RunGameOverSequence(null);
+        }
+
+        /// <summary>Plays the same reveal sequence as a player death, but for winning the run — swaps the headline to "Mission Complete" first. Called externally for every campaign milestone ending (first time reaching level 10, each level-20 boss kill until level 30 unlocks, and the final level-30 boss kill).</summary>
+        public void TriggerMissionComplete()
+        {
+            if (levelUpCardsPanel != null)
+            {
+                levelUpCardsPanel.SetActive(false);
+            }
+
+            RunGameOverSequence("Mission Complete");
+        }
+
+        /// <summary>Shared entry point for both the death and mission-complete endings. headlineOverride null keeps whatever text gameOverTxt already has (the death case).</summary>
+        private void RunGameOverSequence(string headlineOverride)
+        {
             if (hasTriggered) return;
             hasTriggered = true;
+
+            if (headlineOverride != null && gameOverTxt != null)
+            {
+                gameOverTxt.text = headlineOverride;
+            }
 
             Time.timeScale = 0f;
             // Stops the hit-shake dead instead of leaving it stuck re-randomizing forever —

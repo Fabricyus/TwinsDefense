@@ -17,7 +17,8 @@ MonoBehaviour:
   slotId: izzy_4
   displayName: Izzy PopStar
   description: Attacks have a 5% chance to stun the target for 1 second. Starts each
-    run with +2 Projectiles.
+    run with +2 Projectiles. 10% chance to explode a killed enemy for damage equal
+    to its own health, chain-killing nearby enemies (no XP from those kills).
   icon: {fileID: 1355637550, guid: cf5ab18e05429c44ab411069aee41dfd, type: 3}
   lockedSilhouette: {fileID: 1355637550, guid: cf5ab18e05429c44ab411069aee41dfd, type: 3}
   baseStats:
@@ -39,6 +40,7 @@ MonoBehaviour:
     xpGainMultiplier: 1
     coinGainMultiplier: 1
   animatorController: {fileID: 9100000, guid: f13e7cea39851b44590309bee03a8100, type: 2}
+  idleSprite: {fileID: 1188366520017955549, guid: b58b9a20d049b1546abce127fafd4db5, type: 3}
   projectilePrefab: {fileID: 3435300922814392574, guid: e1093f12296bf424087a39ac5c3f828f, type: 3}
   isRotatingProjectile: 0
   procFxPrefab: {fileID: 0}
@@ -58,9 +60,18 @@ MonoBehaviour:
     damageMultiplier: 0
     procMagnitudePercent: 0
     procDurationSeconds: 0
-    explosionColor: {r: 1, g: 0.55, b: 0.1, a: 1}
+    explosionColor: {r: 0.95645285, g: 0.4292453, b: 1, a: 1}
     runStartStat: 3
     runStartStatValue: 2
+  - effectType: 9
+    value: 0
+    procChancePercent: 10
+    damageMultiplier: 0
+    procMagnitudePercent: 0
+    procDurationSeconds: 0
+    explosionColor: {r: 1, g: 0.55, b: 0.1, a: 1}
+    runStartStat: 0
+    runStartStatValue: 0
   unlockCondition:
     type: 3
     requiredLevel: 0

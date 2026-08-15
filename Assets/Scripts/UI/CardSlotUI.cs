@@ -25,6 +25,8 @@ namespace TwinsDefense.UI
         [SerializeField] private Image cardFrameImage;
         [Tooltip("Swapped in in place of the frame's default sprite while a special (buff+debuff) card is shown.")]
         [SerializeField] private Sprite specialCardSprite;
+        [Tooltip("Rarity glow/embers — shown for Rare (blue) and Epic (yellow), hidden for Common.")]
+        [SerializeField] private CardRarityVFX rarityVFX;
 
         [Header("Animation")]
         [SerializeField] private float hoverScale = 1.1f;
@@ -79,6 +81,8 @@ namespace TwinsDefense.UI
             {
                 cardFrameImage.sprite = card.isSpecial && specialCardSprite != null ? specialCardSprite : defaultCardFrameSprite;
             }
+
+            rarityVFX?.SetRarity(card.rarity);
         }
 
         public void OnPointerEnter(PointerEventData eventData)

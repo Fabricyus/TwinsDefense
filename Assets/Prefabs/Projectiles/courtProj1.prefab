@@ -134,6 +134,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TwinsDefense.Combat.Projectile
   lifetime: 3
+  rotationSpeed: 360
+  chainRadius: 4
+  explodeOnKillRadius: 1.5
 --- !u!58 &-515864275804241377
 CircleCollider2D:
   m_ObjectHideFlags: 0

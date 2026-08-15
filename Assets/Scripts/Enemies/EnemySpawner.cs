@@ -1,18 +1,29 @@
 using System.Collections;
+using System.Linq;
 using UnityEngine;
 using TwinsDefense.Progression;
 using TwinsDefense.Systems;
+using TwinsDefense.UI;
+using TwinsDefense.VFX;
 
 namespace TwinsDefense.Enemies
 {
     /// <summary>
     /// Continuously spawns enemies at random positions on a ring around the
     /// player, always outside camera view. Spawn interval shrinks and the
-    /// Sprinter starts appearing as the player's level rises, and a scaling
-    /// wave of bosses is spawned every few levels (see HandleLevelChanged).
+    /// Sprinter starts appearing as the player's level rises, and a specific
+    /// boss spawns once the player picks their level-up card for its assigned
+    /// level (see HandleCardPicked / bossSpawns).
     /// </summary>
     public class EnemySpawner : MonoBehaviour
     {
+        [System.Serializable]
+        private struct BossSpawnEntry
+        {
+            public int level;
+            public GameObject bossPrefab;
+        }
+
         [Header("Spawning")]
         [Tooltip("Seconds between spawns at level 0, before per-level decay.")]
         [SerializeField] private float spawnInterval = 1.5f;
@@ -50,11 +61,24 @@ namespace TwinsDefense.Enemies
         [SerializeField] private float diamondSpawnChance = 0.1f;
 
         [Header("Boss")]
-        [SerializeField] private GameObject bossPrefab;
-        [Tooltip("A wave of bosses spawns every time the player's level is a multiple of this value, with the wave size scaling as level / this value (e.g. level 10 -> 1 boss, level 20 -> 2, level 30 -> 3).")]
-        [SerializeField] private int bossLevelInterval = 10;
+        [Tooltip("Each entry spawns exactly one instance of its bossPrefab the moment the player's level reaches that exact value.")]
+        [SerializeField] private BossSpawnEntry[] bossSpawns;
+        [Tooltip("The bossSpawns level whose kill unlocks level 20 in CampaignProgress (see HookBossDefeatReport) — today that's the Reaper at level 10.")]
+        [SerializeField] private int reaperMilestoneLevel = 10;
+        [Tooltip("The bossSpawns level whose kill counts toward CampaignProgress's level-30 unlock (see HookBossDefeatReport) — today that's the skull at level 20.")]
+        [SerializeField] private int skullMilestoneLevel = 20;
+        [Tooltip("Plays the boss-arrival portrait banner once per boss spawn, using that boss's own sprite.")]
+        [SerializeField] private BossIntroBanner bossIntroBanner;
+        [Tooltip("Boss spawn (and its intro banner) fires off this panel's OnCardPicked instead of LevelManager.OnLevelChanged, so the boss only appears once the player has actually picked their level-up card — not the instant the level is reached, while the cards panel is still up.")]
+        [SerializeField] private LevelUpCardsUI levelUpCardsUI;
+        [Tooltip("World-space diameter the arrival ripple grows to before fading out.")]
+        [SerializeField] private float rippleMaxDiameter = 14f;
+        [Tooltip("Ends the run with a win screen instead of the usual boss-kill reward once the highest-level boss in bossSpawns is defeated.")]
+        [SerializeField] private GameOverController gameOverController;
 
         private Transform player;
+        private bool isBossFightActive;
+        private int finalBossLevel;
 
         private void Start()
         {
@@ -64,9 +88,11 @@ namespace TwinsDefense.Enemies
                 player = playerObject.transform;
             }
 
-            if (LevelManager.Instance != null)
+            finalBossLevel = bossSpawns.Length > 0 ? bossSpawns.Max(entry => entry.level) : int.MaxValue;
+
+            if (levelUpCardsUI != null)
             {
-                LevelManager.Instance.OnLevelChanged += HandleLevelChanged;
+                levelUpCardsUI.OnCardPicked += HandleCardPicked;
             }
 
             StartCoroutine(SpawnLoop());
@@ -74,34 +100,95 @@ namespace TwinsDefense.Enemies
 
         private void OnDestroy()
         {
-            if (LevelManager.Instance != null)
+            if (levelUpCardsUI != null)
             {
-                LevelManager.Instance.OnLevelChanged -= HandleLevelChanged;
+                levelUpCardsUI.OnCardPicked -= HandleCardPicked;
             }
         }
 
-        /// <summary>Drops a scaling wave of bosses into the arena whenever the player reaches a level that's a multiple of bossLevelInterval — e.g. with the default interval of 10, level 10 spawns 1, level 20 spawns 2, level 30 spawns 3.</summary>
-        private void HandleLevelChanged(int level)
+        /// <summary>Spawns the specific boss assigned to this level, if any (see bossSpawns) — clearing every other enemy off screen first so it's a clean boss-vs-player fight, and pausing regular spawns until the boss dies. Fires off LevelUpCardsUI.OnCardPicked (panel already closed, game already resumed), not the raw level change, so the boss/banner never appears while the level-up cards are still on screen.</summary>
+        private void HandleCardPicked(int level)
         {
-            if (level <= 0 || bossPrefab == null || level % bossLevelInterval != 0) return;
-
-            int bossCount = level / bossLevelInterval;
-            for (int i = 0; i < bossCount; i++)
+            foreach (BossSpawnEntry entry in bossSpawns)
             {
-                GameObject boss = SpawnAtRing(bossPrefab);
+                if (entry.level != level || entry.bossPrefab == null) continue;
+
+                GameObject boss = SpawnAtRing(entry.bossPrefab);
+                if (boss == null) continue;
+
+                RippleVFX.Spawn(boss.transform.position, rippleMaxDiameter);
+                ClearNonBossEnemies(boss);
+                isBossFightActive = true;
+
+                if (bossIntroBanner != null && entry.bossPrefab.TryGetComponent(out SpriteRenderer bossSpriteRenderer))
+                {
+                    bossIntroBanner.Show(bossSpriteRenderer.sprite);
+                }
+
                 HookBossDefeatReport(boss, level);
             }
         }
 
-        /// <summary>Reports the boss kill for the player's selected character/tier once this specific boss instance dies. ArenaEnemy has no boss-specific identity, so this hooks its generic death event right at the spawn site instead.</summary>
+        /// <summary>Instantly (and silently — no coin/exp drops) kills every active arena enemy except the boss that just spawned, so the fight starts as boss-vs-player only.</summary>
+        private void ClearNonBossEnemies(GameObject boss)
+        {
+            ArenaEnemy[] snapshot = new ArenaEnemy[ArenaEnemy.Active.Count];
+            ArenaEnemy.Active.CopyTo(snapshot);
+
+            foreach (ArenaEnemy enemy in snapshot)
+            {
+                if (enemy == null || enemy.gameObject == boss) continue;
+                enemy.HitKill();
+            }
+        }
+
+        /// <summary>
+        /// Reports the boss kill for the player's selected character/tier once this specific boss
+        /// instance dies, grants the player a full level's worth of XP as the reward, and resumes
+        /// normal spawning. ArenaEnemy has no boss-specific identity, so this hooks its generic
+        /// death event right at the spawn site instead.
+        ///
+        /// Three ways this ends the run instead of resuming:
+        /// - The Reaper (reaperMilestoneLevel, today 10): the first kill ends the run as a win and
+        ///   unlocks level 20 in CampaignProgress. Only fires once, ever — after that, killing it
+        ///   again (it doesn't respawn, but future bossSpawns entries could reuse the level) is a
+        ///   no-op here.
+        /// - The skull (skullMilestoneLevel, today 20): every kill ends the run as a win AND counts
+        ///   toward CampaignProgress's level-30 unlock, until that unlock actually lands (3 kills) —
+        ///   after which killing it no longer ends the run, so the player can push on to level 30.
+        /// - The highest-level boss in bossSpawns (today 30, magBoss): always ends the run as a win
+        ///   and marks the campaign complete — this is the real ending, no further gating.
+        /// </summary>
         private void HookBossDefeatReport(GameObject boss, int bossLevel)
         {
             if (boss == null || !boss.TryGetComponent(out ArenaEnemy arenaEnemy)) return;
 
-            arenaEnemy.OnEnemyDefeated += () => CharacterProgressTracker.Instance.ReportBossKilled(
-                SelectedRunContext.Instance.SelectedCharacter,
-                bossLevel,
-                SelectedRunContext.Instance.SelectedTier);
+            arenaEnemy.OnEnemyDefeated += () =>
+            {
+                CharacterProgressTracker.Instance.ReportBossKilled(
+                    SelectedRunContext.Instance.SelectedCharacter,
+                    bossLevel,
+                    SelectedRunContext.Instance.SelectedTier);
+
+                LevelManager.Instance?.CompleteCurrentLevelExp();
+                isBossFightActive = false;
+
+                if (bossLevel == reaperMilestoneLevel && !CampaignProgress.Level20Unlocked)
+                {
+                    CampaignProgress.UnlockLevel20();
+                    gameOverController?.TriggerMissionComplete();
+                }
+                else if (bossLevel == skullMilestoneLevel && !CampaignProgress.Level30Unlocked)
+                {
+                    CampaignProgress.ReportSkullKilled();
+                    gameOverController?.TriggerMissionComplete();
+                }
+                else if (bossLevel >= finalBossLevel)
+                {
+                    CampaignProgress.ReportGameCompleted();
+                    gameOverController?.TriggerMissionComplete();
+                }
+            };
         }
 
         private IEnumerator SpawnLoop()
@@ -109,6 +196,7 @@ namespace TwinsDefense.Enemies
             while (true)
             {
                 yield return new WaitForSeconds(CurrentSpawnInterval());
+                if (isBossFightActive) continue;
                 SpawnEnemy();
             }
         }

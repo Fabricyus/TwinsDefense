@@ -19,20 +19,27 @@ namespace TwinsDefense.UI
         [SerializeField] private CardPoolConfig cardPool;
         [SerializeField] private CardSlotUI[] cardSlots;
         [SerializeField] private PlayerStats playerStats;
+        [SerializeField] private PlayerCharacterData characterData;
 
         private readonly CardDraftService draftService = new CardDraftService();
         private readonly CardEffectApplier effectApplier = new CardEffectApplier();
         private readonly RunCardState runState = new RunCardState();
 
+        /// <summary>Raised right after a card is applied and this panel closes (game already resumed), carrying the level just leveled into. EnemySpawner uses this instead of LevelManager.OnLevelChanged to spawn a boss only once the player has actually picked their card — not the instant the level is reached, while the panel is still up.</summary>
+        public event System.Action<int> OnCardPicked;
+
         private void Awake()
         {
-            if (playerStats == null)
+            GameObject playerObject = GameObject.FindGameObjectWithTag("Player");
+
+            if (playerStats == null && playerObject != null)
             {
-                GameObject playerObject = GameObject.FindGameObjectWithTag("Player");
-                if (playerObject != null)
-                {
-                    playerStats = playerObject.GetComponent<PlayerStats>();
-                }
+                playerStats = playerObject.GetComponent<PlayerStats>();
+            }
+
+            if (characterData == null && playerObject != null)
+            {
+                characterData = playerObject.GetComponent<PlayerCharacterData>();
             }
         }
 
@@ -46,14 +53,17 @@ namespace TwinsDefense.UI
             int level = LevelManager.Instance != null ? LevelManager.Instance.CurrentLevel : 0;
             bool isSpecialMilestone = level >= 5 && level % 5 == 0;
 
+            string activeSlotId = characterData != null && characterData.Current != null ? characterData.Current.slotId : string.Empty;
+            int activeStars = string.IsNullOrEmpty(activeSlotId) ? 0 : CharacterStarUpgrades.Instance.GetStars(activeSlotId);
+
             var drafted = isSpecialMilestone
                 ? draftService.RollSpecialCards(cardSlots.Length, cardPool, runState)
-                : draftService.RollCards(cardSlots.Length, cardPool, runState, activeCharacterId: string.Empty);
+                : draftService.RollCards(cardSlots.Length, cardPool, runState, activeSlotId, activeStars);
 
             // No special cards configured/eligible (e.g. all maxed out) — fall back to a normal draft rather than showing nothing.
             if (drafted.Count == 0 && isSpecialMilestone)
             {
-                drafted = draftService.RollCards(cardSlots.Length, cardPool, runState, activeCharacterId: string.Empty);
+                drafted = draftService.RollCards(cardSlots.Length, cardPool, runState, activeSlotId, activeStars);
             }
 
             for (int i = 0; i < cardSlots.Length; i++)
@@ -85,6 +95,9 @@ namespace TwinsDefense.UI
 
             gameObject.SetActive(false);
             Time.timeScale = 1f;
+
+            int level = LevelManager.Instance != null ? LevelManager.Instance.CurrentLevel : 0;
+            OnCardPicked?.Invoke(level);
         }
     }
 }

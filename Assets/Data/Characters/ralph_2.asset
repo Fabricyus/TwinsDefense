@@ -16,7 +16,8 @@ MonoBehaviour:
   tier: 2
   slotId: ralph_2
   displayName: Priest Ralph
-  description: Gains 10 HP per level.
+  description: Gains 10 HP per level. 10% chance to explode a killed enemy for damage
+    equal to its own health, chain-killing nearby enemies (no XP from those kills).
   icon: {fileID: -660253543179638048, guid: cf5ab18e05429c44ab411069aee41dfd, type: 3}
   lockedSilhouette: {fileID: -660253543179638048, guid: cf5ab18e05429c44ab411069aee41dfd, type: 3}
   baseStats:
@@ -38,6 +39,7 @@ MonoBehaviour:
     xpGainMultiplier: 1
     coinGainMultiplier: 1
   animatorController: {fileID: 9100000, guid: debeaf44babe693488611cf8517645b3, type: 2}
+  idleSprite: {fileID: -5402525039496987536, guid: 42f69e6526bc94e40a35d57fd047324b, type: 3}
   projectilePrefab: {fileID: 3435300922814392574, guid: 79bff2f0e0557e449ab551c75292f348, type: 3}
   isRotatingProjectile: 1
   procFxPrefab: {fileID: 0}
@@ -49,6 +51,15 @@ MonoBehaviour:
     procMagnitudePercent: 0
     procDurationSeconds: 0
     explosionColor: {r: 1, g: 0.55, b: 0.1, a: 1}
+    runStartStat: 0
+    runStartStatValue: 0
+  - effectType: 9
+    value: 0
+    procChancePercent: 10
+    damageMultiplier: 0
+    procMagnitudePercent: 0
+    procDurationSeconds: 0
+    explosionColor: {r: 0.97920835, g: 1, b: 0.6084906, a: 1}
     runStartStat: 0
     runStartStatValue: 0
   unlockCondition:
