@@ -10,7 +10,9 @@ namespace TwinsDefense.Systems
         {
             ApplyEffect(card.effectType, card.value, card.isPercentage, target);
 
-            if (card.isSpecial)
+            // Not gated by isSpecial — see CardSlotUI.BuildDescription. secondValue == 0 means no
+            // second effect was set, so this is a safe no-op for every card that doesn't use one.
+            if (card.secondValue != 0f)
             {
                 ApplyEffect(card.secondEffectType, card.secondValue, card.secondIsPercentage, target);
             }
@@ -74,10 +76,16 @@ namespace TwinsDefense.Systems
                 case CardEffectType.InstantHeal:
                     // One-shot heal of current HP, not a stat mutation — routed through the sibling
                     // PlayerHealth component (which clamps to maxHP) instead of PlayerStats.
-                    target.GetComponent<PlayerHealth>()?.Heal(value);
+                    // isPercentage here means "% of current Max HP" (e.g. Second Wind's 100% = full
+                    // heal), not the usual "% of the stat being modified" since InstantHeal isn't a stat.
+                    float healAmount = isPercentage ? target.maxHP * (value / 100f) : value;
+                    target.GetComponent<PlayerHealth>()?.Heal(healAmount);
                     break;
                 case CardEffectType.ExplodeOnKillChance:
                     target.explodeOnKillChance = Apply(target.explodeOnKillChance, value, isPercentage);
+                    break;
+                case CardEffectType.BlockChance:
+                    target.blockChance = Apply(target.blockChance, value, isPercentage);
                     break;
             }
         }

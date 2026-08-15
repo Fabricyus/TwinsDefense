@@ -44,10 +44,13 @@ namespace TwinsDefense.Enemies
         [SerializeField] private float sprinterSpawnChance = 0.3f;
 
         [Header("Bomb Pack")]
+        [Tooltip("The fast bomb pack (bombPackFast) — gated separately by bombPackFastUnlockLevel below, not this section's slow-pack level.")]
         [SerializeField] private GameObject bombPackPrefab;
         [SerializeField] private GameObject bombPackSlowPrefab;
-        [Tooltip("Player level at which bomb packs start appearing in the spawn pool.")]
+        [Tooltip("Player level at which the slow bomb pack starts appearing in the spawn pool.")]
         [SerializeField] private int bombPackUnlockLevel = 8;
+        [Tooltip("Player level at which the fast bomb pack (bombPackPrefab) starts appearing in the spawn pool.")]
+        [SerializeField] private int bombPackFastUnlockLevel = 21;
         [Tooltip("Chance to spawn a bomb pack instead of the normal enemy, once unlocked (rolled independently for each of the two pack prefabs).")]
         [Range(0f, 1f)]
         [SerializeField] private float bombPackSpawnChance = 0.05f;
@@ -219,16 +222,13 @@ namespace TwinsDefense.Enemies
                 prefabToSpawn = sprinterPrefab;
             }
 
-            if (level >= bombPackUnlockLevel)
+            if (level >= bombPackFastUnlockLevel && bombPackPrefab != null && Random.value < bombPackSpawnChance)
             {
-                if (bombPackPrefab != null && Random.value < bombPackSpawnChance)
-                {
-                    prefabToSpawn = bombPackPrefab;
-                }
-                else if (bombPackSlowPrefab != null && Random.value < bombPackSpawnChance)
-                {
-                    prefabToSpawn = bombPackSlowPrefab;
-                }
+                prefabToSpawn = bombPackPrefab;
+            }
+            else if (level >= bombPackUnlockLevel && bombPackSlowPrefab != null && Random.value < bombPackSpawnChance)
+            {
+                prefabToSpawn = bombPackSlowPrefab;
             }
 
             if (level >= diamondUnlockLevel && diamondPrefab != null && Random.value < diamondSpawnChance)

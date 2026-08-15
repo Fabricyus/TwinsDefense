@@ -17,8 +17,8 @@ MonoBehaviour:
   description: 
   icon: {fileID: 0}
   effectType: 17
-  value: 20
-  isPercentage: 0
+  value: 100
+  isPercentage: 1
   isSpecial: 0
   secondEffectType: 0
   secondValue: 0

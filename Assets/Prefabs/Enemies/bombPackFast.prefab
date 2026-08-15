@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4470345799272765504}
   m_Layer: 0
-  m_Name: bombPack
+  m_Name: bombPackFast
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

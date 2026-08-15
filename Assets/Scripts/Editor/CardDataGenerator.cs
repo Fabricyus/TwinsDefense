@@ -26,7 +26,13 @@ namespace TwinsDefense.EditorTools
             public CardRarity rarity;
             public int maxStacks;
 
-            public CardDef(string cardId, string displayName, CardEffectType effectType, float value, bool isPercentage, CardRarity rarity, int maxStacks)
+            /// <summary>Optional second effect a normal (non-special) card can also apply — e.g. Vital Boost's heal alongside its Max HP bump. Leave at defaults (secondValue 0) for cards with only one effect; see CardEffectApplier.ApplyCard / CardSlotUI.BuildDescription, both gated on secondValue != 0, not isSpecial.</summary>
+            public CardEffectType secondEffectType;
+            public float secondValue;
+            public bool secondIsPercentage;
+
+            public CardDef(string cardId, string displayName, CardEffectType effectType, float value, bool isPercentage, CardRarity rarity, int maxStacks,
+                CardEffectType secondEffectType = CardEffectType.Damage, float secondValue = 0f, bool secondIsPercentage = false)
             {
                 this.cardId = cardId;
                 this.displayName = displayName;
@@ -35,6 +41,9 @@ namespace TwinsDefense.EditorTools
                 this.isPercentage = isPercentage;
                 this.rarity = rarity;
                 this.maxStacks = maxStacks;
+                this.secondEffectType = secondEffectType;
+                this.secondValue = secondValue;
+                this.secondIsPercentage = secondIsPercentage;
             }
         }
 
@@ -49,9 +58,9 @@ namespace TwinsDefense.EditorTools
             new CardDef("piercing_shot", "Piercing Shot", CardEffectType.Pierce, 1f, false, CardRarity.Epic, 4),
             new CardDef("wider_reach", "Wider Reach", CardEffectType.AttackRange, 10f, true, CardRarity.Common, 0),
             new CardDef("bigger_impact", "Bigger Impact", CardEffectType.AreaOfEffect, 10f, true, CardRarity.Rare, 0),
-            new CardDef("vital_boost", "Vital Boost", CardEffectType.MaxHP, 20f, false, CardRarity.Common, 0),
+            new CardDef("vital_boost", "Vital Boost", CardEffectType.MaxHP, 20f, false, CardRarity.Common, 0, CardEffectType.InstantHeal, 20f, false),
             new CardDef("iron_skin", "Iron Skin", CardEffectType.Defense, 15f, false, CardRarity.Common, 0),
-            new CardDef("second_wind", "Second Wind", CardEffectType.InstantHeal, 20f, false, CardRarity.Rare, 0),
+            new CardDef("second_wind", "Second Wind", CardEffectType.InstantHeal, 100f, true, CardRarity.Rare, 0),
             new CardDef("guardian_ward", "Guardian Ward", CardEffectType.IFrameDuration, 0.2f, false, CardRarity.Epic, 3),
             new CardDef("quick_feet", "Quick Feet", CardEffectType.MoveSpeed, 8f, true, CardRarity.Common, 0),
             new CardDef("magnet_pull", "Magnet Pull", CardEffectType.PickupRadius, 15f, true, CardRarity.Common, 0),
@@ -92,10 +101,10 @@ namespace TwinsDefense.EditorTools
             new SpecialCardDef("guardians_bargain", "Guardian's Bargain", CardEffectType.Defense, 40f, false, CardEffectType.Damage, -30f, true),
             new SpecialCardDef("gamblers_coin", "Gambler's Coin", CardEffectType.CritChance, 100f, true, CardEffectType.CritDamage, -50f, true),
             new SpecialCardDef("hoarders_curse", "Hoarder's Curse", CardEffectType.PickupRadius, 250f, true, CardEffectType.XPGain, -25f, true),
-            new SpecialCardDef("big_bang", "Big Bang", CardEffectType.AreaOfEffect, 60f, true, CardEffectType.AttackFireRate, -30f, true),
+            new SpecialCardDef("big_bang", "Big Bang", CardEffectType.AreaOfEffect, 60f, true, CardEffectType.ProjectileSpeed, -30f, true),
             new SpecialCardDef("swarm_caller", "Swarm Caller", CardEffectType.ExtraProjectile, 1f, false, CardEffectType.Damage, -25f, true),
             new SpecialCardDef("focused_strikes", "Focused Strikes", CardEffectType.CritDamage, 100f, true, CardEffectType.CritChance, -50f, true),
-            new SpecialCardDef("chain_reaction", "Chain Reaction", CardEffectType.ExplodeOnKillChance, 10f, false, CardEffectType.AttackFireRate, -20f, true),
+            new SpecialCardDef("chain_reaction", "Chain Reaction", CardEffectType.ExplodeOnKillChance, 50f, false, CardEffectType.AreaOfEffect, -30f, true),
         };
 
         /// <summary>A Star Upgrade reward: only drafted once the active character/tier has purchased minStarsRequired stars (see CardDraftService.GetEligibleCards).</summary>
@@ -125,7 +134,7 @@ namespace TwinsDefense.EditorTools
         {
             new ExclusiveCardDef("twin_flame", "Twin Flame", "izzy_1", 3, CardEffectType.CritChance, 20f, true),
             new ExclusiveCardDef("tacticians_focus", "Tactician's Focus", "court_1", 3, CardEffectType.AttackFireRate, 20f, true),
-            new ExclusiveCardDef("loyal_heart", "Loyal Heart", "ralph_1", 3, CardEffectType.MaxHP, 30f, false),
+            new ExclusiveCardDef("loyal_heart", "Loyal Heart", "ralph_1", 3, CardEffectType.BlockChance, 10f, false),
         };
 
         [MenuItem("Tools/TwinsDefense/Generate Card Data")]
@@ -165,6 +174,9 @@ namespace TwinsDefense.EditorTools
                 card.value = def.value;
                 card.isPercentage = def.isPercentage;
                 card.isSpecial = false;
+                card.secondEffectType = def.secondEffectType;
+                card.secondValue = def.secondValue;
+                card.secondIsPercentage = def.secondIsPercentage;
                 card.rarity = def.rarity;
                 card.maxStacks = def.maxStacks;
                 card.rollWeight = 1f;

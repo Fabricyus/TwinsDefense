@@ -37,6 +37,9 @@ namespace TwinsDefense.Player
         /// <summary>Flat percentage chance (0-100) added on top of the character's own ExplodeOnKill passive, if any — see AutoAttack.ResolveOnHitPassives.</summary>
         public float explodeOnKillChance = 0f;
 
+        /// <summary>Flat percentage chance (0-100) to fully negate an incoming hit — rolled in PlayerHealth.TakeDamage before Defense mitigation or i-frames are touched.</summary>
+        public float blockChance = 0f;
+
         /// <summary>Set by PlayerCharacterData.ApplyPurchasedStars — flat percentage points added to the character's own on-hit passive's proc chance (Stun/Slow/Thunder/Chain/ExplodeOnKill). Never affects card-granted procs (e.g. explodeOnKillChance above), only the character's native passive.</summary>
         public float passiveProcChanceBonus = 0f;
 

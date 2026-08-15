@@ -20,8 +20,8 @@ MonoBehaviour:
   value: 20
   isPercentage: 0
   isSpecial: 0
-  secondEffectType: 0
-  secondValue: 0
+  secondEffectType: 17
+  secondValue: 20
   secondIsPercentage: 0
   rarity: 0
   rollWeight: 1

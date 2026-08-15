@@ -17,11 +17,11 @@ MonoBehaviour:
   description: 
   icon: {fileID: 0}
   effectType: 18
-  value: 10
+  value: 50
   isPercentage: 0
   isSpecial: 1
-  secondEffectType: 1
-  secondValue: -20
+  secondEffectType: 8
+  secondValue: -30
   secondIsPercentage: 1
   rarity: 2
   rollWeight: 1

@@ -157,7 +157,10 @@ namespace TwinsDefense.UI
         {
             string primaryLine = FormatEffectLine(card.value, card.isPercentage, card.effectType);
 
-            if (!card.isSpecial)
+            // Not gated by isSpecial — that flag only controls milestone-only draft pool membership
+            // and the special card frame. A normal card can also carry a second effect (e.g. Vital
+            // Boost's heal-on-pick alongside its Max HP bump); secondValue == 0 means "none set".
+            if (card.secondValue == 0f)
             {
                 return $"{card.displayName}\n{primaryLine}";
             }
@@ -196,6 +199,7 @@ namespace TwinsDefense.UI
                 case CardEffectType.CoinGain: return "Coin Gain";
                 case CardEffectType.InstantHeal: return "HP";
                 case CardEffectType.ExplodeOnKillChance: return "Explode Chance";
+                case CardEffectType.BlockChance: return "Chance to Block a Hit";
                 default: return effectType.ToString();
             }
         }

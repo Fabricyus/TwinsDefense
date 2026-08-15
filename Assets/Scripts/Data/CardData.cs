@@ -29,7 +29,8 @@ namespace TwinsDefense.Data
         XPGain,
         CoinGain,
         InstantHeal,
-        ExplodeOnKillChance // appended at the end — existing assets serialize this enum as an int, inserting earlier would remap them
+        ExplodeOnKillChance,
+        BlockChance // appended at the end — existing assets serialize this enum as an int, inserting earlier would remap them
     }
 
     /// <summary>

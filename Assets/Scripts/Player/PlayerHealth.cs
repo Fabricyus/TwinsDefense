@@ -6,8 +6,9 @@ using TwinsDefense.Systems;
 namespace TwinsDefense.Player
 {
     /// <summary>
-    /// Tracks the player's current HP against PlayerStats.maxHP. Incoming
-    /// damage is mitigated by PlayerStats.defense via a diminishing-returns
+    /// Tracks the player's current HP against PlayerStats.maxHP. A hit can
+    /// first be fully negated by PlayerStats.blockChance; damage that gets
+    /// through is mitigated by PlayerStats.defense via a diminishing-returns
     /// curve (100 / (100 + defense)) — never reaches zero damage taken, no
     /// matter how much Defense is stacked — and triggers a brief invincibility
     /// window (PlayerStats.iFrameDuration). Regenerates PlayerStats.hpRegen per
@@ -101,6 +102,11 @@ namespace TwinsDefense.Player
         public void TakeDamage(float amount, Vector2 sourcePosition)
         {
             if (IsDead || IsInvincible || amount <= 0f) return;
+
+            if (stats.blockChance > 0f && UnityEngine.Random.value * 100f < stats.blockChance)
+            {
+                return; // hit fully negated — no damage, no i-frame/knockback spent
+            }
 
             float mitigatedDamage = amount * (100f / (100f + stats.defense));
             CurrentHP = Mathf.Max(0f, CurrentHP - mitigatedDamage);

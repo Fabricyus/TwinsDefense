@@ -257,15 +257,15 @@ MonoBehaviour:
   projectilePrefab: {fileID: 8553046789802213137, guid: 157b2377aed4c7b4f98403671647af40, type: 3}
   projectileSpeed: 6
   projectileDamage: 10
-  volleyCount: 100
+  volleyCount: 75
   spinBurstInterval: 0.1
-  spinDegreesPerShot: 1
+  spinDegreesPerShot: 3
   laserDamage: 25
   laserTrackDuration: 3
   laserLockDuration: 0.5
   laserWidth: 0.4
   laserColor: {r: 1, g: 0.1, b: 0.1, a: 0.85}
-  enrageLaserInterval: 5
+  enrageLaserInterval: 3
   band2Threshold: 0.5
   band3Threshold: 0.2
   enrageSpeedMultiplier: 1.3
@@ -323,7 +323,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4142952471942605494}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
@@ -338,7 +338,7 @@ MonoBehaviour:
       m_Calls: []
   m_Sprite: {fileID: 7482667652216324306, guid: 953e07f47052f314abf4765236231e0e, type: 3}
   m_Type: 0
-  m_PreserveAspect: 1
+  m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
   m_FillAmount: 1

@@ -46,7 +46,7 @@ namespace TwinsDefense.Combat
         [Tooltip("Max distance from the hit enemy a ChainOnHit proc will search for its next target.")]
         [SerializeField] private float chainRadius = 4f;
         [Tooltip("Base AoE radius for an ExplodeOnKill proc, before scaling by the player's current Area of Effect.")]
-        [SerializeField] private float explodeOnKillRadius = 1.5f;
+        [SerializeField] private float explodeOnKillRadius = 3f;
 
         private Vector2 direction;
         private float speed;
@@ -175,16 +175,28 @@ namespace TwinsDefense.Combat
         }
 
         /// <summary>
-        /// AoE-damages nearby enemies (excluding the one that just died) around a kill, scaled by
-        /// the player's current Area of Effect. No-op if the proc doesn't roll. Damage equals 100%
-        /// of the killed enemy's own max HP — usually enough to one-shot same-tier neighbors too,
-        /// chain-reacting through a whole pack. Enemies killed by this splash don't drop XP (only
-        /// coins), so this can't be farmed for XP the way a direct kill can.
+        /// Kicks off an ExplodeOnKill chain reaction rooted at the enemy this projectile just
+        /// killed. No-op if the proc doesn't roll — once it does, every enemy it goes on to kill
+        /// (see TriggerExplosion) explodes too, unconditionally, no re-roll needed.
         /// </summary>
         private void RollExplodeOnKill(ArenaEnemy killedEnemy)
         {
             if (onHitPassives.explodeOnKillChancePercent <= 0f || Random.value * 100f >= onHitPassives.explodeOnKillChancePercent) return;
 
+            TriggerExplosion(killedEnemy, new HashSet<ArenaEnemy> { killedEnemy });
+        }
+
+        /// <summary>
+        /// AoE-damages every enemy within explodeOnKillRadius of killedEnemy (scaled by the
+        /// player's current Area of Effect) for 100% of killedEnemy's own max HP — usually enough
+        /// to one-shot same-tier neighbors too. Any enemy this splash kills immediately triggers
+        /// its own explosion in turn (recursively), so a single proc can chain through an entire
+        /// pack. alreadyExploded is threaded through the recursion so no enemy explodes (or takes
+        /// splash damage) more than once in the same chain. Enemies killed by any explosion in the
+        /// chain don't drop XP (only coins), so this can't be farmed for XP like a direct kill.
+        /// </summary>
+        private void TriggerExplosion(ArenaEnemy killedEnemy, HashSet<ArenaEnemy> alreadyExploded)
+        {
             Vector2 position = killedEnemy.transform.position;
             float radius = explodeOnKillRadius * areaOfEffectScale;
             float explosionDamage = killedEnemy.EffectiveMaxHealth;
@@ -192,13 +204,16 @@ namespace TwinsDefense.Combat
             ExplosionVFX.Spawn(position, radius, onHitPassives.explodeOnKillColor);
 
             Collider2D[] hits = Physics2D.OverlapCircleAll(position, radius);
-            var damagedEnemies = new HashSet<ArenaEnemy>();
 
             foreach (Collider2D hit in hits)
             {
-                if (hit.TryGetComponent(out ArenaEnemy other) && other != killedEnemy && damagedEnemies.Add(other))
+                if (!hit.TryGetComponent(out ArenaEnemy other) || !alreadyExploded.Add(other)) continue;
+
+                other.TakeDamage(explosionDamage, grantsExp: false);
+
+                if (other.HealthPercent01 <= 0f)
                 {
-                    other.TakeDamage(explosionDamage, grantsExp: false);
+                    TriggerExplosion(other, alreadyExploded);
                 }
             }
         }

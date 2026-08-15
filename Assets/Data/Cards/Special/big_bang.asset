@@ -20,7 +20,7 @@ MonoBehaviour:
   value: 60
   isPercentage: 1
   isSpecial: 1
-  secondEffectType: 1
+  secondEffectType: 2
   secondValue: -30
   secondIsPercentage: 1
   rarity: 2
