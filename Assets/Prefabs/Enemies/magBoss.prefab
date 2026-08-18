@@ -90,7 +90,7 @@ RectTransform:
   m_GameObject: {fileID: 535844329756645095}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.2, y: 0.2, z: 0.2}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2957162706313434545}
@@ -204,13 +204,13 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5526750901706512211}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.050980397, g: 0.050980397, b: 0.07058824, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -219,7 +219,7 @@ MonoBehaviour:
       m_Calls: []
   m_Sprite: {fileID: 7482667652216324306, guid: 953e07f47052f314abf4765236231e0e, type: 3}
   m_Type: 0
-  m_PreserveAspect: 1
+  m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
   m_FillAmount: 1
@@ -603,18 +603,22 @@ MonoBehaviour:
   spinInterval: 0.1
   spinDegreesPerShot: 5
   spinDamageTakenMultiplier: 0.2
-  band2Threshold: 0.75
-  hazardAttackInterval: 8
-  hazardDuration: 12
-  hazardCircleCount: 6
-  hazardGrowDuration: 4
-  hazardDiameter: 3
-  hazardExplosionDamage: 20
+  band2Threshold: 0.55
+  hazardCircleCount: 10
+  hazardGrowDuration: 3
+  hazardDiameter: 4
+  hazardExplosionDamage: 40
   hazardSpawnAreaMultiplier: 2
-  band3Threshold: 0.4
+  ascendDuration: 0.35
+  divePassDuration: 0.5
+  divePassGap: 0.25
+  descendDuration: 0.6
+  offScreenMargin: 3
+  band3Threshold: 0.25
   laserAttackInterval: 2
-  laserDamage: 25
+  laserDamage: 30
   laserTrackDuration: 1
-  laserLockDuration: 0.3
-  laserWidth: 0.4
+  laserLockDuration: 0.4
+  laserWidth: 0.5
   laserColor: {r: 1, g: 0.1, b: 0.1, a: 0.85}
+  phase3DamageTakenMultiplier: 0.1

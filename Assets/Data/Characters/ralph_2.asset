@@ -21,7 +21,7 @@ MonoBehaviour:
   icon: {fileID: -660253543179638048, guid: cf5ab18e05429c44ab411069aee41dfd, type: 3}
   lockedSilhouette: {fileID: -660253543179638048, guid: cf5ab18e05429c44ab411069aee41dfd, type: 3}
   baseStats:
-    damage: 45
+    damage: 40
     attackFireRate: 1.8
     projectileSpeed: 10
     critChance: 0.1
@@ -31,7 +31,7 @@ MonoBehaviour:
     attackRange: 4.2
     areaOfEffect: 1
     maxHP: 100
-    defense: 15
+    defense: 20
     hpRegen: 1
     iFrameDuration: 0.1
     moveSpeed: 5
@@ -50,7 +50,7 @@ MonoBehaviour:
     damageMultiplier: 0
     procMagnitudePercent: 0
     procDurationSeconds: 0
-    explosionColor: {r: 1, g: 0.55, b: 0.1, a: 1}
+    explosionColor: {r: 0.8773585, g: 0.86536914, b: 0, a: 1}
     runStartStat: 0
     runStartStatValue: 0
   - effectType: 9
@@ -59,7 +59,7 @@ MonoBehaviour:
     damageMultiplier: 0
     procMagnitudePercent: 0
     procDurationSeconds: 0
-    explosionColor: {r: 0.97920835, g: 1, b: 0.6084906, a: 1}
+    explosionColor: {r: 0.9691038, g: 1, b: 0.3820755, a: 1}
     runStartStat: 0
     runStartStatValue: 0
   unlockCondition:

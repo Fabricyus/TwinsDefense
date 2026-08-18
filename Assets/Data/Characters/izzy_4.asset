@@ -51,7 +51,7 @@ MonoBehaviour:
     damageMultiplier: 0
     procMagnitudePercent: 0
     procDurationSeconds: 1
-    explosionColor: {r: 1, g: 0.55, b: 0.1, a: 1}
+    explosionColor: {r: 0.9347164, g: 0.504717, b: 1, a: 1}
     runStartStat: 0
     runStartStatValue: 0
   - effectType: 3

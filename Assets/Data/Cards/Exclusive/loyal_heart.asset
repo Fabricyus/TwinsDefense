@@ -23,6 +23,7 @@ MonoBehaviour:
   secondEffectType: 0
   secondValue: 0
   secondIsPercentage: 0
+  additionalEffects: []
   rarity: 2
   rollWeight: 1
   maxStacks: 1

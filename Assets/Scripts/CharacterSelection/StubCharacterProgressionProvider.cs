@@ -75,7 +75,9 @@ namespace TwinsDefense.CharacterSelection
                 attackStarsMax = meta != null ? meta.attackStarsMax : CharacterStarUpgrades.MaxStars,
                 defenseStars = defenseStars,
                 defenseStarsMax = DefenseStarsMax,
-                upgradeCost = CharacterStarUpgrades.Instance.GetNextStarCost(slotId)
+                upgradeCost = CharacterStarUpgrades.Instance.GetNextStarCost(slotId),
+                attackPipCount = meta != null ? Mathf.FloorToInt(meta.baseStats.damage / 5f) : 0,
+                defensePipCount = meta != null ? Mathf.FloorToInt(meta.baseStats.defense / 5f) : 0
             };
         }
     }

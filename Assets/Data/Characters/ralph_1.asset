@@ -20,7 +20,7 @@ MonoBehaviour:
   icon: {fileID: 6092078167180830944, guid: cf5ab18e05429c44ab411069aee41dfd, type: 3}
   lockedSilhouette: {fileID: 6092078167180830944, guid: cf5ab18e05429c44ab411069aee41dfd, type: 3}
   baseStats:
-    damage: 45
+    damage: 35
     attackFireRate: 1.8
     projectileSpeed: 10
     critChance: 0.1
@@ -30,7 +30,7 @@ MonoBehaviour:
     attackRange: 4.2
     areaOfEffect: 1
     maxHP: 100
-    defense: 15
+    defense: 20
     hpRegen: 1
     iFrameDuration: 0.1
     moveSpeed: 5

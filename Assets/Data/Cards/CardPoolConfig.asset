@@ -43,6 +43,15 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 9622734ad6eb1334cbe889d157ee805f, type: 2}
   - {fileID: 11400000, guid: 740518de6a196c64487b9f30b17d4b94, type: 2}
   - {fileID: 11400000, guid: 3aec1bf90febdcd4584c9067d221a36f, type: 2}
+  - {fileID: 11400000, guid: 2c22d6ab414460043930616fdcdd05ed, type: 2}
+  - {fileID: 11400000, guid: 6a6e086c3a932f2459f532ddd7131778, type: 2}
+  - {fileID: 11400000, guid: e8104b19ae773dd40a6244894bbe3b5b, type: 2}
+  - {fileID: 11400000, guid: 9124f8faf17f09e409c17bd430349e0e, type: 2}
+  - {fileID: 11400000, guid: 2af13952d90737e428a52f2e96b32b03, type: 2}
+  - {fileID: 11400000, guid: 449705fe1a3a2414e94b7ef64f0166a9, type: 2}
+  - {fileID: 11400000, guid: 41705385c59806b4ca4eead772d7fe92, type: 2}
+  - {fileID: 11400000, guid: ec537daaffa3f3b4ba7d008ed7734be7, type: 2}
+  - {fileID: 11400000, guid: ab2a961be8159f640a944ec15eb6b369, type: 2}
   commonWeight: 60
   rareWeight: 30
   epicWeight: 10

@@ -23,8 +23,11 @@ MonoBehaviour:
   secondEffectType: 0
   secondValue: 0
   secondIsPercentage: 0
+  additionalEffects: []
   rarity: 0
   rollWeight: 1
   maxStacks: 0
   restrictedToCharacterIds: []
   minStarsRequired: 0
+  requiredChallengeCharacter: 0
+  requiredChallengeTier: 0

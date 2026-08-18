@@ -40,7 +40,16 @@ namespace TwinsDefense.Player
         /// <summary>Flat percentage chance (0-100) to fully negate an incoming hit — rolled in PlayerHealth.TakeDamage before Defense mitigation or i-frames are touched.</summary>
         public float blockChance = 0f;
 
-        /// <summary>Set by PlayerCharacterData.ApplyPurchasedStars — flat percentage points added to the character's own on-hit passive's proc chance (Stun/Slow/Thunder/Chain/ExplodeOnKill). Never affects card-granted procs (e.g. explodeOnKillChance above), only the character's native passive.</summary>
+        /// <summary>Set by Star Round (see CardEffectType.StarDamageBonus) — percentage bonus applied only to StarProjectileLauncher's own damage calc, never to the main damage stat above.</summary>
+        public float starDamageBonusPercent = 0f;
+
+        /// <summary>Set by Star Round (see CardEffectType.StarRangeBonus) — percentage bonus applied only to StarProjectileLauncher's own target-search range, never to the main attackRange stat above.</summary>
+        public float starRangeBonusPercent = 0f;
+
+        /// <summary>Set by Star Round (see CardEffectType.StarCooldownReduction) — flat seconds subtracted from StarProjectileLauncher's own cooldown, never affecting the main attackFireRate stat above.</summary>
+        public float starCooldownReductionSeconds = 0f;
+
+        /// <summary>Set by PlayerCharacterData.ApplyPurchasedStars and by Epic exclusive cards (Static Strike, Dark Chain, Holy Strike, Cute Strike — see CardEffectType.PassiveProcChanceBonus) — flat percentage points added to the character's own on-hit passive's proc chance (Stun/Slow/Thunder/Chain/ExplodeOnKill). Never affects card-granted procs (e.g. explodeOnKillChance above), only the character's native passive.</summary>
         public float passiveProcChanceBonus = 0f;
 
         /// <summary>Set by PlayerCharacterData.ApplyPurchasedStars — percentage increase applied to the character's own on-hit passive's magnitude (slow%, stun/slow duration, Thunder/ExplodeOnKill damage multiplier).</summary>

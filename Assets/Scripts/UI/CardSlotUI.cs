@@ -172,18 +172,25 @@ public void OnPointerExit(PointerEventData eventData)
 
         private static string BuildDescription(CardData card)
         {
-            string primaryLine = FormatEffectLine(card.value, card.isPercentage, card.effectType);
+            string description = $"{card.displayName}\n{FormatEffectLine(card.value, card.isPercentage, card.effectType)}";
 
             // Not gated by isSpecial — that flag only controls milestone-only draft pool membership
             // and the special card frame. A normal card can also carry a second effect (e.g. Vital
             // Boost's heal-on-pick alongside its Max HP bump); secondValue == 0 means "none set".
-            if (card.secondValue == 0f)
+            if (card.secondValue != 0f)
             {
-                return $"{card.displayName}\n{primaryLine}";
+                description += $"\n{FormatEffectLine(card.secondValue, card.secondIsPercentage, card.secondEffectType)}";
             }
 
-            string secondaryLine = FormatEffectLine(card.secondValue, card.secondIsPercentage, card.secondEffectType);
-            return $"{card.displayName}\n{primaryLine}\n{secondaryLine}";
+            if (card.additionalEffects != null)
+            {
+                foreach (CardEffect effect in card.additionalEffects)
+                {
+                    description += $"\n{FormatEffectLine(effect.value, effect.isPercentage, effect.effectType)}";
+                }
+            }
+
+            return description;
         }
 
         private static string FormatEffectLine(float value, bool isPercentage, CardEffectType effectType)
@@ -224,6 +231,10 @@ public void OnPointerExit(PointerEventData eventData)
                 case CardEffectType.ExplodeOnKillChance: return "Explode Chance";
                 case CardEffectType.BlockChance: return "Chance to Block a Hit";
                 case CardEffectType.StarProjectileCount: return "Star Projectile";
+                case CardEffectType.PassiveProcChanceBonus: return "Passive Skill Chance";
+                case CardEffectType.StarDamageBonus: return "Star Damage";
+                case CardEffectType.StarRangeBonus: return "Star Range";
+                case CardEffectType.StarCooldownReduction: return "Star Cooldown";
                 default: return effectType.ToString();
             }
         }

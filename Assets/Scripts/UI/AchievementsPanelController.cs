@@ -16,6 +16,7 @@ namespace TwinsDefense.UI
     public class AchievementsPanelController : MonoBehaviour
     {
         [SerializeField] private TextMeshProUGUI[] labels;
+        [SerializeField] private TextMeshProUGUI completionPercentLabel;
         [SerializeField] private Color incompleteColor = new Color(0.92f, 0.88f, 0.8f, 1f);
         [SerializeField] private Color completeColor = new Color(0.45f, 0.85f, 0.4f, 1f);
 
@@ -27,6 +28,19 @@ namespace TwinsDefense.UI
         private void Refresh()
         {
             AchievementDef[] achievements = AchievementRegistry.All;
+
+            int completeCount = 0;
+            for (int i = 0; i < achievements.Length; i++)
+            {
+                if (AchievementRegistry.IsComplete(i)) completeCount++;
+            }
+
+            if (completionPercentLabel != null && achievements.Length > 0)
+            {
+                int percent = Mathf.RoundToInt(100f * completeCount / achievements.Length);
+                completionPercentLabel.text = $"{percent}%";
+            }
+
             if (labels == null) return;
 
             for (int i = 0; i < achievements.Length && i < labels.Length; i++)

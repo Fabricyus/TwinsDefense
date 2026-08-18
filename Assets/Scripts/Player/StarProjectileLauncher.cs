@@ -10,7 +10,10 @@ namespace TwinsDefense.Player
     /// granted at 3+/5+ purchased stars) on a fixed cooldown, fully independent of
     /// AutoAttack's fire-rate loop — this is a passive utility proc, not another shot
     /// in the normal volley. Built entirely at runtime (sprite + trail + collider),
-    /// no prefab needed.
+    /// no prefab needed. Star Round's damage/range/cooldown bonuses (PlayerStats.
+    /// starDamageBonusPercent/starRangeBonusPercent/starCooldownReductionSeconds) only
+    /// affect this launcher's own damage/target-search/cooldown — never the player's
+    /// main damage, attackRange, or attackFireRate stats.
     /// </summary>
     [RequireComponent(typeof(PlayerStats))]
     public class StarProjectileLauncher : MonoBehaviour
@@ -18,6 +21,8 @@ namespace TwinsDefense.Player
         [Tooltip("Origin the Star Projectile spawns from. Defaults to this transform if left unassigned.")]
         [SerializeField] private Transform firePoint;
         [SerializeField] private float cooldownSeconds = 5f;
+        [Tooltip("Floor the effective cooldown can't drop below, no matter how much Star Round's cooldown reduction stacks.")]
+        [SerializeField] private float minCooldownSeconds = 0.5f;
         [Tooltip("Angle in degrees between adjacent Star Projectiles when starProjectileCount > 1.")]
         [SerializeField] private float spreadAngle = 25f;
         [Tooltip("Star Projectile deals roughly the player's damage divided by this.")]
@@ -47,7 +52,8 @@ namespace TwinsDefense.Player
             if (stats.starProjectileCount <= 0f) return;
 
             cooldownTimer += Time.deltaTime;
-            if (cooldownTimer < cooldownSeconds) return;
+            float effectiveCooldown = Mathf.Max(minCooldownSeconds, cooldownSeconds - stats.starCooldownReductionSeconds);
+            if (cooldownTimer < effectiveCooldown) return;
 
             cooldownTimer = 0f;
             FireStarProjectiles();
@@ -60,7 +66,7 @@ namespace TwinsDefense.Player
 
             Vector2 direction = ((Vector2)target.transform.position - (Vector2)firePoint.position).normalized;
             int count = Mathf.Max(1, Mathf.RoundToInt(stats.starProjectileCount));
-            float damage = Mathf.Max(0.1f, stats.damage / damageDivisor);
+            float damage = Mathf.Max(0.1f, stats.damage / damageDivisor) * (1f + stats.starDamageBonusPercent / 100f);
 
             for (int i = 0; i < count; i++)
             {
@@ -102,7 +108,8 @@ namespace TwinsDefense.Player
         private ArenaEnemy FindNearestEnemyInRange()
         {
             ArenaEnemy nearest = null;
-            float nearestSqrDistance = stats.attackRange * stats.attackRange;
+            float effectiveRange = stats.attackRange * (1f + stats.starRangeBonusPercent / 100f);
+            float nearestSqrDistance = effectiveRange * effectiveRange;
 
             foreach (ArenaEnemy enemy in ArenaEnemy.Active)
             {

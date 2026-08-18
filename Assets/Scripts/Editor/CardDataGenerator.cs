@@ -31,8 +31,11 @@ namespace TwinsDefense.EditorTools
             public float secondValue;
             public bool secondIsPercentage;
 
+            /// <summary>Any further effects beyond the primary/second pair — e.g. Star Round's star-exclusive damage/range/cooldown bundle. Leave null for cards with one or two effects.</summary>
+            public CardEffect[] additionalEffects;
+
             public CardDef(string cardId, string displayName, CardEffectType effectType, float value, bool isPercentage, CardRarity rarity, int maxStacks,
-                CardEffectType secondEffectType = CardEffectType.Damage, float secondValue = 0f, bool secondIsPercentage = false)
+                CardEffectType secondEffectType = CardEffectType.Damage, float secondValue = 0f, bool secondIsPercentage = false, CardEffect[] additionalEffects = null)
             {
                 this.cardId = cardId;
                 this.displayName = displayName;
@@ -44,6 +47,7 @@ namespace TwinsDefense.EditorTools
                 this.secondEffectType = secondEffectType;
                 this.secondValue = secondValue;
                 this.secondIsPercentage = secondIsPercentage;
+                this.additionalEffects = additionalEffects;
             }
         }
 
@@ -54,7 +58,15 @@ namespace TwinsDefense.EditorTools
             new CardDef("swift_projectile", "Swift Projectile", CardEffectType.ProjectileSpeed, 15f, true, CardRarity.Common, 0),
             new CardDef("lucky_strike", "Lucky Strike", CardEffectType.CritChance, 5f, true, CardRarity.Rare, 5),
             new CardDef("fatal_blow", "Fatal Blow", CardEffectType.CritDamage, 25f, true, CardRarity.Rare, 0),
-            new CardDef("extra_round", "Star Round", CardEffectType.StarProjectileCount, 1f, false, CardRarity.Epic, 3),
+            // Star Round: +1 Star Projectile, plus a bundle of star-exclusive bonuses (never touch
+            // the player's main damage/attackRange/attackFireRate — see StarProjectileLauncher).
+            new CardDef("extra_round", "Star Round", CardEffectType.StarProjectileCount, 1f, false, CardRarity.Epic, 5,
+                additionalEffects: new[]
+                {
+                    new CardEffect { effectType = CardEffectType.StarDamageBonus, value = 10f, isPercentage = false },
+                    new CardEffect { effectType = CardEffectType.StarRangeBonus, value = 10f, isPercentage = false },
+                    new CardEffect { effectType = CardEffectType.StarCooldownReduction, value = -1f, isPercentage = false },
+                }),
             new CardDef("piercing_shot", "Piercing Shot", CardEffectType.Pierce, 1f, false, CardRarity.Epic, 4),
             new CardDef("wider_reach", "Wider Reach", CardEffectType.AttackRange, 10f, true, CardRarity.Common, 0),
             new CardDef("bigger_impact", "Bigger Impact", CardEffectType.AreaOfEffect, 10f, true, CardRarity.Rare, 0),
@@ -140,6 +152,27 @@ namespace TwinsDefense.EditorTools
             new ExclusiveCardDef("tacticians_focus", "Tactician's Focus", "court_1", CharacterId.Court, 1, CardEffectType.AttackFireRate, 20f, true),
             // Loyal Heart (ralph_1) — unlocked by Ralph's "Iron Wall" challenge (Ralph tier 1).
             new ExclusiveCardDef("loyal_heart", "Loyal Heart", "ralph_1", CharacterId.Ralph, 1, CardEffectType.BlockChance, 10f, false),
+
+            // Gut Feeling (izzy_1) — unlocked by Izzy's "First Instinct" challenge (Izzy tier 1).
+            new ExclusiveCardDef("gut_feeling", "Gut Feeling", "izzy_1", CharacterId.Izzy, 1, CardEffectType.AreaOfEffect, 15f, true),
+            // True Aim (izzy_3) — unlocked by Izzy Archer's "The Real Archer" challenge (Izzy tier 3).
+            new ExclusiveCardDef("true_aim", "True Aim", "izzy_3", CharacterId.Izzy, 3, CardEffectType.Pierce, 2f, false),
+            // Extra Round (izzy_4) — unlocked by Izzy PopStar's "Flawless Diva" challenge (Izzy tier 4).
+            new ExclusiveCardDef("bonus_round", "Extra Round", "izzy_4", CharacterId.Izzy, 4, CardEffectType.ExtraProjectile, 1f, false),
+
+            // Absolute Zero (court_2) — unlocked by Frost Court's "Never Melt" challenge (Court tier 2).
+            new ExclusiveCardDef("absolute_zero", "Absolute Zero", "court_2", CharacterId.Court, 2, CardEffectType.AttackRange, 15f, true),
+            // Static Strike (court_3) — unlocked by Court Reader's "Storm Reader" challenge (Court tier 3). Boosts the character's native ThunderStrikeOnHit proc chance.
+            new ExclusiveCardDef("static_strike", "Static Strike", "court_3", CharacterId.Court, 3, CardEffectType.PassiveProcChanceBonus, 1f, false),
+            // Dark Chain (court_4) — unlocked by Dark Court's "One True Chain" challenge (Court tier 4). Boosts the character's native ChainOnHit proc chance.
+            new ExclusiveCardDef("dark_chain", "Dark Chain", "court_4", CharacterId.Court, 4, CardEffectType.PassiveProcChanceBonus, 25f, false),
+
+            // Blessed Ward (ralph_2) — unlocked by Priest Ralph's "Humble Priest" challenge (Ralph tier 2).
+            new ExclusiveCardDef("blessed_ward", "Blessed Ward", "ralph_2", CharacterId.Ralph, 2, CardEffectType.HPRegen, 1f, false),
+            // Holy Strike (ralph_3) — unlocked by Paladin Ralph's "Holy Solo" challenge (Ralph tier 3). Boosts the character's native ThunderStrikeOnHit (holy bolt) proc chance.
+            new ExclusiveCardDef("holy_strike", "Holy Strike", "ralph_3", CharacterId.Ralph, 3, CardEffectType.PassiveProcChanceBonus, 1f, false),
+            // Cute Strike (ralph_4) — unlocked by Cute Ralph's "Too Cute to Hit" challenge (Ralph tier 4). Boosts the character's native ThunderStrikeOnHit (heart bolt) proc chance.
+            new ExclusiveCardDef("cute_strike", "Cute Strike", "ralph_4", CharacterId.Ralph, 4, CardEffectType.PassiveProcChanceBonus, 5f, false),
         };
 
         [MenuItem("Tools/TwinsDefense/Generate Card Data")]
@@ -182,6 +215,7 @@ namespace TwinsDefense.EditorTools
                 card.secondEffectType = def.secondEffectType;
                 card.secondValue = def.secondValue;
                 card.secondIsPercentage = def.secondIsPercentage;
+                card.additionalEffects = def.additionalEffects;
                 card.rarity = def.rarity;
                 card.maxStacks = def.maxStacks;
                 card.rollWeight = 1f;

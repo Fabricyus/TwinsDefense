@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::TwinsDefense.Data.CardData
   cardId: extra_round
   displayName: Star Round
-  description:
+  description: 
   icon: {fileID: 0}
   effectType: 20
   value: 1
@@ -23,8 +23,20 @@ MonoBehaviour:
   secondEffectType: 0
   secondValue: 0
   secondIsPercentage: 0
+  additionalEffects:
+  - effectType: 22
+    value: 10
+    isPercentage: 0
+  - effectType: 23
+    value: 10
+    isPercentage: 0
+  - effectType: 24
+    value: -1
+    isPercentage: 0
   rarity: 2
   rollWeight: 1
-  maxStacks: 3
+  maxStacks: 5
   restrictedToCharacterIds: []
   minStarsRequired: 0
+  requiredChallengeCharacter: 0
+  requiredChallengeTier: 0

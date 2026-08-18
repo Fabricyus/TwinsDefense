@@ -96,7 +96,10 @@ namespace TwinsDefense.Enemies
             SpawnLineExplosion(start, endPoint);
 
             GameObject playerObject = GameObject.FindGameObjectWithTag("Player");
-            if (playerObject == null || !playerObject.TryGetComponent(out PlayerHurtbox hurtbox)) return;
+            // PlayerHurtbox lives on a small child GameObject, not the tagged root — TryGetComponent
+            // only checks the object itself, so this must search children (see PlayerHurtbox's doc).
+            PlayerHurtbox hurtbox = playerObject != null ? playerObject.GetComponentInChildren<PlayerHurtbox>() : null;
+            if (hurtbox == null) return;
 
             Vector2 closestPoint = ClosestPointOnSegment(playerObject.transform.position, start, endPoint);
             if (Vector2.Distance(playerObject.transform.position, closestPoint) <= width * 0.5f)

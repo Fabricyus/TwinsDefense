@@ -16,6 +16,13 @@ namespace TwinsDefense.Systems
             {
                 ApplyEffect(card.secondEffectType, card.secondValue, card.secondIsPercentage, target);
             }
+
+            if (card.additionalEffects == null) return;
+
+            foreach (CardEffect effect in card.additionalEffects)
+            {
+                ApplyEffect(effect.effectType, effect.value, effect.isPercentage, target);
+            }
         }
 
         private static void ApplyEffect(CardEffectType effectType, float value, bool isPercentage, PlayerStats target)
@@ -89,6 +96,18 @@ namespace TwinsDefense.Systems
                     break;
                 case CardEffectType.StarProjectileCount:
                     target.starProjectileCount = Apply(target.starProjectileCount, value, isPercentage);
+                    break;
+                case CardEffectType.PassiveProcChanceBonus:
+                    target.passiveProcChanceBonus = Apply(target.passiveProcChanceBonus, value, isPercentage);
+                    break;
+                case CardEffectType.StarDamageBonus:
+                    target.starDamageBonusPercent = Apply(target.starDamageBonusPercent, value, isPercentage);
+                    break;
+                case CardEffectType.StarRangeBonus:
+                    target.starRangeBonusPercent = Apply(target.starRangeBonusPercent, value, isPercentage);
+                    break;
+                case CardEffectType.StarCooldownReduction:
+                    target.starCooldownReductionSeconds = Apply(target.starCooldownReductionSeconds, value, isPercentage);
                     break;
             }
         }

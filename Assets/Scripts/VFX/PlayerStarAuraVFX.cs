@@ -15,6 +15,8 @@ namespace TwinsDefense.VFX
     {
         [Tooltip("Local offset from the player's pivot. Negative Y drops the aura down to the feet.")]
         [SerializeField] private Vector3 offset = new Vector3(0f, -0.6f, 0f);
+        [Tooltip("Local Euler rotation. X tilts the sunburst to lie flat on the ground instead of facing the camera.")]
+        [SerializeField] private Vector3 rotation = new Vector3(70f, 0f, 0f);
         [SerializeField] private float baseScale = 1.2f;
         [SerializeField] private Color color = new Color(1f, 0.82f, 0.2f, 0.55f);
         [SerializeField] private int sortingOrder = 0;
@@ -39,6 +41,7 @@ namespace TwinsDefense.VFX
             GameObject auraObject = new GameObject("FiveStarAura");
             auraObject.transform.SetParent(transform, false);
             auraObject.transform.localPosition = offset;
+            auraObject.transform.localRotation = Quaternion.Euler(rotation);
             auraObject.transform.localScale = Vector3.one * baseScale;
 
             auraRenderer = auraObject.AddComponent<SpriteRenderer>();

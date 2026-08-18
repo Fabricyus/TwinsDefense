@@ -884,6 +884,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TwinsDefense.VFX.PlayerStarAuraVFX
   offset: {x: 0, y: -0.6, z: 0}
+  rotation: {x: 70, y: 0, z: 0}
   baseScale: 1.2
   color: {r: 1, g: 0.82, b: 0.2, a: 0.55}
   sortingOrder: 0

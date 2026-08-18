@@ -14,7 +14,10 @@ namespace TwinsDefense.Enemies
     /// player, always outside camera view. Spawn interval shrinks and the
     /// Sprinter starts appearing as the player's level rises, and a specific
     /// boss spawns once the player picks their level-up card for its assigned
-    /// level (see HandleCardPicked / bossSpawns).
+    /// level (see HandleCardPicked / bossSpawns). Spawning pauses (not stops —
+    /// the loop keeps ticking, just skips SpawnEnemy) once ArenaEnemy.Active
+    /// reaches maxActiveEnemies, so a run that outpaces the player's clear
+    /// speed plateaus instead of piling up enemies without bound.
     /// </summary>
     public class EnemySpawner : MonoBehaviour
     {
@@ -34,6 +37,8 @@ namespace TwinsDefense.Enemies
         [SerializeField] private float spawnIntervalDecayPerLevel = 0.05f;
         [SerializeField] private float spawnRadiusMin = 12f;
         [SerializeField] private float spawnRadiusMax = 16f;
+        [Tooltip("Spawning pauses once ArenaEnemy.Active.Count reaches this — prevents unbounded pile-up (and the frame-time/GC collapse that comes with it) on long runs or weak builds that can't clear fast enough, e.g. the AlwaysFirstOption challenges.")]
+        [SerializeField] private int maxActiveEnemies = 40;
         [SerializeField] private GameObject enemyPrefab;
 
         [Header("Sprinter")]
@@ -214,7 +219,7 @@ namespace TwinsDefense.Enemies
             while (true)
             {
                 yield return new WaitForSeconds(CurrentSpawnInterval());
-                if (isBossFightActive) continue;
+                if (isBossFightActive || ArenaEnemy.Active.Count >= maxActiveEnemies) continue;
                 SpawnEnemy();
             }
         }

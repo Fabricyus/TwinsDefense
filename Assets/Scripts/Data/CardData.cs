@@ -31,7 +31,20 @@ namespace TwinsDefense.Data
         InstantHeal,
         ExplodeOnKillChance,
         BlockChance,
-        StarProjectileCount // appended at the end — existing assets serialize this enum as an int, inserting earlier would remap them
+        StarProjectileCount,
+        PassiveProcChanceBonus,
+        StarDamageBonus,
+        StarRangeBonus,
+        StarCooldownReduction // appended at the end — existing assets serialize this enum as an int, inserting earlier would remap them
+    }
+
+    /// <summary>One (effectType, value, isPercentage) tuple — see CardData.additionalEffects.</summary>
+    [System.Serializable]
+    public struct CardEffect
+    {
+        public CardEffectType effectType;
+        public float value;
+        public bool isPercentage;
     }
 
     /// <summary>
@@ -60,6 +73,9 @@ namespace TwinsDefense.Data
         public CardEffectType secondEffectType;
         public float secondValue;
         public bool secondIsPercentage;
+
+        [Tooltip("Any further effects beyond the primary/second pair above — applied unconditionally (not gated on isSpecial), same as the second effect. Used by cards that stack more than two bonuses in one pick (e.g. Star Round's star-exclusive damage/range/cooldown bundle).")]
+        public CardEffect[] additionalEffects;
 
         [Header("Rarity & Rolling")]
         public CardRarity rarity = CardRarity.Common;

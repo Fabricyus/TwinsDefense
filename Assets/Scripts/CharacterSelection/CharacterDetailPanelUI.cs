@@ -20,10 +20,10 @@ namespace TwinsDefense.CharacterSelection
         [SerializeField] private Material lockedMaterial;
 
         [Header("Star Tracks")]
+        [Tooltip("Raw stat-magnitude bars (baseStats.damage/defense divided by 5) — see SetMagnitudeTrack. Independent of starTrack below, which shows purchased Attack Star progress.")]
         [SerializeField] private Image[] attackPips;
         [SerializeField] private Image[] defensePips;
         [SerializeField] private Color filledPipColor = Color.white;
-        [SerializeField] private Color emptyPipColor = new Color(1f, 1f, 1f, 0.35f);
 
         [Tooltip("5 star icons (star, star (1)...star (4)) whose source sprite swaps between lockedStarSprite and unlockedStarSprite based on purchased Attack Stars.")]
         [SerializeField] private Image[] starTrack;
@@ -73,8 +73,8 @@ namespace TwinsDefense.CharacterSelection
             portraitImage.sprite = data.icon;
             portraitImage.material = data.isUnlocked ? null : lockedMaterial;
 
-            SetPipTrack(attackPips, data.attackStars, data.attackStarsMax);
-            SetPipTrack(defensePips, data.defenseStars, data.defenseStarsMax);
+            SetMagnitudeTrack(attackPips, data.attackPipCount);
+            SetMagnitudeTrack(defensePips, data.defensePipCount);
             SetStarTrack(data.attackStars, animateStarChange);
 
             bool isMaxed = data.upgradeCost < 0;
@@ -84,17 +84,18 @@ namespace TwinsDefense.CharacterSelection
             playButton.interactable = data.isUnlocked;
         }
 
-        private void SetPipTrack(Image[] pips, int current, int max)
+        /// <summary>Shows exactly count pips, all filled — a flat raw-stat magnitude bar (baseStats.damage/defense divided by 5), independent of the Star Upgrade progress shown by starTrack. Any wired pip beyond count is hidden.</summary>
+        private void SetMagnitudeTrack(Image[] pips, int count)
         {
             for (int i = 0; i < pips.Length; i++)
             {
-                if (pips[i] == null) continue; // track can have fewer pip icons wired up than the stat's max
+                if (pips[i] == null) continue; // track can have fewer pip icons wired up than the highest count among all characters
 
-                bool withinMax = i < max;
-                pips[i].gameObject.SetActive(withinMax);
-                if (withinMax)
+                bool withinCount = i < count;
+                pips[i].gameObject.SetActive(withinCount);
+                if (withinCount)
                 {
-                    pips[i].color = i < current ? filledPipColor : emptyPipColor;
+                    pips[i].color = filledPipColor;
                 }
             }
         }

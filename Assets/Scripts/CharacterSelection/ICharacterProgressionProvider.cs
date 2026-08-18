@@ -35,5 +35,7 @@ namespace TwinsDefense.CharacterSelection
         public int defenseStars;       // current pips filled, shield track
         public int defenseStarsMax;
         public int upgradeCost;        // placeholder value, ignore real formula for now
+        public int attackPipCount;     // floor(baseStats.damage / 5) — raw power magnitude, independent of the Star Upgrade track above
+        public int defensePipCount;    // floor(baseStats.defense / 5) — raw power magnitude, independent of the Star Upgrade track above
     }
 }

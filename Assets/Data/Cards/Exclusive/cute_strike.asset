@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 896fd27a9be12f04f99236e47bab1415, type: 3}
+  m_Name: cute_strike
+  m_EditorClassIdentifier: Assembly-CSharp::TwinsDefense.Data.CardData
+  cardId: cute_strike
+  displayName: Cute Strike
+  description: 
+  icon: {fileID: 0}
+  effectType: 21
+  value: 5
+  isPercentage: 0
+  isSpecial: 0
+  secondEffectType: 0
+  secondValue: 0
+  secondIsPercentage: 0
+  additionalEffects: []
+  rarity: 2
+  rollWeight: 1
+  maxStacks: 1
+  restrictedToCharacterIds:
+  - ralph_4
+  minStarsRequired: 0
+  requiredChallengeCharacter: 2
+  requiredChallengeTier: 4

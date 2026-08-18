@@ -24,8 +24,10 @@ namespace TwinsDefense.Enemies
         private float phaseEndTime;
         private float spawnAreaMultiplier;
         private float elapsed;
+        private Color? explosionColor;
 
-        public static ReaperHazardCircle Spawn(Vector2 position, float growDuration, float diameter, float explosionDamage, float phaseEndTime, float spawnAreaMultiplier = 1f)
+        /// <param name="explosionColor">Tint for the detonation burst — leave null for ExplosionVFX's default orange (ReaperBoss's own use). MagBoss's Aerial Bombing Run passes red to match its laser attack's explosion look.</param>
+        public static ReaperHazardCircle Spawn(Vector2 position, float growDuration, float diameter, float explosionDamage, float phaseEndTime, float spawnAreaMultiplier = 1f, Color? explosionColor = null)
         {
             GameObject obj = new GameObject("ReaperHazardCircle");
             obj.transform.position = position;
@@ -42,6 +44,7 @@ namespace TwinsDefense.Enemies
             circle.explosionDamage = explosionDamage;
             circle.phaseEndTime = phaseEndTime;
             circle.spawnAreaMultiplier = spawnAreaMultiplier;
+            circle.explosionColor = explosionColor;
 
             return circle;
         }
@@ -70,7 +73,7 @@ namespace TwinsDefense.Enemies
 
         private void Explode()
         {
-            ExplosionVFX.Spawn(transform.position, diameter / 2f);
+            ExplosionVFX.Spawn(transform.position, diameter / 2f, explosionColor);
 
             Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, diameter / 2f);
             foreach (Collider2D hit in hits)

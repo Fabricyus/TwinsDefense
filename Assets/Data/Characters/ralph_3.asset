@@ -31,7 +31,7 @@ MonoBehaviour:
     attackRange: 4.2
     areaOfEffect: 1
     maxHP: 100
-    defense: 15
+    defense: 20
     hpRegen: 1
     iFrameDuration: 0.1
     moveSpeed: 5
