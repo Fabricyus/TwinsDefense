@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using UnityEngine;
 using TwinsDefense.Systems;
+using TwinsDefense.Progression;
 
 namespace TwinsDefense.Player
 {
@@ -110,6 +111,8 @@ namespace TwinsDefense.Player
 
             float mitigatedDamage = amount * (100f / (100f + stats.defense));
             CurrentHP = Mathf.Max(0f, CurrentHP - mitigatedDamage);
+
+            RunChallengeTracker.Instance?.RegisterDamageTaken();
 
             invincibleTimer = stats.iFrameDuration;
             IsInvincible = stats.iFrameDuration > 0f;

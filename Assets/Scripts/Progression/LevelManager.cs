@@ -26,6 +26,9 @@ namespace TwinsDefense.Progression
         [Range(0f, 1f)]
         [SerializeField] private float expPerPickupFloorFraction = 0.25f;
 
+        /// <summary>Hard level cap — keeps the Fast Learner exp-multiplier exploit chain (see the Rainbow Aura achievement) from running past level 100 into unbounded territory. Kept in sync with PlayerRainbowAuraVFX.requiredLevel and the 3 Rainbow Aura rows in AchievementsPanelController.</summary>
+        private const int MaxLevel = 100;
+
         public int CurrentLevel { get; private set; }
         public float CurrentExp { get; private set; }
 
@@ -56,9 +59,9 @@ namespace TwinsDefense.Progression
         }
 
         /// <summary>Adds one pickup's worth of XP (scaled by the player's XP Gain card, if any), triggering a level-up once the slider is full.</summary>
-        public void AddExp(float multiplier = 1f)
+public void AddExp(float multiplier = 1f)
         {
-            if (CurrentExp >= 1f) return;
+            if (CurrentLevel >= MaxLevel || CurrentExp >= 1f) return;
 
             CurrentExp = Mathf.Min(CurrentExp + CurrentExpPerPickup * multiplier, 1f);
 
@@ -78,9 +81,9 @@ namespace TwinsDefense.Progression
         }
 
         /// <summary>Instantly fills the XP bar to 100% and triggers a level-up — used as a boss-kill reward instead of a normal Exp pickup.</summary>
-        public void CompleteCurrentLevelExp()
+public void CompleteCurrentLevelExp()
         {
-            if (CurrentExp >= 1f) return;
+            if (CurrentLevel >= MaxLevel || CurrentExp >= 1f) return;
 
             CurrentExp = 1f;
             OnExpChanged?.Invoke(CurrentExp);
@@ -91,6 +94,7 @@ namespace TwinsDefense.Progression
         {
             CurrentLevel++;
             CharacterProgressTracker.Instance.ReportLevelReached(SelectedRunContext.Instance.SelectedCharacter, CurrentLevel);
+            CharacterProgressTracker.Instance.ReportLevelReachedForTier(SelectedRunContext.Instance.SelectedCharacter, SelectedRunContext.Instance.SelectedTier, CurrentLevel);
             OnLevelChanged?.Invoke(CurrentLevel);
 
             CurrentExp = 0f;

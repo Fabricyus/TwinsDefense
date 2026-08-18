@@ -14,21 +14,23 @@ namespace TwinsDefense.Combat
     public class ProcAreaDamage : MonoBehaviour
     {
         private CircleCollider2D hitbox;
-        private float baseRadius;
+        private Vector3 baseScale;
 
         private void Awake()
         {
             hitbox = GetComponent<CircleCollider2D>();
             hitbox.isTrigger = true;
-            baseRadius = hitbox.radius;
+            baseScale = transform.localScale;
         }
 
-        /// <summary>Scales the hitbox by areaOfEffectScale, then damages every ArenaEnemy caught inside it (once each).</summary>
+        /// <summary>Scales the FX GameObject (visual + hitbox) by areaOfEffectScale, then damages every ArenaEnemy caught inside it (once each).</summary>
         public void Detonate(float damage, bool isCrit, float areaOfEffectScale)
         {
-            hitbox.radius = baseRadius * Mathf.Max(0.01f, areaOfEffectScale);
+            float scaleMultiplier = Mathf.Max(0.01f, areaOfEffectScale);
+            transform.localScale = baseScale * scaleMultiplier;
 
-            Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, hitbox.radius);
+            float worldRadius = hitbox.radius * transform.lossyScale.x;
+            Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, worldRadius);
             var damagedEnemies = new HashSet<ArenaEnemy>();
 
             foreach (Collider2D hit in hits)

@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 using TwinsDefense.Data;
 using TwinsDefense.Systems;
 using TwinsDefense.Player;
@@ -25,6 +26,9 @@ namespace TwinsDefense.UI
         private readonly CardEffectApplier effectApplier = new CardEffectApplier();
         private readonly RunCardState runState = new RunCardState();
 
+        private int selectedIndex = -1;
+        private CardData currentFirstOptionCard;
+
         /// <summary>Raised right after a card is applied and this panel closes (game already resumed), carrying the level just leveled into. EnemySpawner uses this instead of LevelManager.OnLevelChanged to spawn a boss only once the player has actually picked their card — not the instant the level is reached, while the panel is still up.</summary>
         public event System.Action<int> OnCardPicked;
 
@@ -48,7 +52,7 @@ namespace TwinsDefense.UI
             RollAndShowCards();
         }
 
-        private void RollAndShowCards()
+private void RollAndShowCards()
         {
             int level = LevelManager.Instance != null ? LevelManager.Instance.CurrentLevel : 0;
             bool isSpecialMilestone = level >= 5 && level % 5 == 0;
@@ -66,6 +70,10 @@ namespace TwinsDefense.UI
                 drafted = draftService.RollCards(cardSlots.Length, cardPool, runState, activeSlotId, activeStars);
             }
 
+            // First card rolled, before shuffling into slots — see the "First Instinct" challenge
+            // (ChallengeDefinitions), which requires always picking this exact card.
+            currentFirstOptionCard = drafted.Count > 0 ? drafted[0] : null;
+
             for (int i = 0; i < cardSlots.Length; i++)
             {
                 bool hasCard = i < drafted.Count;
@@ -76,9 +84,76 @@ namespace TwinsDefense.UI
                     cardSlots[i].Show(drafted[i], HandleCardPicked);
                 }
             }
+
+            selectedIndex = -1;
+            int defaultIndex = Mathf.Clamp((drafted.Count - 1) / 2, 0, cardSlots.Length - 1);
+            SetSelectedIndex(defaultIndex);
         }
 
-        private void HandleCardPicked(CardData card)
+private void Update()
+        {
+            Keyboard keyboard = Keyboard.current;
+            if (keyboard == null) return;
+
+            if (keyboard.aKey.wasPressedThisFrame)
+            {
+                MoveSelection(-1);
+            }
+            else if (keyboard.dKey.wasPressedThisFrame)
+            {
+                MoveSelection(1);
+            }
+
+            if (keyboard.spaceKey.wasPressedThisFrame || keyboard.enterKey.wasPressedThisFrame || keyboard.numpadEnterKey.wasPressedThisFrame)
+            {
+                ConfirmSelection();
+            }
+        }
+
+        private void MoveSelection(int delta)
+        {
+            int activeCount = ActiveCardCount();
+            if (activeCount == 0) return;
+
+            int next = Mathf.Clamp(selectedIndex + delta, 0, activeCount - 1);
+            SetSelectedIndex(next);
+        }
+
+        private void SetSelectedIndex(int index)
+        {
+            if (selectedIndex >= 0 && selectedIndex < cardSlots.Length)
+            {
+                cardSlots[selectedIndex].SetHighlighted(false);
+            }
+
+            selectedIndex = index;
+
+            if (selectedIndex >= 0 && selectedIndex < cardSlots.Length)
+            {
+                cardSlots[selectedIndex].SetHighlighted(true);
+            }
+        }
+
+        private void ConfirmSelection()
+        {
+            if (selectedIndex < 0 || selectedIndex >= cardSlots.Length || !cardSlots[selectedIndex].gameObject.activeSelf) return;
+
+            cardSlots[selectedIndex].Pick();
+        }
+
+        private int ActiveCardCount()
+        {
+            int count = 0;
+            foreach (CardSlotUI slot in cardSlots)
+            {
+                if (slot.gameObject.activeSelf) count++;
+            }
+
+            return count;
+        }
+
+
+private void HandleCardPicked(CardData card)
         {
             if (playerStats != null)
             {
@@ -93,11 +168,31 @@ namespace TwinsDefense.UI
                 CharacterProgressTracker.Instance.ReportSpecialCardPicked(SelectedRunContext.Instance.SelectedCharacter);
             }
 
+            RegisterChallengeSignals(card);
+
             gameObject.SetActive(false);
             Time.timeScale = 1f;
 
             int level = LevelManager.Instance != null ? LevelManager.Instance.CurrentLevel : 0;
             OnCardPicked?.Invoke(level);
+        }
+
+        /// <summary>Feeds RunChallengeTracker for the two card-driven "Flawless Form" rule types (see ChallengeDefinitions) — harmless to call every pick regardless of which character/tier is being played, since EnemySpawner only checks the signal relevant to that tier's own challenge at the Magpie kill.</summary>
+        private void RegisterChallengeSignals(CardData card)
+        {
+            if (currentFirstOptionCard != null && card != currentFirstOptionCard)
+            {
+                RunChallengeTracker.Instance?.RegisterNonFirstOptionPicked();
+            }
+
+            if (characterData == null || characterData.Current == null) return;
+
+            if (ChallengeDefinitions.TryFind(characterData.Current.characterId, characterData.Current.tier, out ChallengeDefinition challenge)
+                && challenge.ruleType == ChallengeRuleType.ForbiddenCards
+                && System.Array.IndexOf(challenge.forbiddenCardIds, card.cardId) >= 0)
+            {
+                RunChallengeTracker.Instance?.RegisterForbiddenCardPicked();
+            }
         }
     }
 }

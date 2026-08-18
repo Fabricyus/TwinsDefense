@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 using TwinsDefense.Systems;
 
@@ -39,6 +40,16 @@ namespace TwinsDefense.CharacterSelection
             int defaultIndex = slots.FindIndex(s => s.isUnlocked);
             SelectIndex(defaultIndex >= 0 ? defaultIndex : 0);
         }
+
+private void Update()
+        {
+            Keyboard keyboard = Keyboard.current;
+            if (keyboard != null && keyboard.escapeKey.wasPressedThisFrame)
+            {
+                OnBackClicked();
+            }
+        }
+
 
         /// <summary>Re-fetches the slot list and re-wires every grid icon to it. Must run after any change that replaces the slots list (e.g. an upgrade purchase) — CharacterSlotData has no value equality, so a CharacterSlotUI left holding a stale instance would never be found again by HandleSlotClicked's list lookup.</summary>
         private void RefreshSlots()

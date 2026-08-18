@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using TwinsDefense.Enemies;
+using TwinsDefense.Systems;
 using TwinsDefense.VFX;
 
 namespace TwinsDefense.Combat
@@ -58,9 +59,11 @@ namespace TwinsDefense.Combat
         private int remainingPierces;
         private float lifeTimer;
         private Vector3 baseScale;
+        private SpriteRenderer spriteRenderer;
+        private float baseAlpha = 1f;
         private readonly HashSet<ArenaEnemy> hitEnemies = new HashSet<ArenaEnemy>();
 
-        private void Awake()
+private void Awake()
         {
             // Kinematic so it never reacts to physics/gravity, but still raises
             // trigger events against the enemies' (non-rigidbody) colliders.
@@ -69,7 +72,35 @@ namespace TwinsDefense.Combat
             rb.gravityScale = 0f;
 
             baseScale = transform.localScale;
+
+            spriteRenderer = GetComponent<SpriteRenderer>();
+            if (spriteRenderer != null)
+            {
+                baseAlpha = spriteRenderer.color.a;
+                ApplyOpacity(ProjectileOpacitySettings.Value);
+            }
         }
+
+private void OnEnable()
+        {
+            ProjectileOpacitySettings.OnChanged += ApplyOpacity;
+        }
+
+        private void OnDisable()
+        {
+            ProjectileOpacitySettings.OnChanged -= ApplyOpacity;
+        }
+
+        /// <summary>Scales the sprite's own alpha by the player's opacity preference, so a projectile with a semi-transparent base color (if any) isn't clipped to full opacity.</summary>
+        private void ApplyOpacity(float opacity)
+        {
+            if (spriteRenderer == null) return;
+
+            Color color = spriteRenderer.color;
+            color.a = baseAlpha * opacity;
+            spriteRenderer.color = color;
+        }
+
 
         /// <summary>
         /// Assigns this projectile's travel direction, damage and speed right after Instantiate.

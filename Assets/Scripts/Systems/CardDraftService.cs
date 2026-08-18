@@ -85,6 +85,9 @@ namespace TwinsDefense.Systems
 
                 if (card.minStarsRequired > 0 && activeCharacterStars < card.minStarsRequired) continue;
 
+                if (card.requiredChallengeTier > 0
+                    && !CharacterProgressTracker.Instance.HasCompletedChallenge(card.requiredChallengeCharacter, card.requiredChallengeTier)) continue;
+
                 eligible.Add(card);
             }
 

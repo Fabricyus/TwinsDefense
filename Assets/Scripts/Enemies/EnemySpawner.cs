@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Linq;
 using UnityEngine;
+using TwinsDefense.Data;
 using TwinsDefense.Progression;
 using TwinsDefense.Systems;
 using TwinsDefense.UI;
@@ -189,10 +190,24 @@ namespace TwinsDefense.Enemies
                 else if (bossLevel >= finalBossLevel)
                 {
                     CampaignProgress.ReportGameCompleted();
+                    ReportChallengeIfCompleted();
                     gameOverController?.TriggerMissionComplete();
                 }
             };
         }
+
+/// <summary>Checked only on the final boss (Magpie) kill — see HookBossDefeatReport. Looks up the "Flawless Form" challenge for whichever character/tier is currently selected (see ChallengeDefinitions) and, if this run's RunChallengeTracker never broke that tier's specific rule, records it as completed.</summary>
+        private void ReportChallengeIfCompleted()
+        {
+            CharacterId playedCharacter = SelectedRunContext.Instance.SelectedCharacter;
+            int playedTier = SelectedRunContext.Instance.SelectedTier;
+
+            if (!ChallengeDefinitions.TryFind(playedCharacter, playedTier, out ChallengeDefinition challenge)) return;
+            if (RunChallengeTracker.Instance == null || !RunChallengeTracker.Instance.SatisfiesRule(challenge)) return;
+
+            CharacterProgressTracker.Instance.ReportChallengeCompleted(playedCharacter, playedTier);
+        }
+
 
         private IEnumerator SpawnLoop()
         {

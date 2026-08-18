@@ -9,14 +9,14 @@ namespace TwinsDefense.Enemies
     /// ArenaEnemy.HealthPercent01, which only ever decreases):
     ///
     /// 100%-50% HP — only the Phase 1 pattern runs, on repeat: the boss stops
-    /// moving, gains iframes (like ReaperEnemy), then fires a rapid series of
-    /// 4-projectile cross volleys (N/E/S/W), each volley rotated 1 degree
-    /// further clockwise than the last for a spiral/spin effect, then
-    /// becomes vulnerable again and resumes chasing.
+    /// moving, takes greatly reduced damage (see spinDamageTakenMultiplier) but
+    /// stays hittable throughout, then fires a rapid series of 4-projectile
+    /// cross volleys (N/E/S/W), each volley rotated 1 degree further clockwise
+    /// than the last for a spiral/spin effect, then resumes chasing.
     ///
-    /// 50%-20% HP — alternates Phase 1 with Phase 2: iframes, then a red laser
-    /// that tracks the player for 3s, locks for 0.5s, then explodes
-    /// (SkullLaserBeam).
+    /// 50%-20% HP — alternates Phase 1 with Phase 2: a red laser (this is the
+    /// only attack that grants iframes) that tracks the player for 3s, locks
+    /// for 0.5s, then explodes (SkullLaserBeam).
     ///
     /// Below 20% HP (once, permanently) — enrage: +30% move speed, takes half
     /// damage (double defense), and Phase 1 + Phase 2 now run concurrently on
@@ -46,6 +46,8 @@ namespace TwinsDefense.Enemies
         [SerializeField] private float spinBurstInterval = 0.03f;
         [Tooltip("Degrees the whole 4-way cross rotates clockwise from one volley to the next.")]
         [SerializeField] private float spinDegreesPerShot = 1f;
+        [Tooltip("Multiplies damage taken while the spin is active — high defense window, but unlike the laser this does NOT grant iframes: the boss stays hittable throughout. 0.2 = takes 20% damage.")]
+        [SerializeField] private float spinDamageTakenMultiplier = 0.2f;
 
         [Header("Phase 2 - Tracking Laser")]
         [SerializeField] private float laserDamage = 25f;
@@ -74,8 +76,7 @@ namespace TwinsDefense.Enemies
         private bool isAttacking;
         private bool phase2Turn;
         private float attackTimer;
-        private bool phase1Running;
-        private bool phase2Running;
+        private float baselineDamageTakenMultiplier = 1f;
 
         private void Awake()
         {
@@ -137,9 +138,10 @@ namespace TwinsDefense.Enemies
         {
             hasEnteredBand3 = true;
             currentBand = Band.DualEnrage;
+            baselineDamageTakenMultiplier = enrageDamageTakenMultiplier;
 
             arenaEnemy.SetSpeedMultiplier(enrageSpeedMultiplier);
-            arenaEnemy.SetDamageTakenMultiplier(enrageDamageTakenMultiplier);
+            arenaEnemy.SetDamageTakenMultiplier(baselineDamageTakenMultiplier);
 
             StartCoroutine(Band3Phase1Loop());
             StartCoroutine(Band3Phase2Loop());
@@ -172,8 +174,8 @@ namespace TwinsDefense.Enemies
         /// </summary>
         private IEnumerator Phase1CrossSpinAttack()
         {
-            phase1Running = true;
-            UpdateInvulnerability();
+            // High-defense window instead of iframes — the spin is meant to be free to hit, just tanky.
+            arenaEnemy.SetDamageTakenMultiplier(baselineDamageTakenMultiplier * spinDamageTakenMultiplier);
 
             arenaEnemy.ApplyStun(volleyCount * spinBurstInterval + 0.1f);
 
@@ -185,8 +187,7 @@ namespace TwinsDefense.Enemies
                 yield return new WaitForSeconds(spinBurstInterval);
             }
 
-            phase1Running = false;
-            UpdateInvulnerability();
+            arenaEnemy.SetDamageTakenMultiplier(baselineDamageTakenMultiplier);
         }
 
         /// <summary>Fires 4 simultaneous projectiles 90 degrees apart, starting at baseAngle clockwise from north.</summary>
@@ -201,8 +202,8 @@ namespace TwinsDefense.Enemies
         /// <summary>Tracking laser that locks and explodes — see SkullLaserBeam.</summary>
         private IEnumerator Phase2LaserAttack()
         {
-            phase2Running = true;
-            UpdateInvulnerability();
+            // Iframes live here now — only the laser cast is untouchable, not the spin.
+            arenaEnemy.SetInvulnerable(true);
 
             float totalDuration = laserTrackDuration + laserLockDuration;
             arenaEnemy.ApplyStun(totalDuration + 0.1f);
@@ -214,14 +215,7 @@ namespace TwinsDefense.Enemies
 
             yield return new WaitForSeconds(totalDuration);
 
-            phase2Running = false;
-            UpdateInvulnerability();
-        }
-
-        /// <summary>Stays invulnerable as long as either attack pattern is mid-execution — needed because both can run concurrently in the DualEnrage band.</summary>
-        private void UpdateInvulnerability()
-        {
-            arenaEnemy.SetInvulnerable(phase1Running || phase2Running);
+            arenaEnemy.SetInvulnerable(false);
         }
 
         private void FireProjectile(Vector2 direction)

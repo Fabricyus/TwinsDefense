@@ -30,7 +30,8 @@ namespace TwinsDefense.Data
         CoinGain,
         InstantHeal,
         ExplodeOnKillChance,
-        BlockChance // appended at the end — existing assets serialize this enum as an int, inserting earlier would remap them
+        BlockChance,
+        StarProjectileCount // appended at the end — existing assets serialize this enum as an int, inserting earlier would remap them
     }
 
     /// <summary>
@@ -74,5 +75,11 @@ namespace TwinsDefense.Data
         public string[] restrictedToCharacterIds;
         [Tooltip("Minimum Star Upgrades purchased for the active character/tier before this card can be drafted (0 = no requirement). Only meaningful combined with restrictedToCharacterIds — a Star-exclusive card.")]
         public int minStarsRequired = 0;
+
+        [Header("Challenge Unlock (optional)")]
+        [Tooltip("Only meaningful when requiredChallengeTier > 0 — an Exclusive card that stays undraftable until the named character tier's Flawless Form challenge (see ChallengeDefinitions/CharacterProgressTracker.HasCompletedChallenge) has been completed at least once, on any run.")]
+        public CharacterId requiredChallengeCharacter;
+        [Tooltip("Character tier whose challenge must be completed, 0 = no challenge requirement.")]
+        public int requiredChallengeTier = 0;
     }
 }

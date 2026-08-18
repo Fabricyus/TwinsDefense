@@ -54,7 +54,7 @@ namespace TwinsDefense.EditorTools
             new CardDef("swift_projectile", "Swift Projectile", CardEffectType.ProjectileSpeed, 15f, true, CardRarity.Common, 0),
             new CardDef("lucky_strike", "Lucky Strike", CardEffectType.CritChance, 5f, true, CardRarity.Rare, 5),
             new CardDef("fatal_blow", "Fatal Blow", CardEffectType.CritDamage, 25f, true, CardRarity.Rare, 0),
-            new CardDef("extra_round", "Extra Round", CardEffectType.ExtraProjectile, 1f, false, CardRarity.Epic, 3),
+            new CardDef("extra_round", "Star Round", CardEffectType.StarProjectileCount, 1f, false, CardRarity.Epic, 3),
             new CardDef("piercing_shot", "Piercing Shot", CardEffectType.Pierce, 1f, false, CardRarity.Epic, 4),
             new CardDef("wider_reach", "Wider Reach", CardEffectType.AttackRange, 10f, true, CardRarity.Common, 0),
             new CardDef("bigger_impact", "Bigger Impact", CardEffectType.AreaOfEffect, 10f, true, CardRarity.Rare, 0),
@@ -107,23 +107,25 @@ namespace TwinsDefense.EditorTools
             new SpecialCardDef("chain_reaction", "Chain Reaction", CardEffectType.ExplodeOnKillChance, 50f, false, CardEffectType.AreaOfEffect, -30f, true),
         };
 
-        /// <summary>A Star Upgrade reward: only drafted once the active character/tier has purchased minStarsRequired stars (see CardDraftService.GetEligibleCards).</summary>
+        /// <summary>An Exclusive card: only drafted once the named character tier's Flawless Form challenge has been completed (see ChallengeDefinitions, CardDraftService.GetEligibleCards).</summary>
         private struct ExclusiveCardDef
         {
             public string cardId;
             public string displayName;
             public string slotId;
-            public int minStarsRequired;
+            public CharacterId requiredChallengeCharacter;
+            public int requiredChallengeTier;
             public CardEffectType effectType;
             public float value;
             public bool isPercentage;
 
-            public ExclusiveCardDef(string cardId, string displayName, string slotId, int minStarsRequired, CardEffectType effectType, float value, bool isPercentage)
+            public ExclusiveCardDef(string cardId, string displayName, string slotId, CharacterId requiredChallengeCharacter, int requiredChallengeTier, CardEffectType effectType, float value, bool isPercentage)
             {
                 this.cardId = cardId;
                 this.displayName = displayName;
                 this.slotId = slotId;
-                this.minStarsRequired = minStarsRequired;
+                this.requiredChallengeCharacter = requiredChallengeCharacter;
+                this.requiredChallengeTier = requiredChallengeTier;
                 this.effectType = effectType;
                 this.value = value;
                 this.isPercentage = isPercentage;
@@ -132,9 +134,12 @@ namespace TwinsDefense.EditorTools
 
         private static readonly ExclusiveCardDef[] ExclusiveCards =
         {
-            new ExclusiveCardDef("twin_flame", "Twin Flame", "izzy_1", 3, CardEffectType.CritChance, 20f, true),
-            new ExclusiveCardDef("tacticians_focus", "Tactician's Focus", "court_1", 3, CardEffectType.AttackFireRate, 20f, true),
-            new ExclusiveCardDef("loyal_heart", "Loyal Heart", "ralph_1", 3, CardEffectType.BlockChance, 10f, false),
+            // Twin Flame (izzy_1) — unlocked by Izzy Blaze's "Small Blaze" challenge (Izzy tier 2).
+            new ExclusiveCardDef("twin_flame", "Twin Flame", "izzy_1", CharacterId.Izzy, 2, CardEffectType.CritChance, 20f, true),
+            // Tactician's Focus (court_1) — unlocked by Court's "Tactician, Not Brawler" challenge (Court tier 1).
+            new ExclusiveCardDef("tacticians_focus", "Tactician's Focus", "court_1", CharacterId.Court, 1, CardEffectType.AttackFireRate, 20f, true),
+            // Loyal Heart (ralph_1) — unlocked by Ralph's "Iron Wall" challenge (Ralph tier 1).
+            new ExclusiveCardDef("loyal_heart", "Loyal Heart", "ralph_1", CharacterId.Ralph, 1, CardEffectType.BlockChance, 10f, false),
         };
 
         [MenuItem("Tools/TwinsDefense/Generate Card Data")]
@@ -234,7 +239,9 @@ namespace TwinsDefense.EditorTools
                 card.maxStacks = 1;
                 card.rollWeight = 1f;
                 card.restrictedToCharacterIds = new[] { def.slotId };
-                card.minStarsRequired = def.minStarsRequired;
+                card.minStarsRequired = 0;
+                card.requiredChallengeCharacter = def.requiredChallengeCharacter;
+                card.requiredChallengeTier = def.requiredChallengeTier;
 
                 EditorUtility.SetDirty(card);
                 createdCards.Add(card);

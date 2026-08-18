@@ -28,4 +28,6 @@ MonoBehaviour:
   maxStacks: 1
   restrictedToCharacterIds:
   - court_1
-  minStarsRequired: 3
+  minStarsRequired: 0
+  requiredChallengeCharacter: 1
+  requiredChallengeTier: 1

@@ -87,6 +87,9 @@ namespace TwinsDefense.Systems
                 case CardEffectType.BlockChance:
                     target.blockChance = Apply(target.blockChance, value, isPercentage);
                     break;
+                case CardEffectType.StarProjectileCount:
+                    target.starProjectileCount = Apply(target.starProjectileCount, value, isPercentage);
+                    break;
             }
         }
 

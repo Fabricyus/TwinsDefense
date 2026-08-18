@@ -28,4 +28,6 @@ MonoBehaviour:
   maxStacks: 1
   restrictedToCharacterIds:
   - izzy_1
-  minStarsRequired: 3
+  minStarsRequired: 0
+  requiredChallengeCharacter: 0
+  requiredChallengeTier: 2

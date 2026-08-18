@@ -1,8 +1,11 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 using TMPro;
+using TwinsDefense.Data;
 using TwinsDefense.Player;
 using TwinsDefense.Progression;
 using TwinsDefense.Economy;
@@ -50,6 +53,18 @@ namespace TwinsDefense.UI
         [Tooltip("Scene loaded when the player clicks anywhere after the total has finished revealing.")]
         [SerializeField] private string characterSelectionSceneName = "CharacterSelection";
 
+        [Header("Achievement Popup")]
+        [Tooltip("PopUpChallenge panel — shown once per newly-unlocked achievement this run, after the stat summary finishes revealing.")]
+        [SerializeField] private GameObject achievementPopupPanel;
+        [SerializeField] private Image achievementIconImage;
+        [SerializeField] private TextMeshProUGUI achievementText;
+        [SerializeField] private Color achievementStartColor = Color.white;
+        [SerializeField] private Color achievementCompleteColor = new Color(0.45f, 0.85f, 0.4f, 1f);
+        [SerializeField] private float achievementPopInTime = 0.5f;
+        [SerializeField] private float achievementColorShiftTime = 0.4f;
+        [Tooltip("How far below its resting position (in anchoredPosition units) the popup starts before tweening up into place.")]
+        [SerializeField] private float achievementBelowScreenOffset = 700f;
+
         private CanvasGroup summaryCanvasGroup;
         private PlayerHealth playerHealth;
         private CameraFollow cameraFollow;
@@ -57,7 +72,13 @@ namespace TwinsDefense.UI
         private bool canReturnToCharacterSelection;
         private int finalTotal;
 
-        private void Awake()
+        private RectTransform achievementPopupRect;
+        private Vector2 achievementRestPosition;
+        private Sprite currentIdleSprite;
+        private List<string> pendingAchievements;
+        private int achievementIndex = -1;
+
+private void Awake()
         {
             if (gameOverPanel != null)
             {
@@ -72,9 +93,16 @@ namespace TwinsDefense.UI
                     summaryCanvasGroup = summaryPanel.gameObject.AddComponent<CanvasGroup>();
                 }
             }
+
+            if (achievementPopupPanel != null)
+            {
+                achievementPopupRect = achievementPopupPanel.GetComponent<RectTransform>();
+                achievementRestPosition = achievementPopupRect.anchoredPosition;
+                achievementPopupPanel.SetActive(false);
+            }
         }
 
-        private void Start()
+private void Start()
         {
             playerHealth = FindAnyObjectByType<PlayerHealth>();
             if (playerHealth != null)
@@ -83,6 +111,12 @@ namespace TwinsDefense.UI
             }
 
             cameraFollow = FindAnyObjectByType<CameraFollow>();
+
+            PlayerCharacterData characterData = FindAnyObjectByType<PlayerCharacterData>();
+            if (characterData != null && characterData.Current != null)
+            {
+                currentIdleSprite = characterData.Current.idleSprite;
+            }
         }
 
         private void OnDestroy()
@@ -93,15 +127,26 @@ namespace TwinsDefense.UI
             }
         }
 
-        private void Update()
+private void Update()
         {
-            if (!canReturnToCharacterSelection) return;
+            if (!canReturnToCharacterSelection || !AnyInputPressedThisFrame()) return;
+
+            if (pendingAchievements != null && achievementIndex < pendingAchievements.Count - 1)
+            {
+                ShowNextAchievement();
+                return;
+            }
+
+            ReturnToCharacterSelection();
+        }
+
+        private bool AnyInputPressedThisFrame()
+        {
+            Keyboard keyboard = Keyboard.current;
+            if (keyboard != null && keyboard.anyKey.wasPressedThisFrame) return true;
 
             Mouse mouse = Mouse.current;
-            if (mouse != null && mouse.leftButton.wasPressedThisFrame)
-            {
-                ReturnToCharacterSelection();
-            }
+            return mouse != null && mouse.leftButton.wasPressedThisFrame;
         }
 
         private void HandlePlayerDied()
@@ -184,7 +229,7 @@ namespace TwinsDefense.UI
             StartCoroutine(RevealSequence());
         }
 
-        private IEnumerator RevealSequence()
+private IEnumerator RevealSequence()
         {
             yield return new WaitForSecondsRealtime(summaryDelay);
             RevealSummaryPanel();
@@ -205,10 +250,90 @@ namespace TwinsDefense.UI
 
             RevealTotal();
 
-            // Matches RevealTotal's own count-up tween time, so the click-anywhere
-            // gate only opens once the player has actually seen the final number.
+            // Matches RevealTotal's own count-up tween time, so the achievement
+            // popup (or the direct return, if there's nothing to show) only
+            // starts once the player has actually seen the final number.
             yield return new WaitForSecondsRealtime(1f);
+            BeginAchievementQueue();
+        }
+
+        /// <summary>Snapshots which achievements were newly unlocked this run (see AchievementUnlockTracker) and either shows the first one or, if there are none, opens the gate straight to ReturnToCharacterSelection.</summary>
+        private void BeginAchievementQueue()
+        {
+            pendingAchievements = AchievementUnlockTracker.Instance != null
+                ? AchievementUnlockTracker.Instance.GetNewlyUnlockedDescriptions()
+                : new List<string>();
+
+            achievementIndex = -1;
             canReturnToCharacterSelection = true;
+
+            if (pendingAchievements.Count > 0)
+            {
+                ShowNextAchievement();
+            }
+        }
+
+        private void ShowNextAchievement()
+        {
+            achievementIndex++;
+
+            if (achievementPopupPanel != null) achievementPopupPanel.SetActive(true);
+            if (achievementIconImage != null) achievementIconImage.sprite = currentIdleSprite;
+
+            if (achievementText != null)
+            {
+                achievementText.text = pendingAchievements[achievementIndex];
+                achievementText.color = achievementStartColor;
+            }
+
+            PlayAchievementPopAnimation();
+        }
+
+        /// <summary>Resets the popup to its hidden state (below its resting position, scaled to zero) then tweens both position and scale in together — the "pop up from below the screen" reveal.</summary>
+        private void PlayAchievementPopAnimation()
+        {
+            if (achievementPopupRect == null) return;
+
+            achievementPopupRect.anchoredPosition = new Vector2(achievementRestPosition.x, achievementRestPosition.y - achievementBelowScreenOffset);
+            achievementPopupRect.localScale = Vector3.zero;
+
+            iTween.MoveTo(achievementPopupPanel, iTween.Hash(
+                "position", new Vector3(achievementRestPosition.x, achievementRestPosition.y, 0f),
+                "islocal", true,
+                "time", achievementPopInTime,
+                "easetype", iTween.EaseType.easeOutBack,
+                "ignoretimescale", true
+            ));
+
+            iTween.ScaleTo(achievementPopupPanel, iTween.Hash(
+                "scale", Vector3.one,
+                "time", achievementPopInTime,
+                "easetype", iTween.EaseType.easeOutBack,
+                "ignoretimescale", true,
+                "oncomplete", "PlayAchievementColorShift",
+                "oncompletetarget", gameObject
+            ));
+        }
+
+        /// <summary>Fades the achievement text from achievementStartColor to achievementCompleteColor once the pop-in lands.</summary>
+        private void PlayAchievementColorShift()
+        {
+            if (achievementText == null) return;
+
+            iTween.ValueTo(achievementPopupPanel, iTween.Hash(
+                "from", 0f,
+                "to", 1f,
+                "time", achievementColorShiftTime,
+                "ignoretimescale", true,
+                "onupdate", "UpdateAchievementTextColor",
+                "onupdatetarget", gameObject
+            ));
+        }
+
+        private void UpdateAchievementTextColor(float t)
+        {
+            if (achievementText == null) return;
+            achievementText.color = Color.Lerp(achievementStartColor, achievementCompleteColor, t);
         }
 
         private void RevealSummaryPanel()

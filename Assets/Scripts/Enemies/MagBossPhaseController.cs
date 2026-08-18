@@ -39,6 +39,8 @@ namespace TwinsDefense.Enemies
         [SerializeField] private float spinInterval = 0.03f;
         [Tooltip("Degrees the cross rotates per volley — the sign flips at the halfway volley, reversing the spin direction.")]
         [SerializeField] private float spinDegreesPerShot = 1f;
+        [Tooltip("Multiplies damage taken while the spin is active — high defense window; the boss stays hittable throughout, just takes greatly reduced damage. 0.2 = takes 20% damage.")]
+        [SerializeField] private float spinDamageTakenMultiplier = 0.2f;
 
         [Header("Phase 2 - Hazard Field (Reaper-style)")]
         [Range(0f, 1f)]
@@ -129,9 +131,13 @@ namespace TwinsDefense.Enemies
             }
         }
 
-        /// <summary>volleyCount 4-way cross volleys, spinning by spinDegreesPerShot per volley — the rotation direction flips (*-1) once the halfway volley is reached, so the spin winds one way then unwinds back. Unlike the other two attacks, this one does NOT grant iframes — the boss stays stunned (can't move) but stays damageable while spinning.</summary>
+        /// <summary>volleyCount 4-way cross volleys, spinning by spinDegreesPerShot per volley — the rotation direction flips (*-1) once the halfway volley is reached, so the spin winds one way then unwinds back. Unlike the other two attacks, this one does NOT grant iframes — the boss stays stunned (can't move) and damageable while spinning, just takes greatly reduced damage (see spinDamageTakenMultiplier).</summary>
         private IEnumerator SpinCrossAttack()
         {
+            // High-defense window instead of iframes — the boss stays stunned (can't move) and
+            // stays damageable while spinning, just takes greatly reduced damage.
+            arenaEnemy.SetDamageTakenMultiplier(spinDamageTakenMultiplier);
+
             arenaEnemy.ApplyStun(volleyCount * spinInterval + 0.1f);
 
             float baseAngle = 0f;
@@ -149,6 +155,8 @@ namespace TwinsDefense.Enemies
                 baseAngle += spinDegreesPerShot * direction;
                 yield return new WaitForSeconds(spinInterval);
             }
+
+            arenaEnemy.SetDamageTakenMultiplier(1f);
         }
 
         /// <summary>Spreads hazardCircleCount growing red telegraph circles (ReaperHazardCircle) across the arena — each explodes and respawns elsewhere until hazardDuration elapses. Same pattern as ReaperBoss's Phase 2, except here it's a recurring attack instead of a one-time trigger.</summary>

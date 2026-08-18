@@ -13,10 +13,10 @@ MonoBehaviour:
   m_Name: extra_round
   m_EditorClassIdentifier: Assembly-CSharp::TwinsDefense.Data.CardData
   cardId: extra_round
-  displayName: Extra Round
-  description: 
+  displayName: Star Round
+  description:
   icon: {fileID: 0}
-  effectType: 5
+  effectType: 20
   value: 1
   isPercentage: 0
   isSpecial: 0

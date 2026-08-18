@@ -17,8 +17,6 @@ MonoBehaviour:
   slotId: court_3
   displayName: Court Reader
   description: 10% chance on hit to strike the enemy with a thunder bolt (300% damage).
-    10% chance to explode a killed enemy for damage equal to its own health, chain-killing
-    nearby enemies (no XP from those kills).
   icon: {fileID: -1923827032, guid: cf5ab18e05429c44ab411069aee41dfd, type: 3}
   lockedSilhouette: {fileID: 885167995, guid: cf5ab18e05429c44ab411069aee41dfd, type: 3}
   baseStats:
@@ -56,7 +54,7 @@ MonoBehaviour:
     runStartStatValue: 0
   - effectType: 9
     value: 0
-    procChancePercent: 10
+    procChancePercent: 0
     damageMultiplier: 0
     procMagnitudePercent: 0
     procDurationSeconds: 0

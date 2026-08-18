@@ -86,6 +86,7 @@ namespace TwinsDefense.Enemies
         private SlowTrailVFX slowTrail;
         private float speedMultiplier = 1f;
         private float damageTakenMultiplier = 1f;
+        private bool isDead;
 
         /// <summary>All currently active arena enemies, used by AutoAttack for nearest-target queries.</summary>
         public static readonly HashSet<ArenaEnemy> Active = new HashSet<ArenaEnemy>();
@@ -95,6 +96,12 @@ namespace TwinsDefense.Enemies
 
         /// <summary>Raised whenever currentHealth changes (HealthPercent01, 0-1), so UI like boss HP bars can refresh without polling.</summary>
         public event Action<float> OnHealthChanged;
+
+        /// <summary>Raised whenever SetInvulnerable actually changes the invulnerability state (not on redundant same-value calls) — used by BossShieldIconUI to show/hide a shield icon while a boss is in iframes.</summary>
+        public event Action<bool> OnInvulnerabilityChanged;
+
+        /// <summary>True while TakeDamage is a no-op due to SetInvulnerable(true) — e.g. a boss mid-cast on an attack that grants iframes.</summary>
+        public bool IsInvulnerable => isInvulnerable;
 
         private void Awake()
         {
@@ -259,9 +266,12 @@ namespace TwinsDefense.Enemies
         }
 
         /// <summary>While true, TakeDamage is a no-op — used by boss phases (e.g. ReaperEnemy's hazard-field phase) that shouldn't be interruptible.</summary>
-        public void SetInvulnerable(bool invulnerable)
+public void SetInvulnerable(bool invulnerable)
         {
+            if (isInvulnerable == invulnerable) return;
+
             isInvulnerable = invulnerable;
+            OnInvulnerabilityChanged?.Invoke(isInvulnerable);
         }
 
         /// <summary>Multiplies this enemy's base move speed (compounds with slow) — used by boss phases that permanently speed up (e.g. SkullBoss's enrage phase).</summary>
@@ -277,9 +287,13 @@ namespace TwinsDefense.Enemies
         }
 
         /// <summary>Applies damage to this enemy, defeating it once health reaches zero. grantsExp false skips the XP drop (only coins) — used for ExplodeOnKill splash kills, which shouldn't reward XP the same as a direct kill.</summary>
-        public void TakeDamage(float amount, bool isCrit = false, bool grantsExp = true)
+public void TakeDamage(float amount, bool isCrit = false, bool grantsExp = true)
         {
-            if (isInvulnerable) return;
+            // isDead guards against a second TakeDamage call landing in the same frame as the
+            // killing blow (e.g. two projectiles overlapping this enemy at once) — Destroy(gameObject)
+            // only takes effect at end of frame, so without this a boss could fire its on-death
+            // report (coins, XP, campaign/achievement counters) twice for one kill.
+            if (isInvulnerable || isDead) return;
 
             float appliedDamage = amount * damageTakenMultiplier;
             currentHealth -= appliedDamage;
@@ -289,6 +303,7 @@ namespace TwinsDefense.Enemies
 
             if (currentHealth <= 0f)
             {
+                isDead = true;
                 OnEnemyDefeated?.Invoke();
                 RunStats.Instance?.RegisterKill();
                 DeathSmokeVFX.Spawn(transform.position);
@@ -304,8 +319,11 @@ namespace TwinsDefense.Enemies
         }
 
         /// <summary>Instantly defeats this enemy without dropping coins/XP — used to clear the arena when a boss spawns, so the fight is boss-vs-player only.</summary>
-        public void HitKill()
+public void HitKill()
         {
+            if (isDead) return;
+
+            isDead = true;
             currentHealth = 0f;
             OnEnemyDefeated?.Invoke();
             RunStats.Instance?.RegisterKill();

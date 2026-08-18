@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using UnityEngine.UI;
+using TwinsDefense.Systems;
 
 namespace TwinsDefense.CharacterSelection
 {
@@ -17,6 +18,10 @@ namespace TwinsDefense.CharacterSelection
 
         [Tooltip("Applied to the portrait when the slot is locked (e.g. a white-flash silhouette material). Unlocked slots use the default UI material.")]
         [SerializeField] private Material lockedMaterial;
+
+        [Tooltip("Sibling Image sitting behind the portrait, same icon sprite, with the Rainbow Aura material. Shown only for this EXACT slot's tier once it reached auraRequiredLevel — see PlayerRainbowAuraVFX for the same per-tier gating on the player itself.")]
+        [SerializeField] private Image auraImage;
+        [SerializeField] private int auraRequiredLevel = 100;
 
         private Button button;
         private CharacterSlotData assignedData;
@@ -39,6 +44,17 @@ namespace TwinsDefense.CharacterSelection
             onClicked = clickedCallback;
             portraitImage.sprite = data.icon;
             portraitImage.material = data.isUnlocked ? null : lockedMaterial;
+
+            if (auraImage != null)
+            {
+                bool hasAura = CharacterProgressTracker.Instance.GetHighestLevelForTier(data.characterId, data.tier) >= auraRequiredLevel;
+                auraImage.gameObject.SetActive(hasAura);
+
+                if (hasAura)
+                {
+                    auraImage.sprite = data.icon;
+                }
+            }
         }
 
         public void SetSelected(bool selected)

@@ -42,6 +42,7 @@ namespace TwinsDefense.UI
         private Vector3 baseScale;
         private Coroutine scaleRoutine;
         private bool isPicked;
+        private bool isHighlighted;
         private Sprite defaultCardFrameSprite;
 
         private void Awake()
@@ -68,11 +69,12 @@ namespace TwinsDefense.UI
         }
 
         /// <summary>Assigns a rolled card to this slot and shows its description.</summary>
-        public void Show(CardData card, Action<CardData> pickedCallback)
+public void Show(CardData card, Action<CardData> pickedCallback)
         {
             assignedCard = card;
             onPicked = pickedCallback;
             isPicked = false;
+            isHighlighted = false;
             button.interactable = true;
             transform.localScale = baseScale;
             descriptionText.text = BuildDescription(card);
@@ -91,11 +93,26 @@ namespace TwinsDefense.UI
             SetScaleTarget(baseScale * hoverScale, hoverAnimDuration);
         }
 
-        public void OnPointerExit(PointerEventData eventData)
+public void OnPointerExit(PointerEventData eventData)
         {
             if (isPicked) return;
-            SetScaleTarget(baseScale, hoverAnimDuration);
+            SetScaleTarget(isHighlighted ? baseScale * hoverScale : baseScale, hoverAnimDuration);
         }
+
+/// <summary>Keyboard-navigation equivalent of a mouse hover — used by LevelUpCardsUI's A/D selection so the currently-selected card reads the same as a moused-over one.</summary>
+        public void SetHighlighted(bool highlighted)
+        {
+            if (isPicked || highlighted == isHighlighted) return;
+            isHighlighted = highlighted;
+            SetScaleTarget(highlighted ? baseScale * hoverScale : baseScale, hoverAnimDuration);
+        }
+
+        /// <summary>Keyboard-navigation equivalent of a mouse click — used by LevelUpCardsUI's Space/Enter confirm.</summary>
+        public void Pick()
+        {
+            if (!isPicked) button.onClick.Invoke();
+        }
+
 
         private void HandleClick()
         {
@@ -173,6 +190,12 @@ namespace TwinsDefense.UI
         {
             string sign = value >= 0f ? "+" : string.Empty;
             string amount = isPercentage ? $"{sign}{value:0.#}%" : $"{sign}{value:0.#}";
+
+            if (effectType == CardEffectType.InstantHeal)
+            {
+                return $"Recover {amount} HP";
+            }
+
             return $"{amount} {EffectLabel(effectType)}";
         }
 
@@ -200,6 +223,7 @@ namespace TwinsDefense.UI
                 case CardEffectType.InstantHeal: return "HP";
                 case CardEffectType.ExplodeOnKillChance: return "Explode Chance";
                 case CardEffectType.BlockChance: return "Chance to Block a Hit";
+                case CardEffectType.StarProjectileCount: return "Star Projectile";
                 default: return effectType.ToString();
             }
         }

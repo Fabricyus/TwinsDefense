@@ -40,6 +40,23 @@ namespace TwinsDefense.Systems
             public int highestLevel;
         }
 
+        /// <summary>Highest level tracked per exact (character, tier) pair — e.g. Izzy PopStar separately from Izzy Base, unlike LevelEntry above which lumps every tier of a character together. Used to gate the Rainbow Aura cosmetic to only the specific evolution that actually earned it.</summary>
+        [System.Serializable]
+        private class TierLevelEntry
+        {
+            public CharacterId character;
+            public int tier;
+            public int highestLevel;
+        }
+
+        /// <summary>One of the 12 "Flawless Form" challenge achievements (see ChallengeDefinitions) completed — killed the Magpie as this exact character tier without ever breaking that tier's rule.</summary>
+        [System.Serializable]
+        private class ChallengeEntry
+        {
+            public CharacterId character;
+            public int tier;
+        }
+
         [System.Serializable]
         private class CardPickEntry
         {
@@ -67,6 +84,8 @@ namespace TwinsDefense.Systems
         private class SaveData
         {
             public List<LevelEntry> levels = new List<LevelEntry>();
+            public List<TierLevelEntry> tierLevels = new List<TierLevelEntry>();
+            public List<ChallengeEntry> completedChallenges = new List<ChallengeEntry>();
             public List<CardPickEntry> cardPicks = new List<CardPickEntry>();
             public List<BossKillEntry> bossKills = new List<BossKillEntry>();
             public List<SpecialCardPickEntry> specialCardPicks = new List<SpecialCardPickEntry>();
@@ -126,12 +145,35 @@ namespace TwinsDefense.Systems
             }
         }
 
-        /// <summary>Highest level ever reached playing this character (any tier), 0 if never played — used by the Achievements panel to show live progress toward ReachLevelFirstTime unlocks.</summary>
+        /// <summary>Highest level ever reached playing this character (any tier), 0 if never played — used by the Achievements panel to show live progress toward ReachLevelFirstTime unlocks and the 3 Rainbow Aura achievement rows (the achievement itself stays character-wide).</summary>
         public int GetHighestLevel(CharacterId character)
         {
             LevelEntry entry = data.levels.Find(e => e.character == character);
             return entry != null ? entry.highestLevel : 0;
         }
+
+        /// <summary>Highest level ever reached playing this EXACT character tier (e.g. Izzy PopStar specifically), 0 if never played at this tier — used to gate where the Rainbow Aura cosmetic actually shows (only the evolution that earned it), separate from the character-wide achievement tracked by GetHighestLevel.</summary>
+        public int GetHighestLevelForTier(CharacterId character, int tier)
+        {
+            TierLevelEntry entry = data.tierLevels.Find(e => e.character == character && e.tier == tier);
+            return entry != null ? entry.highestLevel : 0;
+        }
+
+/// <summary>Whether the "Flawless Form" challenge for this exact character tier (see ChallengeDefinitions) has already been completed.</summary>
+        public bool HasCompletedChallenge(CharacterId character, int tier)
+        {
+            return data.completedChallenges.Exists(e => e.character == character && e.tier == tier);
+        }
+
+        /// <summary>Marks this exact character tier's "Flawless Form" challenge as completed. Safe to call repeatedly — a no-op once already recorded.</summary>
+        public void ReportChallengeCompleted(CharacterId character, int tier)
+        {
+            if (HasCompletedChallenge(character, tier)) return;
+
+            data.completedChallenges.Add(new ChallengeEntry { character = character, tier = tier });
+            Save();
+        }
+
 
         /// <summary>Special (buff+debuff) cards picked so far while playing this character, 0 if none — used by the Achievements panel to show live progress toward AccumulateSpecialCardPicks unlocks.</summary>
         public int GetSpecialCardPickCount(CharacterId character)
@@ -163,6 +205,25 @@ namespace TwinsDefense.Systems
                 Save();
             }
         }
+
+public void ReportLevelReachedForTier(CharacterId character, int tier, int level)
+        {
+            TierLevelEntry entry = data.tierLevels.Find(e => e.character == character && e.tier == tier);
+
+            if (entry == null)
+            {
+                data.tierLevels.Add(new TierLevelEntry { character = character, tier = tier, highestLevel = level });
+                Save();
+                return;
+            }
+
+            if (level > entry.highestLevel)
+            {
+                entry.highestLevel = level;
+                Save();
+            }
+        }
+
 
         public void ReportCardPicked(CharacterId character, string cardId)
         {
