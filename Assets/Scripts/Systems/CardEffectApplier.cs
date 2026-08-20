@@ -58,6 +58,9 @@ namespace TwinsDefense.Systems
                     break;
                 case CardEffectType.MaxHP:
                     target.maxHP = Apply(target.maxHP, value, isPercentage);
+                    // Caps CurrentHP down when a card shrinks the max (e.g. Glass Cannon) — otherwise
+                    // it would sit stuck above the new cap until the next hit or heal touches it.
+                    target.GetComponent<PlayerHealth>()?.ClampToMaxHP();
                     break;
                 case CardEffectType.Defense:
                     target.defense = Apply(target.defense, value, isPercentage);
@@ -108,6 +111,18 @@ namespace TwinsDefense.Systems
                     break;
                 case CardEffectType.StarCooldownReduction:
                     target.starCooldownReductionSeconds = Apply(target.starCooldownReductionSeconds, value, isPercentage);
+                    break;
+                case CardEffectType.HolyStrikeChance:
+                    target.holyStrikeChance = Apply(target.holyStrikeChance, value, isPercentage);
+                    break;
+                case CardEffectType.StaticStrikeChance:
+                    target.staticStrikeChance = Apply(target.staticStrikeChance, value, isPercentage);
+                    break;
+                case CardEffectType.ProjectileSplitOnHit:
+                    target.hasProjectileSplitOnHit = true;
+                    break;
+                case CardEffectType.RainbowNova:
+                    target.hasRainbowNova = true;
                     break;
             }
         }

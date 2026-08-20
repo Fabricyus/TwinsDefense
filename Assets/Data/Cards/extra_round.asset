@@ -40,3 +40,4 @@ MonoBehaviour:
   minStarsRequired: 0
   requiredChallengeCharacter: 0
   requiredChallengeTier: 0
+  requiresMegaMagpieKill: 0

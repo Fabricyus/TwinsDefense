@@ -49,23 +49,23 @@ namespace TwinsDefense.VFX
             }
         }
 
-        /// <summary>Spawns (or recycles) a floating damage number at the given world position.</summary>
-        public static void Spawn(Vector3 worldPosition, float damage, bool isCrit = false)
+        /// <summary>Spawns (or recycles) a floating damage number at the given world position. popupColor overrides the popup's normal/crit color when set.</summary>
+        public static void Spawn(Vector3 worldPosition, float damage, bool isCrit = false, Color? popupColor = null)
         {
             if (Instance == null)
             {
                 return;
             }
 
-            Instance.SpawnInternal(worldPosition, damage, isCrit);
+            Instance.SpawnInternal(worldPosition, damage, isCrit, popupColor);
         }
 
-        private void SpawnInternal(Vector3 worldPosition, float damage, bool isCrit)
+        private void SpawnInternal(Vector3 worldPosition, float damage, bool isCrit, Color? popupColor)
         {
             DamagePopup popup = pool.Count > 0 ? pool.Dequeue() : CreatePopup();
             popup.transform.position = worldPosition;
             popup.gameObject.SetActive(true);
-            popup.Play(damage, isCrit, ReturnToPool);
+            popup.Play(damage, isCrit, popupColor, ReturnToPool);
         }
 
         private void ReturnToPool(DamagePopup popup)

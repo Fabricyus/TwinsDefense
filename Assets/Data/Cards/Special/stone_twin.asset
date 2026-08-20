@@ -21,7 +21,7 @@ MonoBehaviour:
   isPercentage: 1
   isSpecial: 1
   secondEffectType: 13
-  secondValue: -30
+  secondValue: -25
   secondIsPercentage: 1
   additionalEffects: []
   rarity: 2
@@ -31,3 +31,4 @@ MonoBehaviour:
   minStarsRequired: 0
   requiredChallengeCharacter: 0
   requiredChallengeTier: 0
+  requiresMegaMagpieKill: 0

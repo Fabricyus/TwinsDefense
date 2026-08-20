@@ -93,6 +93,9 @@ namespace TwinsDefense.Systems
 
         private SaveData data;
 
+        /// <summary>Lazily loads on first access instead of relying solely on Awake() — AddComponent doesn't reliably run Awake() synchronously when Instance creates this outside Play mode (e.g. an Editor menu item), which left data null and NullReferenceException'd every accessor.</summary>
+        private SaveData Data => data ??= LoadData();
+
         private void Awake()
         {
             if (instance != null && instance != this)
@@ -103,7 +106,7 @@ namespace TwinsDefense.Systems
 
             instance = this;
             DontDestroyOnLoad(gameObject);
-            Load();
+            data = LoadData();
         }
 
         public bool IsUnlocked(CharacterMetaData meta)
@@ -119,24 +122,24 @@ namespace TwinsDefense.Systems
 
                 case UnlockConditionType.ReachLevelFirstTime:
                 {
-                    LevelEntry entry = data.levels.Find(e => e.character == meta.characterId);
+                    LevelEntry entry = Data.levels.Find(e => e.character == meta.characterId);
                     return entry != null && entry.highestLevel >= condition.requiredLevel;
                 }
 
                 case UnlockConditionType.AccumulateCardPicks:
                 {
-                    CardPickEntry entry = data.cardPicks.Find(e => e.character == meta.characterId && e.cardId == condition.requiredCardId);
+                    CardPickEntry entry = Data.cardPicks.Find(e => e.character == meta.characterId && e.cardId == condition.requiredCardId);
                     return entry != null && entry.count >= condition.requiredCount;
                 }
 
                 case UnlockConditionType.KillBossAtTier:
-                    return data.bossKills.Exists(e => e.character == meta.characterId
+                    return Data.bossKills.Exists(e => e.character == meta.characterId
                         && e.bossLevel == condition.requiredBossLevel
                         && e.characterTier == condition.requiredCharacterTier);
 
                 case UnlockConditionType.AccumulateSpecialCardPicks:
                 {
-                    SpecialCardPickEntry entry = data.specialCardPicks.Find(e => e.character == meta.characterId);
+                    SpecialCardPickEntry entry = Data.specialCardPicks.Find(e => e.character == meta.characterId);
                     return entry != null && entry.count >= condition.requiredCount;
                 }
 
@@ -148,21 +151,21 @@ namespace TwinsDefense.Systems
         /// <summary>Highest level ever reached playing this character (any tier), 0 if never played — used by the Achievements panel to show live progress toward ReachLevelFirstTime unlocks and the 3 Rainbow Aura achievement rows (the achievement itself stays character-wide).</summary>
         public int GetHighestLevel(CharacterId character)
         {
-            LevelEntry entry = data.levels.Find(e => e.character == character);
+            LevelEntry entry = Data.levels.Find(e => e.character == character);
             return entry != null ? entry.highestLevel : 0;
         }
 
         /// <summary>Highest level ever reached playing this EXACT character tier (e.g. Izzy PopStar specifically), 0 if never played at this tier — used to gate where the Rainbow Aura cosmetic actually shows (only the evolution that earned it), separate from the character-wide achievement tracked by GetHighestLevel.</summary>
         public int GetHighestLevelForTier(CharacterId character, int tier)
         {
-            TierLevelEntry entry = data.tierLevels.Find(e => e.character == character && e.tier == tier);
+            TierLevelEntry entry = Data.tierLevels.Find(e => e.character == character && e.tier == tier);
             return entry != null ? entry.highestLevel : 0;
         }
 
 /// <summary>Whether the "Flawless Form" challenge for this exact character tier (see ChallengeDefinitions) has already been completed.</summary>
         public bool HasCompletedChallenge(CharacterId character, int tier)
         {
-            return data.completedChallenges.Exists(e => e.character == character && e.tier == tier);
+            return Data.completedChallenges.Exists(e => e.character == character && e.tier == tier);
         }
 
         /// <summary>Marks this exact character tier's "Flawless Form" challenge as completed. Safe to call repeatedly — a no-op once already recorded.</summary>
@@ -170,7 +173,7 @@ namespace TwinsDefense.Systems
         {
             if (HasCompletedChallenge(character, tier)) return;
 
-            data.completedChallenges.Add(new ChallengeEntry { character = character, tier = tier });
+            Data.completedChallenges.Add(new ChallengeEntry { character = character, tier = tier });
             Save();
         }
 
@@ -178,23 +181,23 @@ namespace TwinsDefense.Systems
         /// <summary>Special (buff+debuff) cards picked so far while playing this character, 0 if none — used by the Achievements panel to show live progress toward AccumulateSpecialCardPicks unlocks.</summary>
         public int GetSpecialCardPickCount(CharacterId character)
         {
-            SpecialCardPickEntry entry = data.specialCardPicks.Find(e => e.character == character);
+            SpecialCardPickEntry entry = Data.specialCardPicks.Find(e => e.character == character);
             return entry != null ? entry.count : 0;
         }
 
         /// <summary>Whether this exact boss-level/tier kill has already been reported — used by the Achievements panel to show live progress toward KillBossAtTier unlocks.</summary>
         public bool HasKilledBossAtTier(CharacterId character, int bossLevel, int characterTier)
         {
-            return data.bossKills.Exists(e => e.character == character && e.bossLevel == bossLevel && e.characterTier == characterTier);
+            return Data.bossKills.Exists(e => e.character == character && e.bossLevel == bossLevel && e.characterTier == characterTier);
         }
 
         public void ReportLevelReached(CharacterId character, int level)
         {
-            LevelEntry entry = data.levels.Find(e => e.character == character);
+            LevelEntry entry = Data.levels.Find(e => e.character == character);
 
             if (entry == null)
             {
-                data.levels.Add(new LevelEntry { character = character, highestLevel = level });
+                Data.levels.Add(new LevelEntry { character = character, highestLevel = level });
                 Save();
                 return;
             }
@@ -208,11 +211,11 @@ namespace TwinsDefense.Systems
 
 public void ReportLevelReachedForTier(CharacterId character, int tier, int level)
         {
-            TierLevelEntry entry = data.tierLevels.Find(e => e.character == character && e.tier == tier);
+            TierLevelEntry entry = Data.tierLevels.Find(e => e.character == character && e.tier == tier);
 
             if (entry == null)
             {
-                data.tierLevels.Add(new TierLevelEntry { character = character, tier = tier, highestLevel = level });
+                Data.tierLevels.Add(new TierLevelEntry { character = character, tier = tier, highestLevel = level });
                 Save();
                 return;
             }
@@ -227,11 +230,11 @@ public void ReportLevelReachedForTier(CharacterId character, int tier, int level
 
         public void ReportCardPicked(CharacterId character, string cardId)
         {
-            CardPickEntry entry = data.cardPicks.Find(e => e.character == character && e.cardId == cardId);
+            CardPickEntry entry = Data.cardPicks.Find(e => e.character == character && e.cardId == cardId);
 
             if (entry == null)
             {
-                data.cardPicks.Add(new CardPickEntry { character = character, cardId = cardId, count = 1 });
+                Data.cardPicks.Add(new CardPickEntry { character = character, cardId = cardId, count = 1 });
             }
             else
             {
@@ -244,11 +247,11 @@ public void ReportLevelReachedForTier(CharacterId character, int tier, int level
         /// <summary>Counts a pick toward AccumulateSpecialCardPicks — call only when the picked card is special (isSpecial), regardless of which one.</summary>
         public void ReportSpecialCardPicked(CharacterId character)
         {
-            SpecialCardPickEntry entry = data.specialCardPicks.Find(e => e.character == character);
+            SpecialCardPickEntry entry = Data.specialCardPicks.Find(e => e.character == character);
 
             if (entry == null)
             {
-                data.specialCardPicks.Add(new SpecialCardPickEntry { character = character, count = 1 });
+                Data.specialCardPicks.Add(new SpecialCardPickEntry { character = character, count = 1 });
             }
             else
             {
@@ -260,20 +263,20 @@ public void ReportLevelReachedForTier(CharacterId character, int tier, int level
 
         public void ReportBossKilled(CharacterId character, int bossLevel, int characterTierPlayed)
         {
-            bool alreadyAchieved = data.bossKills.Exists(e => e.character == character
+            bool alreadyAchieved = Data.bossKills.Exists(e => e.character == character
                 && e.bossLevel == bossLevel
                 && e.characterTier == characterTierPlayed);
 
             if (alreadyAchieved) return;
 
-            data.bossKills.Add(new BossKillEntry { character = character, bossLevel = bossLevel, characterTier = characterTierPlayed });
+            Data.bossKills.Add(new BossKillEntry { character = character, bossLevel = bossLevel, characterTier = characterTierPlayed });
             Save();
         }
 
-        private void Load()
+        private static SaveData LoadData()
         {
             string json = PlayerPrefs.GetString(PersistenceKey, string.Empty);
-            data = string.IsNullOrEmpty(json) ? new SaveData() : JsonUtility.FromJson<SaveData>(json);
+            return string.IsNullOrEmpty(json) ? new SaveData() : JsonUtility.FromJson<SaveData>(json);
         }
 
         private void Save()

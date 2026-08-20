@@ -59,6 +59,11 @@ namespace TwinsDefense.Enemies
         [Tooltip("If true, locks onto the player's position once at spawn and walks that fixed straight line forever, instead of continuously chasing the player like most enemies.")]
         [SerializeField] private bool moveInStraightLine = false;
 
+        [Header("Leash")]
+        [Tooltip("If true, this enemy silently despawns (no coins/XP) once it ends up farther than leashDistance from the player while actively chasing — e.g. it's slower than the player's current move speed and can never catch up. Only checked outside of stun/knockback, so a boss standing still during an attack telegraph or a long phase-stun can never get despawned out from under its own fight. Without this, an unreachable enemy sits in ArenaEnemy.Active forever and can permanently jam EnemySpawner's maxActiveEnemies cap.")]
+        [SerializeField] private bool canLeashDespawn = true;
+        [SerializeField] private float leashDistance = 40f;
+
         /// <summary>Exposed so companion scripts (e.g. BombEnemy) can reuse the same contact-hit VFX instead of duplicating the reference.</summary>
         public GameObject AttackCirclePrefab => attackCirclePrefab;
         public Vector3 AttackCircleOffset => attackCircleOffset;
@@ -183,6 +188,20 @@ namespace TwinsDefense.Enemies
             transform.position += (Vector3)(direction * moveSpeed * slowMultiplier * speedMultiplier * Time.deltaTime);
 
             FaceTarget();
+
+            if (canLeashDespawn && ((Vector2)transform.position - (Vector2)player.position).sqrMagnitude > leashDistance * leashDistance)
+            {
+                DespawnOutOfLeash();
+            }
+        }
+
+        /// <summary>Silently removes this enemy once it's fallen too far behind the player to ever catch up — no coins/XP, no OnEnemyDefeated (so it never counts as a kill or a boss defeat), just frees a slot under EnemySpawner's maxActiveEnemies cap.</summary>
+        private void DespawnOutOfLeash()
+        {
+            if (isDead) return;
+
+            isDead = true;
+            Destroy(gameObject);
         }
 
         /// <summary>Stuns this enemy for the given duration (refreshes rather than stacks if already stunned).</summary>
@@ -286,8 +305,8 @@ public void SetInvulnerable(bool invulnerable)
             damageTakenMultiplier = Mathf.Max(0f, multiplier);
         }
 
-        /// <summary>Applies damage to this enemy, defeating it once health reaches zero. grantsExp false skips the XP drop (only coins) — used for ExplodeOnKill splash kills, which shouldn't reward XP the same as a direct kill.</summary>
-public void TakeDamage(float amount, bool isCrit = false, bool grantsExp = true)
+        /// <summary>Applies damage to this enemy, defeating it once health reaches zero. grantsExp false skips the XP drop (only coins) — used for ExplodeOnKill splash kills, which shouldn't reward XP the same as a direct kill. popupColor overrides the normal/crit damage popup color — used by the ThunderStrikeOnHit procs (heartFx/thunderFx/holyFx) to tint their popup per character instead of the default crit gold.</summary>
+public void TakeDamage(float amount, bool isCrit = false, bool grantsExp = true, Color? popupColor = null)
         {
             // isDead guards against a second TakeDamage call landing in the same frame as the
             // killing blow (e.g. two projectiles overlapping this enemy at once) — Destroy(gameObject)
@@ -298,7 +317,7 @@ public void TakeDamage(float amount, bool isCrit = false, bool grantsExp = true)
             float appliedDamage = amount * damageTakenMultiplier;
             currentHealth -= appliedDamage;
             TriggerHitFlash();
-            DamagePopupSpawner.Spawn(transform.position + damagePopupOffset, appliedDamage, isCrit);
+            DamagePopupSpawner.Spawn(transform.position + damagePopupOffset, appliedDamage, isCrit, popupColor);
             OnHealthChanged?.Invoke(HealthPercent01);
 
             if (currentHealth <= 0f)
@@ -342,6 +361,15 @@ public void HitKill()
                 Vector2 offset = UnityEngine.Random.insideUnitCircle * coinScatterRadius;
                 Instantiate(coinPrefab, transform.position + (Vector3)offset, Quaternion.identity);
             }
+        }
+
+        /// <summary>Spawns exactly one exp pickup at this enemy's position — used by ExplodeOnKill's chain reaction (see Projectile.TriggerExplosion) to occasionally reward XP for splash kills, which otherwise grant none at all, without paying a direct kill's full drop.</summary>
+        public void DropBonusExpCrystal()
+        {
+            if (expPrefab == null) return;
+
+            Vector2 offset = UnityEngine.Random.insideUnitCircle * expScatterRadius;
+            Instantiate(expPrefab, transform.position + (Vector3)offset, Quaternion.identity);
         }
 
         private void DropExp()

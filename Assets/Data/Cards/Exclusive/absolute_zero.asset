@@ -15,7 +15,7 @@ MonoBehaviour:
   cardId: absolute_zero
   displayName: Absolute Zero
   description: 
-  icon: {fileID: 0}
+  icon: {fileID: -8022603239838021816, guid: cf5ab18e05429c44ab411069aee41dfd, type: 3}
   effectType: 7
   value: 15
   isPercentage: 1
@@ -24,11 +24,11 @@ MonoBehaviour:
   secondValue: 0
   secondIsPercentage: 0
   additionalEffects: []
-  rarity: 2
+  rarity: 1
   rollWeight: 1
   maxStacks: 1
-  restrictedToCharacterIds:
-  - court_2
+  restrictedToCharacterIds: []
   minStarsRequired: 0
   requiredChallengeCharacter: 1
   requiredChallengeTier: 2
+  requiresMegaMagpieKill: 0

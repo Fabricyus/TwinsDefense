@@ -11,16 +11,23 @@ namespace TwinsDefense.Combat
     /// StarProjectileLauncher). Flies out to a fixed distance, then eases back
     /// toward its launch point — both legs use an "ease in back" curve, which
     /// overshoots backward before accelerating forward, so each leg reads as a
-    /// little windup-then-throw rather than a straight glide. Carries its own
-    /// fixed pierce budget, independent of the player's Pierce stat.
+    /// little windup-then-throw rather than a straight glide. Once the back arc
+    /// lands on its launch point, it keeps flying straight along that same
+    /// return direction for continueDuration seconds before despawning, instead
+    /// of dying right on the spot. Carries its own fixed pierce budget,
+    /// independent of the player's Pierce stat.
     /// </summary>
     [RequireComponent(typeof(Rigidbody2D))]
     public class StarProjectile : MonoBehaviour
     {
         [SerializeField] private float travelDistance = 4f;
-        [SerializeField] private float legDuration = 0.5f;
+        [SerializeField] private float legDuration = 1f;
         [SerializeField] private float spinDegreesPerSecond = 540f;
         [SerializeField] private int pierceBudget = 5;
+        [Tooltip("After the back arc lands on startPos, keeps flying straight past it along the same return direction for this many seconds before despawning, instead of dying right on the spot.")]
+        [SerializeField] private float continueDuration = 0.4f;
+        [Tooltip("Constant speed used only for the post-return straight-line continuation (the out/back legs themselves are eased, not constant-speed).")]
+        [SerializeField] private float continueSpeed = 15f;
 
         private float damage;
         private int remainingPierces;
@@ -29,6 +36,9 @@ namespace TwinsDefense.Combat
         private Vector3 outPos;
         private float legTimer;
         private bool returning;
+        private bool continuingPastReturn;
+        private float continueTimer;
+        private Vector3 continueDirection;
         private SpriteRenderer spriteRenderer;
         private float baseAlpha = 1f;
 
@@ -76,10 +86,25 @@ private void OnEnable()
             outPos = startPos + (Vector3)(direction.normalized * travelDistance);
             legTimer = 0f;
             returning = false;
+            continuingPastReturn = false;
         }
 
         private void Update()
         {
+            if (continuingPastReturn)
+            {
+                continueTimer += Time.deltaTime;
+                transform.position += continueDirection * continueSpeed * Time.deltaTime;
+                transform.Rotate(0f, 0f, spinDegreesPerSecond * Time.deltaTime);
+
+                if (continueTimer >= continueDuration)
+                {
+                    Destroy(gameObject);
+                }
+
+                return;
+            }
+
             legTimer += Time.deltaTime;
             float t = Mathf.Clamp01(legTimer / legDuration);
             float eased = EaseInBack(t);
@@ -100,8 +125,11 @@ private void OnEnable()
 
                 if (t >= 1f)
                 {
-                    Destroy(gameObject);
-                    return;
+                    // Back arc lands exactly on startPos — keep flying straight along the same
+                    // return direction instead of despawning right on the spot.
+                    continuingPastReturn = true;
+                    continueTimer = 0f;
+                    continueDirection = (startPos - outPos).normalized;
                 }
             }
 

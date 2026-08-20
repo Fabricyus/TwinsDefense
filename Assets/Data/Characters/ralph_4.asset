@@ -35,7 +35,7 @@ MonoBehaviour:
     hpRegen: 1
     iFrameDuration: 0.1
     moveSpeed: 5
-    pickupRadius: 3
+    pickupRadius: 3.6
     xpGainMultiplier: 1
     coinGainMultiplier: 1
   animatorController: {fileID: 9100000, guid: 25b8cebbf7ae90e4aaadafb3181c7fdc, type: 2}
@@ -50,7 +50,8 @@ MonoBehaviour:
     damageMultiplier: 0
     procMagnitudePercent: 5
     procDurationSeconds: 2
-    explosionColor: {r: 0.9005465, g: 0.5235849, b: 1, a: 1}
+    explosionColor: {r: 1, g: 0.55, b: 0.1, a: 1}
+    strikeColor: {r: 1, g: 1, b: 1, a: 1}
     runStartStat: 0
     runStartStatValue: 0
   - effectType: 6
@@ -59,16 +60,8 @@ MonoBehaviour:
     damageMultiplier: 3
     procMagnitudePercent: 0
     procDurationSeconds: 0
-    explosionColor: {r: 1, g: 0.0990566, b: 0.61039126, a: 1}
-    runStartStat: 0
-    runStartStatValue: 0
-  - effectType: 9
-    value: 0
-    procChancePercent: 0
-    damageMultiplier: 0
-    procMagnitudePercent: 0
-    procDurationSeconds: 0
     explosionColor: {r: 1, g: 0.55, b: 0.1, a: 1}
+    strikeColor: {r: 1, g: 0.6, b: 0.8, a: 1}
     runStartStat: 0
     runStartStatValue: 0
   unlockCondition:

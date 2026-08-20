@@ -41,8 +41,8 @@ namespace TwinsDefense.VFX
             label = GetComponent<TextMeshPro>();
         }
 
-        /// <summary>Resets and plays the popup at its current position, calling back once fully faded.</summary>
-        public void Play(float damage, bool isCrit, Action<DamagePopup> onFinishedCallback)
+        /// <summary>Resets and plays the popup at its current position, calling back once fully faded. popupColor overrides the normal/crit color (e.g. per-character ThunderStrikeOnHit tints) while leaving the crit size/motion untouched.</summary>
+        public void Play(float damage, bool isCrit, Color? popupColor, Action<DamagePopup> onFinishedCallback)
         {
             onFinished = onFinishedCallback;
 
@@ -55,7 +55,7 @@ namespace TwinsDefense.VFX
             restScale = isCrit ? critMotionMultiplier : 1f;
 
             label.text = Mathf.RoundToInt(damage).ToString();
-            label.color = isCrit ? critColor : normalColor;
+            label.color = popupColor ?? (isCrit ? critColor : normalColor);
             label.fontSize = isCrit ? critFontSize : normalFontSize;
             label.alpha = 1f;
 

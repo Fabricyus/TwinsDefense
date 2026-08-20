@@ -7,7 +7,7 @@ using TwinsDefense.Systems;
 
 namespace TwinsDefense.UI
 {
-    public enum MoveDirection { Up, Down, Left, Right }
+    public enum MoveDirection { Up, Down, Left, Right, Confirm }
 
     /// <summary>
     /// One rebindable row in the Settings panel: shows "&lt;Direction&gt;: &lt;Key&gt;",
@@ -87,6 +87,7 @@ namespace TwinsDefense.UI
                 case MoveDirection.Down: KeyBindings.SetDown(key); break;
                 case MoveDirection.Left: KeyBindings.SetLeft(key); break;
                 case MoveDirection.Right: KeyBindings.SetRight(key); break;
+                case MoveDirection.Confirm: KeyBindings.SetConfirm(key); break;
             }
 
             RefreshLabel();
@@ -103,6 +104,7 @@ namespace TwinsDefense.UI
                 case MoveDirection.Down: current = KeyBindings.Down; break;
                 case MoveDirection.Left: current = KeyBindings.Left; break;
                 case MoveDirection.Right: current = KeyBindings.Right; break;
+                case MoveDirection.Confirm: current = KeyBindings.Confirm; break;
                 default: current = Key.None; break;
             }
 

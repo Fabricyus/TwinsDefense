@@ -15,7 +15,7 @@ MonoBehaviour:
   cardId: tacticians_focus
   displayName: Tactician's Focus
   description: 
-  icon: {fileID: 0}
+  icon: {fileID: 5255163242236650128, guid: cf5ab18e05429c44ab411069aee41dfd, type: 3}
   effectType: 1
   value: 20
   isPercentage: 1
@@ -27,8 +27,8 @@ MonoBehaviour:
   rarity: 2
   rollWeight: 1
   maxStacks: 1
-  restrictedToCharacterIds:
-  - court_1
+  restrictedToCharacterIds: []
   minStarsRequired: 0
   requiredChallengeCharacter: 1
   requiredChallengeTier: 1
+  requiresMegaMagpieKill: 0

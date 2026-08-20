@@ -13,8 +13,8 @@ namespace TwinsDefense.Data
         public CardData[] allCards;
 
         [Header("Rarity Weights (placeholder — designer tunes)")]
-        public float commonWeight = 60f;
-        public float rareWeight = 30f;
-        public float epicWeight = 10f;
+        public float commonWeight = 50f;
+        public float rareWeight = 35f;
+        public float epicWeight = 15f;
     }
 }

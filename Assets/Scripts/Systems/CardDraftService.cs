@@ -88,6 +88,8 @@ namespace TwinsDefense.Systems
                 if (card.requiredChallengeTier > 0
                     && !CharacterProgressTracker.Instance.HasCompletedChallenge(card.requiredChallengeCharacter, card.requiredChallengeTier)) continue;
 
+                if (card.requiresMegaMagpieKill && !CampaignProgress.MegaMagpieKilled) continue;
+
                 eligible.Add(card);
             }
 

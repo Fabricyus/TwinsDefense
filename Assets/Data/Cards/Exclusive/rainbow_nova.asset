@@ -10,14 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 896fd27a9be12f04f99236e47bab1415, type: 3}
-  m_Name: dark_chain
+  m_Name: rainbow_nova
   m_EditorClassIdentifier: Assembly-CSharp::TwinsDefense.Data.CardData
-  cardId: dark_chain
-  displayName: Dark Chain
+  cardId: rainbow_nova
+  displayName: Rainbow Nova
   description: 
-  icon: {fileID: 0}
-  effectType: 21
-  value: 25
+  icon: {fileID: -8823794351565449622, guid: 7baea348ea0bf4a4390b8a9e446db192, type: 3}
+  effectType: 28
+  value: 1
   isPercentage: 0
   isSpecial: 0
   secondEffectType: 0
@@ -27,8 +27,8 @@ MonoBehaviour:
   rarity: 2
   rollWeight: 1
   maxStacks: 1
-  restrictedToCharacterIds:
-  - court_4
+  restrictedToCharacterIds: []
   minStarsRequired: 0
-  requiredChallengeCharacter: 1
-  requiredChallengeTier: 4
+  requiredChallengeCharacter: 0
+  requiredChallengeTier: 0
+  requiresMegaMagpieKill: 1

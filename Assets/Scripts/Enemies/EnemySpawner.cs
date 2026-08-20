@@ -37,7 +37,7 @@ namespace TwinsDefense.Enemies
         [SerializeField] private float spawnIntervalDecayPerLevel = 0.05f;
         [SerializeField] private float spawnRadiusMin = 12f;
         [SerializeField] private float spawnRadiusMax = 16f;
-        [Tooltip("Spawning pauses once ArenaEnemy.Active.Count reaches this — prevents unbounded pile-up (and the frame-time/GC collapse that comes with it) on long runs or weak builds that can't clear fast enough, e.g. the AlwaysFirstOption challenges.")]
+        [Tooltip("Spawning pauses once ArenaEnemy.Active.Count reaches this — prevents unbounded pile-up (and the frame-time/GC collapse that comes with it) on long runs or weak builds that can't clear fast enough, e.g. the AlwaysMiddleOption challenges.")]
         [SerializeField] private int maxActiveEnemies = 40;
         [SerializeField] private GameObject enemyPrefab;
 
@@ -85,9 +85,19 @@ namespace TwinsDefense.Enemies
         [Tooltip("Ends the run with a win screen instead of the usual boss-kill reward once the highest-level boss in bossSpawns is defeated.")]
         [SerializeField] private GameOverController gameOverController;
 
+        [Header("Secret Boss")]
+        [Tooltip("Player level at which the secret Mega Magpie spawns instead of a normal enemy — a supercharged variant of the regular Magpie (100x HP, 3x move speed, rainbow aura). Reached by out-leveling the regular level-30 Magpie fight before killing it (uncollected exp crystals from earlier in the run keep the level climbing even mid-fight) — deliberately independent of bossSpawns/finalBossLevel below, so it never touches the normal level-10/20/30 campaign-ending flow.")]
+        [SerializeField] private int megaBossLevel = 100;
+        [SerializeField] private GameObject megaBossPrefab;
+
         private Transform player;
         private bool isBossFightActive;
         private int finalBossLevel;
+        private bool hasSpawnedMegaBoss;
+
+        /// <summary>Whichever boss (regular or mega) currently has its defeat-report handler wired via HookBossDefeatReport/HookMegaBossDefeatReport — tracked so DisarmPreviousBossDefeatReport can unsubscribe it if it's still alive when the next boss spawns (see that method's doc for why this matters).</summary>
+        private GameObject currentBossInstance;
+        private System.Action currentBossDefeatHandler;
 
         private void Start()
         {
@@ -126,6 +136,7 @@ namespace TwinsDefense.Enemies
                 if (boss == null) continue;
 
                 RippleVFX.Spawn(boss.transform.position, rippleMaxDiameter);
+                DisarmPreviousBossDefeatReport();
                 ClearNonBossEnemies(boss);
                 isBossFightActive = true;
 
@@ -136,6 +147,53 @@ namespace TwinsDefense.Enemies
 
                 HookBossDefeatReport(boss, level);
             }
+
+            TrySpawnMegaBoss(level);
+        }
+
+        /// <summary>Secret encounter, entirely separate from bossSpawns/finalBossLevel above — see megaBossLevel's tooltip for how a run can actually reach it. Spawns at most once per run.</summary>
+        private void TrySpawnMegaBoss(int level)
+        {
+            if (hasSpawnedMegaBoss || level != megaBossLevel || megaBossPrefab == null) return;
+
+            hasSpawnedMegaBoss = true;
+
+            GameObject megaBoss = SpawnAtRing(megaBossPrefab);
+            if (megaBoss == null) return;
+
+            RippleVFX.Spawn(megaBoss.transform.position, rippleMaxDiameter);
+            DisarmPreviousBossDefeatReport();
+            ClearNonBossEnemies(megaBoss);
+            isBossFightActive = true;
+
+            if (bossIntroBanner != null && megaBossPrefab.TryGetComponent(out SpriteRenderer megaBossSpriteRenderer))
+            {
+                bossIntroBanner.Show(megaBossSpriteRenderer.sprite);
+            }
+
+            HookMegaBossDefeatReport(megaBoss);
+        }
+
+        /// <summary>
+        /// If a previous boss is still tracked as the active one (currentBossInstance) when a new
+        /// boss is about to spawn — e.g. the level-30 Magpie left alive while the player out-levels
+        /// it toward the secret level-100 Mega Magpie, by hoarding uncollected exp crystals instead
+        /// of finishing the fight — unsubscribes its defeat-report handler first. Without this,
+        /// ClearNonBossEnemies's HitKill sweep would still fire that earlier boss's OnEnemyDefeated,
+        /// which would incorrectly trigger ITS OWN win/ending report (e.g. GameOverController
+        /// freezing the run) even though the player never actually finished that fight.
+        /// </summary>
+        private void DisarmPreviousBossDefeatReport()
+        {
+            if (currentBossInstance == null || currentBossDefeatHandler == null) return;
+
+            if (currentBossInstance.TryGetComponent(out ArenaEnemy arenaEnemy))
+            {
+                arenaEnemy.OnEnemyDefeated -= currentBossDefeatHandler;
+            }
+
+            currentBossInstance = null;
+            currentBossDefeatHandler = null;
         }
 
         /// <summary>Instantly (and silently — no coin/exp drops) kills every active arena enemy except the boss that just spawned, so the fight starts as boss-vs-player only.</summary>
@@ -172,7 +230,9 @@ namespace TwinsDefense.Enemies
         {
             if (boss == null || !boss.TryGetComponent(out ArenaEnemy arenaEnemy)) return;
 
-            arenaEnemy.OnEnemyDefeated += () =>
+            // Stored (not an inline anonymous subscription) so DisarmPreviousBossDefeatReport can
+            // unsubscribe this exact handler later if this boss is still alive when the next one spawns.
+            System.Action handler = () =>
             {
                 CharacterProgressTracker.Instance.ReportBossKilled(
                     SelectedRunContext.Instance.SelectedCharacter,
@@ -199,9 +259,30 @@ namespace TwinsDefense.Enemies
                     gameOverController?.TriggerMissionComplete();
                 }
             };
+
+            arenaEnemy.OnEnemyDefeated += handler;
+            currentBossInstance = boss;
+            currentBossDefeatHandler = handler;
         }
 
-/// <summary>Checked only on the final boss (Magpie) kill — see HookBossDefeatReport. Looks up the "Flawless Form" challenge for whichever character/tier is currently selected (see ChallengeDefinitions) and, if this run's RunChallengeTracker never broke that tier's specific rule, records it as completed.</summary>
+/// <summary>Reports the secret Mega Magpie kill (global, character-independent — see CampaignProgress.MegaMagpieKilled) and ends the run as a special win, once this specific mega boss instance dies. Deliberately does not call CharacterProgressTracker.ReportBossKilled or touch finalBossLevel/CampaignProgress.GameCompleted — this is a standalone secret, not part of the normal campaign-ending flow.</summary>
+        private void HookMegaBossDefeatReport(GameObject megaBoss)
+        {
+            if (megaBoss == null || !megaBoss.TryGetComponent(out ArenaEnemy arenaEnemy)) return;
+
+            System.Action handler = () =>
+            {
+                CampaignProgress.ReportMegaMagpieKilled();
+                isBossFightActive = false;
+                gameOverController?.TriggerMissionComplete();
+            };
+
+            arenaEnemy.OnEnemyDefeated += handler;
+            currentBossInstance = megaBoss;
+            currentBossDefeatHandler = handler;
+        }
+
+        /// <summary>Checked only on the final boss (Magpie) kill — see HookBossDefeatReport. Looks up the "Flawless Form" challenge for whichever character/tier is currently selected (see ChallengeDefinitions) and, if this run's RunChallengeTracker never broke that tier's specific rule, records it as completed.</summary>
         private void ReportChallengeIfCompleted()
         {
             CharacterId playedCharacter = SelectedRunContext.Instance.SelectedCharacter;

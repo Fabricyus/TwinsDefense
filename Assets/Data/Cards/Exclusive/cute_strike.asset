@@ -13,11 +13,11 @@ MonoBehaviour:
   m_Name: cute_strike
   m_EditorClassIdentifier: Assembly-CSharp::TwinsDefense.Data.CardData
   cardId: cute_strike
-  displayName: Cute Strike
+  displayName: Cute Stats
   description: 
-  icon: {fileID: 0}
+  icon: {fileID: 786287686, guid: cf5ab18e05429c44ab411069aee41dfd, type: 3}
   effectType: 21
-  value: 5
+  value: 25
   isPercentage: 0
   isSpecial: 0
   secondEffectType: 0
@@ -27,8 +27,8 @@ MonoBehaviour:
   rarity: 2
   rollWeight: 1
   maxStacks: 1
-  restrictedToCharacterIds:
-  - ralph_4
+  restrictedToCharacterIds: []
   minStarsRequired: 0
   requiredChallengeCharacter: 2
   requiredChallengeTier: 4
+  requiresMegaMagpieKill: 0

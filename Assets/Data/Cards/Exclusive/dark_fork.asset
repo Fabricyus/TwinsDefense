@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 896fd27a9be12f04f99236e47bab1415, type: 3}
+  m_Name: dark_fork
+  m_EditorClassIdentifier: Assembly-CSharp::TwinsDefense.Data.CardData
+  cardId: dark_fork
+  displayName: Dark Fork
+  description: 
+  icon: {fileID: -2131950970, guid: cf5ab18e05429c44ab411069aee41dfd, type: 3}
+  effectType: 27
+  value: 1
+  isPercentage: 0
+  isSpecial: 0
+  secondEffectType: 0
+  secondValue: 0
+  secondIsPercentage: 0
+  additionalEffects: []
+  rarity: 2
+  rollWeight: 1
+  maxStacks: 1
+  restrictedToCharacterIds: []
+  minStarsRequired: 0
+  requiredChallengeCharacter: 1
+  requiredChallengeTier: 4
+  requiresMegaMagpieKill: 0

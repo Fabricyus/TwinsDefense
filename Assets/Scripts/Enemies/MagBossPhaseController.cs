@@ -133,14 +133,14 @@ namespace TwinsDefense.Enemies
             {
                 yield return new WaitForSeconds(attackInterval);
 
-                // The boss is airborne and off-screen mid-Bombing Run — skip this cycle
-                // rather than fire a cross-volley from wherever it happens to be flying.
-                if (bombingRunActive) continue;
-
                 // Phase 3 drops Spinning Cross entirely — the boss just walks the player
                 // down between cross-laser casts instead (see SpinCrossAttack's doc).
                 if (hasStartedLaser) continue;
 
+                // Keeps firing even mid-Bombing Run — the boss is stunned by SpinCrossAttack either
+                // way, so this never fights the flight coroutine for control of transform.position;
+                // it just keeps the cross volleys raining from wherever the boss currently is in its
+                // ascend/strafe/descend path instead of going silent until it lands.
                 yield return StartCoroutine(SpinCrossAttack());
             }
         }

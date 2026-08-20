@@ -17,11 +17,11 @@ MonoBehaviour:
   description: 
   icon: {fileID: 0}
   effectType: 3
-  value: 100
-  isPercentage: 1
+  value: 0.2
+  isPercentage: 0
   isSpecial: 1
   secondEffectType: 4
-  secondValue: -50
+  secondValue: -25
   secondIsPercentage: 1
   additionalEffects: []
   rarity: 2
@@ -31,3 +31,4 @@ MonoBehaviour:
   minStarsRequired: 0
   requiredChallengeCharacter: 0
   requiredChallengeTier: 0
+  requiresMegaMagpieKill: 0

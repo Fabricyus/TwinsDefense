@@ -90,7 +90,7 @@ namespace TwinsDefense.Systems
             new AchievementDef("Unlock the Rainbow Aura by reaching Level 100 as Cute Ralph", 100,
                 () => CharacterProgressTracker.Instance.GetHighestLevelForTier(CharacterId.Ralph, 4), isSecret: true),
 
-            new AchievementDef("First Instinct: kill the Magpie as Izzy always picking the first card option", 1,
+            new AchievementDef("First Instinct: kill the Magpie as Izzy, having always picked the middle card option (2nd of 3) on every level-up the whole run", 1,
                 () => CharacterProgressTracker.Instance.HasCompletedChallenge(CharacterId.Izzy, 1) ? 1 : 0),
             new AchievementDef("Small Blaze: kill the Magpie as Izzy Blaze without ever picking Bigger Impact or Big Bang", 1,
                 () => CharacterProgressTracker.Instance.HasCompletedChallenge(CharacterId.Izzy, 2) ? 1 : 0),
@@ -116,6 +116,13 @@ namespace TwinsDefense.Systems
                 () => CharacterProgressTracker.Instance.HasCompletedChallenge(CharacterId.Ralph, 3) ? 1 : 0),
             new AchievementDef("Too Cute to Hit: kill the Magpie as Cute Ralph without ever taking damage", 1,
                 () => CharacterProgressTracker.Instance.HasCompletedChallenge(CharacterId.Ralph, 4) ? 1 : 0),
+
+            // Beyond the Rainbow — secret. Out-level the regular level-30 Magpie fight before
+            // killing it (uncollected exp crystals keep the level climbing mid-fight) to reach
+            // Level 100, where the secret Mega Magpie (100x HP, 3x move speed) spawns instead.
+            // Unlocks the Rainbow Nova Exclusive card — see CardData.requiresMegaMagpieKill.
+            new AchievementDef("Beyond the Rainbow: defeat the secret Mega Magpie at Level 100", 1,
+                () => CampaignProgress.MegaMagpieKilled ? 1 : 0, isSecret: true),
         };
 
         public static bool IsComplete(int index)

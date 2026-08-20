@@ -35,7 +35,17 @@ namespace TwinsDefense.Data
         PassiveProcChanceBonus,
         StarDamageBonus,
         StarRangeBonus,
-        StarCooldownReduction // appended at the end — existing assets serialize this enum as an int, inserting earlier would remap them
+        StarCooldownReduction,
+
+        /// <summary>Holy Strike / Static Strike: flat % chance, independent of the equipped character's own passives, to proc the fixed holyFx/thunderFx strike — see AutoAttack's holyStrikeFxPrefab/staticStrikeFxPrefab and Projectile.RollOnHitPassives.</summary>
+        HolyStrikeChance,
+        StaticStrikeChance,
+
+        /// <summary>Dark Fork: on hitting an enemy, forks the projectile into two children angled +/-45 degrees off its current heading — see Projectile.TrySplitOnHit. Value/isPercentage are unused for this effect.</summary>
+        ProjectileSplitOnHit,
+
+        /// <summary>Rainbow Nova: periodic AoE pulse that damages every active enemy in the arena — see RainbowNovaController. Value/isPercentage are unused for this effect; picking the card just flips PlayerStats.hasRainbowNova on.</summary>
+        RainbowNova // appended at the end — existing assets serialize this enum as an int, inserting earlier would remap them
     }
 
     /// <summary>One (effectType, value, isPercentage) tuple — see CardData.additionalEffects.</summary>
@@ -97,5 +107,8 @@ namespace TwinsDefense.Data
         public CharacterId requiredChallengeCharacter;
         [Tooltip("Character tier whose challenge must be completed, 0 = no challenge requirement.")]
         public int requiredChallengeTier = 0;
+
+        [Tooltip("Global secret unlock, independent of character/tier — an Exclusive card that stays undraftable until the secret level-100 Mega Magpie (see CampaignProgress.MegaMagpieKilled/EnemySpawner.megaBossPrefab) has been defeated at least once, with any character. Separate from requiredChallengeTier above since this isn't gated per character/tier.")]
+        public bool requiresMegaMagpieKill = false;
     }
 }

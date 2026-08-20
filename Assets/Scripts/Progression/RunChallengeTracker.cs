@@ -17,7 +17,7 @@ namespace TwinsDefense.Progression
 
         public bool TookDamage { get; private set; }
         public bool PickedForbiddenCard { get; private set; }
-        public bool PickedNonFirstOption { get; private set; }
+        public bool PickedNonMiddleOption { get; private set; }
 
         private void Awake()
         {
@@ -40,9 +40,9 @@ namespace TwinsDefense.Progression
             PickedForbiddenCard = true;
         }
 
-        public void RegisterNonFirstOptionPicked()
+        public void RegisterNonMiddleOptionPicked()
         {
-            PickedNonFirstOption = true;
+            PickedNonMiddleOption = true;
         }
 
         /// <summary>Whether this run's compliance state so far satisfies the given challenge's rule.</summary>
@@ -54,8 +54,8 @@ namespace TwinsDefense.Progression
                     return !TookDamage;
                 case ChallengeRuleType.ForbiddenCards:
                     return !PickedForbiddenCard;
-                case ChallengeRuleType.AlwaysFirstOption:
-                    return !PickedNonFirstOption;
+                case ChallengeRuleType.AlwaysMiddleOption:
+                    return !PickedNonMiddleOption;
                 default:
                     return false;
             }

@@ -6,7 +6,7 @@ namespace TwinsDefense.Progression
     {
         ForbiddenCards,
         Flawless,
-        AlwaysFirstOption
+        AlwaysMiddleOption
     }
 
     /// <summary>One of the 12 "Flawless Form" challenge achievements — killing the Magpie (final boss) as this exact character tier while never breaking ruleType's restriction anywhere in the run.</summary>
@@ -42,8 +42,8 @@ namespace TwinsDefense.Progression
     {
         public static readonly ChallengeDefinition[] All =
         {
-            // Izzy (×2 gold/level) — always pick the middle/first-rolled card option.
-            new ChallengeDefinition(CharacterId.Izzy, 1, "First Instinct", ChallengeRuleType.AlwaysFirstOption),
+            // Izzy (×2 gold/level) — always pick the middle-rolled card option (2nd of 3) on every level-up.
+            new ChallengeDefinition(CharacterId.Izzy, 1, "First Instinct", ChallengeRuleType.AlwaysMiddleOption),
             // Izzy Blaze (+1 AoE base) — never Bigger Impact (normal) or Big Bang (special), both +Area of Effect.
             new ChallengeDefinition(CharacterId.Izzy, 2, "Small Blaze", ChallengeRuleType.ForbiddenCards, new[] { "bigger_impact", "big_bang" }),
             // Izzy Archer (+1 Pierce base) — never Swarm Caller (special), +Projectiles.

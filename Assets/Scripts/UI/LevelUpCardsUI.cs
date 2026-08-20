@@ -27,7 +27,7 @@ namespace TwinsDefense.UI
         private readonly RunCardState runState = new RunCardState();
 
         private int selectedIndex = -1;
-        private CardData currentFirstOptionCard;
+        private CardData currentMiddleOptionCard;
 
         /// <summary>Raised right after a card is applied and this panel closes (game already resumed), carrying the level just leveled into. EnemySpawner uses this instead of LevelManager.OnLevelChanged to spawn a boss only once the player has actually picked their card — not the instant the level is reached, while the panel is still up.</summary>
         public event System.Action<int> OnCardPicked;
@@ -70,9 +70,10 @@ private void RollAndShowCards()
                 drafted = draftService.RollCards(cardSlots.Length, cardPool, runState, activeSlotId, activeStars);
             }
 
-            // First card rolled, before shuffling into slots — see the "First Instinct" challenge
-            // (ChallengeDefinitions), which requires always picking this exact card.
-            currentFirstOptionCard = drafted.Count > 0 ? drafted[0] : null;
+            // Middle-rolled card (2nd of 3, before shuffling into slots) — see the "First Instinct"
+            // challenge (ChallengeDefinitions), which requires always picking this exact card.
+            int middleOptionIndex = drafted.Count > 0 ? Mathf.Clamp((drafted.Count - 1) / 2, 0, drafted.Count - 1) : -1;
+            currentMiddleOptionCard = middleOptionIndex >= 0 ? drafted[middleOptionIndex] : null;
 
             for (int i = 0; i < cardSlots.Length; i++)
             {
@@ -104,7 +105,9 @@ private void Update()
                 MoveSelection(1);
             }
 
-            if (keyboard.spaceKey.wasPressedThisFrame || keyboard.enterKey.wasPressedThisFrame || keyboard.numpadEnterKey.wasPressedThisFrame)
+            // KeyBindings.Confirm defaults to Space and is rebindable in Settings; Enter/Numpad
+            // Enter always work alongside it as a fixed fallback (see KeyBindings' own doc comment).
+            if (keyboard[KeyBindings.Confirm].wasPressedThisFrame || keyboard.enterKey.wasPressedThisFrame || keyboard.numpadEnterKey.wasPressedThisFrame)
             {
                 ConfirmSelection();
             }
@@ -180,9 +183,9 @@ private void HandleCardPicked(CardData card)
         /// <summary>Feeds RunChallengeTracker for the two card-driven "Flawless Form" rule types (see ChallengeDefinitions) — harmless to call every pick regardless of which character/tier is being played, since EnemySpawner only checks the signal relevant to that tier's own challenge at the Magpie kill.</summary>
         private void RegisterChallengeSignals(CardData card)
         {
-            if (currentFirstOptionCard != null && card != currentFirstOptionCard)
+            if (currentMiddleOptionCard != null && card != currentMiddleOptionCard)
             {
-                RunChallengeTracker.Instance?.RegisterNonFirstOptionPicked();
+                RunChallengeTracker.Instance?.RegisterNonMiddleOptionPicked();
             }
 
             if (characterData == null || characterData.Current == null) return;

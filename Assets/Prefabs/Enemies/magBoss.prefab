@@ -614,11 +614,11 @@ MonoBehaviour:
   divePassGap: 0.25
   descendDuration: 0.6
   offScreenMargin: 3
-  band3Threshold: 0.25
+  band3Threshold: 0.175
   laserAttackInterval: 2
   laserDamage: 30
-  laserTrackDuration: 1
-  laserLockDuration: 0.4
+  laserTrackDuration: 1.5
+  laserLockDuration: 0.5
   laserWidth: 0.5
   laserColor: {r: 1, g: 0.1, b: 0.1, a: 0.85}
   phase3DamageTakenMultiplier: 0.1

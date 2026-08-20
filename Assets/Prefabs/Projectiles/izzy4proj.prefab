@@ -16,6 +16,7 @@ GameObject:
   - component: {fileID: 8403162680403791015}
   - component: {fileID: 7323606529397571220}
   - component: {fileID: 5248250265896092210}
+  - component: {fileID: 4728193650192837465}
   m_Layer: 0
   m_Name: izzy4proj
   m_TagString: Untagged
@@ -313,5 +314,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: df139aba095e3824a805f04ea65ac42f, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Assembly-CSharp::TwinsDefense.VFX.LockRotationOnSpawn
+--- !u!114 &4728193650192837465
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3435300922814392574}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b22fa7833b189b6438832b0d4b5bc84a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::TwinsDefense.VFX.TrailRendererOpacityVFX

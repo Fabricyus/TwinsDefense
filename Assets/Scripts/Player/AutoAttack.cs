@@ -31,6 +31,16 @@ namespace TwinsDefense.Player
         [Tooltip("Floor for the per-projectile damage multiplier, so heavily stacked multi-shot builds don't drop to near-zero per shot.")]
         [SerializeField] private float minExtraProjectileDamageMultiplier = 0.5f;
 
+        [Header("Exclusive Card Procs (Holy Strike / Static Strike)")]
+        [Tooltip("Damage multiplier on the player's own damage stat for both Holy Strike and Static Strike procs — matches the native ThunderStrikeOnHit characters' own multiplier (see Paladin Ralph/Court Reader).")]
+        [SerializeField] private float exclusiveStrikeDamageMultiplier = 3f;
+        [Tooltip("Holy Strike card: Paladin Ralph's holyFx, fired independent of the equipped character.")]
+        [SerializeField] private GameObject holyStrikeFxPrefab;
+        [SerializeField] private Color holyStrikeColor = new Color(1f, 0.95f, 0.55f, 1f);
+        [Tooltip("Static Strike card: Court Reader's thunderFx, fired independent of the equipped character.")]
+        [SerializeField] private GameObject staticStrikeFxPrefab;
+        [SerializeField] private Color staticStrikeColor = new Color(0.55f, 0.85f, 1f, 1f);
+
         private PlayerStats stats;
         private PlayerCharacterData characterData;
         private float attackTimer;
@@ -110,7 +120,7 @@ namespace TwinsDefense.Player
 
                 OnHitPassiveEffects onHitPassives = ResolveOnHitPassives();
 
-                projectile.Launch(direction, damage, stats.projectileSpeed, isCrit, pierceCount, stats.areaOfEffect, isRotatingProjectile, onHitPassives);
+                projectile.Launch(direction, damage, stats.projectileSpeed, isCrit, pierceCount, stats.areaOfEffect, isRotatingProjectile, onHitPassives, prefab);
             }
 
             ApplyStarCosmeticTrail(instance);
@@ -139,6 +149,7 @@ namespace TwinsDefense.Player
             if (characterData == null || characterData.Current == null)
             {
                 ResolveExplodeOnKill(null, ref passives);
+                ResolveExclusiveCardProcs(ref passives);
                 return passives;
             }
 
@@ -148,10 +159,11 @@ namespace TwinsDefense.Player
             if (thunder != null)
             {
                 passives.thunderChancePercent = thunder.procChancePercent + stats.passiveProcChanceBonus;
-                // Treated as a guaranteed crit: the passive's own multiplier (e.g. 300%) stacks additively with
-                // the player's current critDamage stat, so Crit Damage cards make this proc hit harder too.
-                passives.thunderBonusDamage = stats.damage * (thunder.damageMultiplier * magnitudeMultiplier + stats.critDamage);
+                // Flat multiplier on player damage (e.g. 3.0 = 300%), scaled only by Star Upgrades' own
+                // passiveMagnitudeBonusPercent — no longer stacks with the player's Crit Damage stat.
+                passives.thunderBonusDamage = stats.damage * thunder.damageMultiplier * magnitudeMultiplier;
                 passives.thunderFxPrefab = characterData.Current.procFxPrefab;
+                passives.thunderStrikeColor = thunder.strikeColor;
             }
 
             CharacterPassiveEffect stun = effects.Find(e => e.effectType == CharacterPassiveEffectType.StunOnHit);
@@ -178,7 +190,31 @@ namespace TwinsDefense.Player
             CharacterPassiveEffect explodeOnKill = effects.Find(e => e.effectType == CharacterPassiveEffectType.ExplodeOnKill);
             ResolveExplodeOnKill(explodeOnKill, ref passives);
 
+            ResolveExclusiveCardProcs(ref passives);
+
             return passives;
+        }
+
+        /// <summary>Holy Strike / Static Strike / Dark Fork — card-granted procs that work the same regardless of which character is equipped, unlike the character-native passives resolved above.</summary>
+        private void ResolveExclusiveCardProcs(ref OnHitPassiveEffects passives)
+        {
+            if (stats.holyStrikeChance > 0f && holyStrikeFxPrefab != null)
+            {
+                passives.holyStrikeChancePercent = stats.holyStrikeChance;
+                passives.holyStrikeBonusDamage = stats.damage * exclusiveStrikeDamageMultiplier;
+                passives.holyStrikeFxPrefab = holyStrikeFxPrefab;
+                passives.holyStrikeColor = holyStrikeColor;
+            }
+
+            if (stats.staticStrikeChance > 0f && staticStrikeFxPrefab != null)
+            {
+                passives.staticStrikeChancePercent = stats.staticStrikeChance;
+                passives.staticStrikeBonusDamage = stats.damage * exclusiveStrikeDamageMultiplier;
+                passives.staticStrikeFxPrefab = staticStrikeFxPrefab;
+                passives.staticStrikeColor = staticStrikeColor;
+            }
+
+            passives.projectileSplitOnHit = stats.hasProjectileSplitOnHit;
         }
 
         /// <summary>Chance stacks additively between the character's own ExplodeOnKill passive (if any, boosted by Star Upgrades) and PlayerStats.explodeOnKillChance (from cards, never boosted by stars); explosion color always uses the character's own passive when present, otherwise the fixed orange cards grant on their own. Damage is no longer derived from the player's stats at all (no magnitude to boost) — Projectile.RollExplodeOnKill scales it to 100% of whichever enemy actually dies.</summary>

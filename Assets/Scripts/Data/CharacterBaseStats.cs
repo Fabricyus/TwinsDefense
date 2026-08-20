@@ -29,7 +29,7 @@ namespace TwinsDefense.Data
         public float moveSpeed = 5f;
 
         [Header("Economy")]
-        public float pickupRadius = 3f;
+        public float pickupRadius = 3.6f;
         public float xpGainMultiplier = 1f;
         public float coinGainMultiplier = 1f;
     }

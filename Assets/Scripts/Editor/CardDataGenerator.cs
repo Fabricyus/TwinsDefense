@@ -56,7 +56,7 @@ namespace TwinsDefense.EditorTools
             new CardDef("sharper_edge", "Sharper Edge", CardEffectType.Damage, 10f, true, CardRarity.Common, 0),
             new CardDef("rapid_cast", "Rapid Cast", CardEffectType.AttackFireRate, 8f, true, CardRarity.Common, 0),
             new CardDef("swift_projectile", "Swift Projectile", CardEffectType.ProjectileSpeed, 15f, true, CardRarity.Common, 0),
-            new CardDef("lucky_strike", "Lucky Strike", CardEffectType.CritChance, 5f, true, CardRarity.Rare, 5),
+            new CardDef("lucky_strike", "Lucky Strike", CardEffectType.CritChance, 10f, true, CardRarity.Rare, 5),
             new CardDef("fatal_blow", "Fatal Blow", CardEffectType.CritDamage, 25f, true, CardRarity.Rare, 0),
             // Star Round: +1 Star Projectile, plus a bundle of star-exclusive bonuses (never touch
             // the player's main damage/attackRange/attackFireRate — see StarProjectileLauncher).
@@ -108,18 +108,18 @@ namespace TwinsDefense.EditorTools
         {
             new SpecialCardDef("reckless_frenzy", "Reckless Frenzy", CardEffectType.AttackFireRate, 150f, true, CardEffectType.Damage, -50f, true),
             new SpecialCardDef("glass_cannon", "Glass Cannon", CardEffectType.Damage, 100f, true, CardEffectType.MaxHP, -50f, true),
-            new SpecialCardDef("stone_twin", "Stone Twin", CardEffectType.MaxHP, 100f, true, CardEffectType.MoveSpeed, -30f, true),
+            new SpecialCardDef("stone_twin", "Stone Twin", CardEffectType.MaxHP, 100f, true, CardEffectType.MoveSpeed, -25f, true),
             new SpecialCardDef("sugar_rush", "Sugar Rush", CardEffectType.MoveSpeed, 50f, true, CardEffectType.Defense, -30f, true),
             new SpecialCardDef("guardians_bargain", "Guardian's Bargain", CardEffectType.Defense, 40f, false, CardEffectType.Damage, -30f, true),
-            new SpecialCardDef("gamblers_coin", "Gambler's Coin", CardEffectType.CritChance, 100f, true, CardEffectType.CritDamage, -50f, true),
+            new SpecialCardDef("gamblers_coin", "Gambler's Coin", CardEffectType.CritChance, 0.2f, false, CardEffectType.CritDamage, -25f, true),
             new SpecialCardDef("hoarders_curse", "Hoarder's Curse", CardEffectType.PickupRadius, 250f, true, CardEffectType.XPGain, -25f, true),
             new SpecialCardDef("big_bang", "Big Bang", CardEffectType.AreaOfEffect, 60f, true, CardEffectType.ProjectileSpeed, -30f, true),
             new SpecialCardDef("swarm_caller", "Swarm Caller", CardEffectType.ExtraProjectile, 1f, false, CardEffectType.Damage, -25f, true),
             new SpecialCardDef("focused_strikes", "Focused Strikes", CardEffectType.CritDamage, 100f, true, CardEffectType.CritChance, -50f, true),
-            new SpecialCardDef("chain_reaction", "Chain Reaction", CardEffectType.ExplodeOnKillChance, 50f, false, CardEffectType.AreaOfEffect, -30f, true),
+            new SpecialCardDef("chain_reaction", "Chain Reaction", CardEffectType.ExplodeOnKillChance, 40f, false, CardEffectType.AreaOfEffect, -30f, true),
         };
 
-        /// <summary>An Exclusive card: only drafted once the named character tier's Flawless Form challenge has been completed (see ChallengeDefinitions, CardDraftService.GetEligibleCards).</summary>
+        /// <summary>An Exclusive card: only drafted once the named character tier's Flawless Form challenge has been completed (see ChallengeDefinitions, CardDraftService.GetEligibleCards) — once unlocked, it's eligible for every character's draft, not just the one whose challenge unlocked it. slotId is kept only as provenance (which character it's thematically tied to), not used to restrict who can draft it.</summary>
         private struct ExclusiveCardDef
         {
             public string cardId;
@@ -130,8 +130,9 @@ namespace TwinsDefense.EditorTools
             public CardEffectType effectType;
             public float value;
             public bool isPercentage;
+            public CardRarity rarity;
 
-            public ExclusiveCardDef(string cardId, string displayName, string slotId, CharacterId requiredChallengeCharacter, int requiredChallengeTier, CardEffectType effectType, float value, bool isPercentage)
+            public ExclusiveCardDef(string cardId, string displayName, string slotId, CharacterId requiredChallengeCharacter, int requiredChallengeTier, CardEffectType effectType, float value, bool isPercentage, CardRarity rarity = CardRarity.Epic)
             {
                 this.cardId = cardId;
                 this.displayName = displayName;
@@ -141,38 +142,67 @@ namespace TwinsDefense.EditorTools
                 this.effectType = effectType;
                 this.value = value;
                 this.isPercentage = isPercentage;
+                this.rarity = rarity;
             }
         }
 
         private static readonly ExclusiveCardDef[] ExclusiveCards =
         {
             // Twin Flame (izzy_1) — unlocked by Izzy Blaze's "Small Blaze" challenge (Izzy tier 2).
-            new ExclusiveCardDef("twin_flame", "Twin Flame", "izzy_1", CharacterId.Izzy, 2, CardEffectType.CritChance, 20f, true),
+            new ExclusiveCardDef("twin_flame", "Twin Flame", "izzy_1", CharacterId.Izzy, 2, CardEffectType.CritChance, 20f, true, CardRarity.Rare),
             // Tactician's Focus (court_1) — unlocked by Court's "Tactician, Not Brawler" challenge (Court tier 1).
             new ExclusiveCardDef("tacticians_focus", "Tactician's Focus", "court_1", CharacterId.Court, 1, CardEffectType.AttackFireRate, 20f, true),
             // Loyal Heart (ralph_1) — unlocked by Ralph's "Iron Wall" challenge (Ralph tier 1).
-            new ExclusiveCardDef("loyal_heart", "Loyal Heart", "ralph_1", CharacterId.Ralph, 1, CardEffectType.BlockChance, 10f, false),
+            new ExclusiveCardDef("loyal_heart", "Loyal Heart", "ralph_1", CharacterId.Ralph, 1, CardEffectType.BlockChance, 10f, false, CardRarity.Rare),
 
             // Gut Feeling (izzy_1) — unlocked by Izzy's "First Instinct" challenge (Izzy tier 1).
-            new ExclusiveCardDef("gut_feeling", "Gut Feeling", "izzy_1", CharacterId.Izzy, 1, CardEffectType.AreaOfEffect, 15f, true),
+            new ExclusiveCardDef("gut_feeling", "Gut Feeling", "izzy_1", CharacterId.Izzy, 1, CardEffectType.Damage, 20f, true),
             // True Aim (izzy_3) — unlocked by Izzy Archer's "The Real Archer" challenge (Izzy tier 3).
             new ExclusiveCardDef("true_aim", "True Aim", "izzy_3", CharacterId.Izzy, 3, CardEffectType.Pierce, 2f, false),
             // Extra Round (izzy_4) — unlocked by Izzy PopStar's "Flawless Diva" challenge (Izzy tier 4).
             new ExclusiveCardDef("bonus_round", "Extra Round", "izzy_4", CharacterId.Izzy, 4, CardEffectType.ExtraProjectile, 1f, false),
 
             // Absolute Zero (court_2) — unlocked by Frost Court's "Never Melt" challenge (Court tier 2).
-            new ExclusiveCardDef("absolute_zero", "Absolute Zero", "court_2", CharacterId.Court, 2, CardEffectType.AttackRange, 15f, true),
-            // Static Strike (court_3) — unlocked by Court Reader's "Storm Reader" challenge (Court tier 3). Boosts the character's native ThunderStrikeOnHit proc chance.
-            new ExclusiveCardDef("static_strike", "Static Strike", "court_3", CharacterId.Court, 3, CardEffectType.PassiveProcChanceBonus, 1f, false),
-            // Dark Chain (court_4) — unlocked by Dark Court's "One True Chain" challenge (Court tier 4). Boosts the character's native ChainOnHit proc chance.
-            new ExclusiveCardDef("dark_chain", "Dark Chain", "court_4", CharacterId.Court, 4, CardEffectType.PassiveProcChanceBonus, 25f, false),
+            new ExclusiveCardDef("absolute_zero", "Absolute Zero", "court_2", CharacterId.Court, 2, CardEffectType.AttackRange, 15f, true, CardRarity.Rare),
+            // Mega Brain (court_3, cardId kept as static_strike) — unlocked by Court Reader's "Storm Reader" challenge (Court tier 3).
+            new ExclusiveCardDef("static_strike", "Mega Brain", "court_3", CharacterId.Court, 3, CardEffectType.AreaOfEffect, 15f, true, CardRarity.Rare),
+            // Dark Fork (court_4) — unlocked by Dark Court's "One True Chain" challenge (Court tier 4). On hitting an enemy, forks the projectile into two children angled +/-45 degrees off its heading (see Projectile.TrySplitOnHit).
+            new ExclusiveCardDef("dark_fork", "Dark Fork", "court_4", CharacterId.Court, 4, CardEffectType.ProjectileSplitOnHit, 1f, false),
 
             // Blessed Ward (ralph_2) — unlocked by Priest Ralph's "Humble Priest" challenge (Ralph tier 2).
-            new ExclusiveCardDef("blessed_ward", "Blessed Ward", "ralph_2", CharacterId.Ralph, 2, CardEffectType.HPRegen, 1f, false),
-            // Holy Strike (ralph_3) — unlocked by Paladin Ralph's "Holy Solo" challenge (Ralph tier 3). Boosts the character's native ThunderStrikeOnHit (holy bolt) proc chance.
-            new ExclusiveCardDef("holy_strike", "Holy Strike", "ralph_3", CharacterId.Ralph, 3, CardEffectType.PassiveProcChanceBonus, 1f, false),
-            // Cute Strike (ralph_4) — unlocked by Cute Ralph's "Too Cute to Hit" challenge (Ralph tier 4). Boosts the character's native ThunderStrikeOnHit (heart bolt) proc chance.
-            new ExclusiveCardDef("cute_strike", "Cute Strike", "ralph_4", CharacterId.Ralph, 4, CardEffectType.PassiveProcChanceBonus, 5f, false),
+            new ExclusiveCardDef("blessed_ward", "Blessed Ward", "ralph_2", CharacterId.Ralph, 2, CardEffectType.HPRegen, 1f, false, CardRarity.Rare),
+            // Holy Strike (ralph_3) — unlocked by Paladin Ralph's "Holy Solo" challenge (Ralph tier 3). 1% flat chance per hit to proc Paladin Ralph's own holyFx strike, independent of the equipped character (see AutoAttack.holyStrikeFxPrefab).
+            new ExclusiveCardDef("holy_strike", "Holy Strike", "ralph_3", CharacterId.Ralph, 3, CardEffectType.HolyStrikeChance, 1f, false),
+            // Cute Stats (ralph_4) — unlocked by Cute Ralph's "Too Cute to Hit" challenge (Ralph tier 4). Boosts the character's native ThunderStrikeOnHit (heart bolt) proc chance.
+            new ExclusiveCardDef("cute_strike", "Cute Stats", "ralph_4", CharacterId.Ralph, 4, CardEffectType.PassiveProcChanceBonus, 25f, false),
+        };
+
+        /// <summary>A globally-unlocked secret card — undraftable until CampaignProgress.MegaMagpieKilled is true (see CardDraftService.GetEligibleCards), independent of character/tier, unlike ExclusiveCardDef above.</summary>
+        private struct SecretCardDef
+        {
+            public string cardId;
+            public string displayName;
+            public CardEffectType effectType;
+            public float value;
+            public bool isPercentage;
+
+            public SecretCardDef(string cardId, string displayName, CardEffectType effectType, float value, bool isPercentage)
+            {
+                this.cardId = cardId;
+                this.displayName = displayName;
+                this.effectType = effectType;
+                this.value = value;
+                this.isPercentage = isPercentage;
+            }
+        }
+
+        private static readonly SecretCardDef[] SecretCards =
+        {
+            // Rainbow Nova — unlocked by defeating the secret Mega Magpie at Level 100 (see
+            // EnemySpawner.megaBossPrefab, CampaignProgress.MegaMagpieKilled, AchievementRegistry's
+            // "Beyond the Rainbow"). Periodic AoE pulse that damages every active enemy in the arena,
+            // scaling off the player's own damage — see RainbowNovaController.
+            new SecretCardDef("rainbow_nova", "Rainbow Nova", CardEffectType.RainbowNova, 1f, false),
         };
 
         [MenuItem("Tools/TwinsDefense/Generate Card Data")]
@@ -193,7 +223,7 @@ namespace TwinsDefense.EditorTools
                 AssetDatabase.CreateFolder(CardsFolder, "Exclusive");
             }
 
-            List<CardData> createdCards = new List<CardData>(Cards.Length + SpecialCards.Length + ExclusiveCards.Length);
+            List<CardData> createdCards = new List<CardData>(Cards.Length + SpecialCards.Length + ExclusiveCards.Length + SecretCards.Length);
 
             foreach (CardDef def in Cards)
             {
@@ -269,13 +299,48 @@ namespace TwinsDefense.EditorTools
                 card.value = def.value;
                 card.isPercentage = def.isPercentage;
                 card.isSpecial = false;
-                card.rarity = CardRarity.Epic;
+                card.rarity = def.rarity;
                 card.maxStacks = 1;
+                // Same weight as every other card in its rarity tier — no Exclusive-card premium.
+                // Not character-restricted — once its own challenge is completed (see
+                // requiredChallengeCharacter/Tier below), this card is eligible for every character's
+                // draft, not just the one whose challenge unlocked it.
                 card.rollWeight = 1f;
-                card.restrictedToCharacterIds = new[] { def.slotId };
+                card.restrictedToCharacterIds = null;
                 card.minStarsRequired = 0;
                 card.requiredChallengeCharacter = def.requiredChallengeCharacter;
                 card.requiredChallengeTier = def.requiredChallengeTier;
+
+                EditorUtility.SetDirty(card);
+                createdCards.Add(card);
+            }
+
+            foreach (SecretCardDef def in SecretCards)
+            {
+                string path = $"{ExclusiveCardsFolder}/{def.cardId}.asset";
+                CardData card = AssetDatabase.LoadAssetAtPath<CardData>(path);
+
+                if (card == null)
+                {
+                    card = ScriptableObject.CreateInstance<CardData>();
+                    AssetDatabase.CreateAsset(card, path);
+                }
+
+                card.cardId = def.cardId;
+                card.displayName = def.displayName;
+                card.effectType = def.effectType;
+                card.value = def.value;
+                card.isPercentage = def.isPercentage;
+                card.isSpecial = false;
+                card.rarity = CardRarity.Epic;
+                card.maxStacks = 1;
+                // Same weight as every other Epic card — no premium.
+                card.rollWeight = 1f;
+                card.restrictedToCharacterIds = null;
+                card.minStarsRequired = 0;
+                card.requiredChallengeCharacter = default;
+                card.requiredChallengeTier = 0;
+                card.requiresMegaMagpieKill = true;
 
                 EditorUtility.SetDirty(card);
                 createdCards.Add(card);
@@ -296,7 +361,7 @@ namespace TwinsDefense.EditorTools
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
 
-            Debug.Log($"CardDataGenerator: generated {createdCards.Count} card asset(s) ({SpecialCards.Length} special, {ExclusiveCards.Length} Star-exclusive) + CardPoolConfig at '{CardsFolder}'.");
+            Debug.Log($"CardDataGenerator: generated {createdCards.Count} card asset(s) ({SpecialCards.Length} special, {ExclusiveCards.Length} Star-exclusive, {SecretCards.Length} secret) + CardPoolConfig at '{CardsFolder}'.");
         }
     }
 }

@@ -15,7 +15,7 @@ MonoBehaviour:
   cardId: blessed_ward
   displayName: Blessed Ward
   description: 
-  icon: {fileID: 0}
+  icon: {fileID: -660253543179638048, guid: cf5ab18e05429c44ab411069aee41dfd, type: 3}
   effectType: 11
   value: 1
   isPercentage: 0
@@ -24,11 +24,11 @@ MonoBehaviour:
   secondValue: 0
   secondIsPercentage: 0
   additionalEffects: []
-  rarity: 2
+  rarity: 1
   rollWeight: 1
   maxStacks: 1
-  restrictedToCharacterIds:
-  - ralph_2
+  restrictedToCharacterIds: []
   minStarsRequired: 0
   requiredChallengeCharacter: 2
   requiredChallengeTier: 2
+  requiresMegaMagpieKill: 0

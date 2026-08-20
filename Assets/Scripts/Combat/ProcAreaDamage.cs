@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using TwinsDefense.Enemies;
+using TwinsDefense.Systems;
 
 namespace TwinsDefense.Combat
 {
@@ -15,16 +16,45 @@ namespace TwinsDefense.Combat
     {
         private CircleCollider2D hitbox;
         private Vector3 baseScale;
+        private SpriteRenderer spriteRenderer;
+        private float baseAlpha = 1f;
 
         private void Awake()
         {
             hitbox = GetComponent<CircleCollider2D>();
             hitbox.isTrigger = true;
             baseScale = transform.localScale;
+
+            spriteRenderer = GetComponent<SpriteRenderer>();
+            if (spriteRenderer != null)
+            {
+                baseAlpha = spriteRenderer.color.a;
+                ApplyOpacity(ProjectileOpacitySettings.Value);
+            }
         }
 
-        /// <summary>Scales the FX GameObject (visual + hitbox) by areaOfEffectScale, then damages every ArenaEnemy caught inside it (once each).</summary>
-        public void Detonate(float damage, bool isCrit, float areaOfEffectScale)
+        private void OnEnable()
+        {
+            ProjectileOpacitySettings.OnChanged += ApplyOpacity;
+        }
+
+        private void OnDisable()
+        {
+            ProjectileOpacitySettings.OnChanged -= ApplyOpacity;
+        }
+
+        /// <summary>Scales the sprite's own alpha by the player's projectile-opacity preference — same slider/setting Projectile/StarProjectile/ProjectileTrailVFX already use.</summary>
+        private void ApplyOpacity(float opacity)
+        {
+            if (spriteRenderer == null) return;
+
+            Color color = spriteRenderer.color;
+            color.a = baseAlpha * opacity;
+            spriteRenderer.color = color;
+        }
+
+        /// <summary>Scales the FX GameObject (visual + hitbox) by areaOfEffectScale, then damages every ArenaEnemy caught inside it (once each). popupColor tints the damage popup per character (e.g. thunderFx/holyFx/heartFx) instead of the default crit gold.</summary>
+        public void Detonate(float damage, bool isCrit, float areaOfEffectScale, Color? popupColor = null)
         {
             float scaleMultiplier = Mathf.Max(0.01f, areaOfEffectScale);
             transform.localScale = baseScale * scaleMultiplier;
@@ -38,7 +68,7 @@ namespace TwinsDefense.Combat
                 ArenaEnemy enemy = hit.GetComponent<ArenaEnemy>();
                 if (enemy == null || !damagedEnemies.Add(enemy)) continue;
 
-                enemy.TakeDamage(damage, isCrit);
+                enemy.TakeDamage(damage, isCrit, popupColor: popupColor);
             }
         }
     }

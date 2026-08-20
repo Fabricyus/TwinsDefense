@@ -18,6 +18,7 @@ namespace TwinsDefense.Combat
         public float thunderChancePercent;
         public float thunderBonusDamage;
         public GameObject thunderFxPrefab;
+        public Color thunderStrikeColor;
 
         public float stunChancePercent;
         public float stunDurationSeconds;
@@ -30,6 +31,21 @@ namespace TwinsDefense.Combat
 
         public float explodeOnKillChancePercent;
         public Color explodeOnKillColor;
+
+        /// <summary>Holy Strike card — flat chance, independent of the equipped character, to proc Paladin Ralph's holyFx. See AutoAttack.ResolveOnHitPassives.</summary>
+        public float holyStrikeChancePercent;
+        public float holyStrikeBonusDamage;
+        public GameObject holyStrikeFxPrefab;
+        public Color holyStrikeColor;
+
+        /// <summary>Static Strike card — flat chance, independent of the equipped character, to proc Court Reader's thunderFx.</summary>
+        public float staticStrikeChancePercent;
+        public float staticStrikeBonusDamage;
+        public GameObject staticStrikeFxPrefab;
+        public Color staticStrikeColor;
+
+        /// <summary>Dark Fork card — on hitting an enemy, forks the projectile into two children angled +/-45 degrees off its heading. See Projectile.TrySplitOnHit.</summary>
+        public bool projectileSplitOnHit;
     }
 
     /// <summary>
@@ -48,6 +64,9 @@ namespace TwinsDefense.Combat
         [SerializeField] private float chainRadius = 4f;
         [Tooltip("Base AoE radius for an ExplodeOnKill proc, before scaling by the player's current Area of Effect.")]
         [SerializeField] private float explodeOnKillRadius = 3f;
+        [Tooltip("Chance for each enemy killed by an ExplodeOnKill splash (not the original direct kill) to drop one bonus exp crystal — roughly 1 in 3 by default, since splash kills otherwise grant no XP at all.")]
+        [Range(0f, 1f)]
+        [SerializeField] private float explodeOnKillBonusExpChance = 1f / 3f;
 
         private Vector2 direction;
         private float speed;
@@ -62,6 +81,8 @@ namespace TwinsDefense.Combat
         private SpriteRenderer spriteRenderer;
         private float baseAlpha = 1f;
         private readonly HashSet<ArenaEnemy> hitEnemies = new HashSet<ArenaEnemy>();
+        private GameObject sourcePrefab;
+        private bool hasSplitOnHit;
 
 private void Awake()
         {
@@ -108,7 +129,8 @@ private void OnEnable()
         /// <param name="pierceCount">Extra enemies this projectile can hit after its first, before being destroyed.</param>
         /// <param name="scaleMultiplier">Multiplies the prefab's own scale — how the Area of Effect card grows the projectile's visual/hit size.</param>
         /// <param name="onHitPassives">The firing character's on-hit passives (ThunderStrike/Stun/Slow/Chain), rolled independently per enemy hit.</param>
-        public void Launch(Vector2 direction, float damage, float speed, bool isCrit = false, int pierceCount = 0, float scaleMultiplier = 1f, bool isRotatingProjectile = false, OnHitPassiveEffects onHitPassives = default)
+        /// <param name="sourcePrefab">The prefab this instance was spawned from — kept only so Dark Fork's split-on-hit proc can spawn clean children from the original prefab instead of cloning this (already-scaled, already-hit) live instance. Left null for callers that never grant the split proc (e.g. enemy/boss projectiles).</param>
+        public void Launch(Vector2 direction, float damage, float speed, bool isCrit = false, int pierceCount = 0, float scaleMultiplier = 1f, bool isRotatingProjectile = false, OnHitPassiveEffects onHitPassives = default, GameObject sourcePrefab = null)
         {
             this.direction = direction.normalized;
             this.damage = damage;
@@ -117,6 +139,7 @@ private void OnEnable()
             this.isRotatingProjectile = isRotatingProjectile;
             this.areaOfEffectScale = scaleMultiplier;
             this.onHitPassives = onHitPassives;
+            this.sourcePrefab = sourcePrefab;
             remainingPierces = pierceCount;
 
             transform.rotation = Quaternion.Euler(0f, 0, -90 + Mathf.Atan2(this.direction.y, this.direction.x) * Mathf.Rad2Deg);
@@ -165,6 +188,8 @@ private void OnEnable()
                 RollExplodeOnKill(enemy);
             }
 
+            TrySplitOnHit();
+
             if (remainingPierces <= 0)
             {
                 Destroy(gameObject);
@@ -190,8 +215,10 @@ private void OnEnable()
                 GameObject fxInstance = Instantiate(onHitPassives.thunderFxPrefab, enemy.transform.position, Quaternion.identity);
                 ProcAreaDamage areaDamage = fxInstance.GetComponent<ProcAreaDamage>();
 
-                // Crit (yellow) AoE hit around the impact point — scales with the player's current Area of Effect.
-                areaDamage?.Detonate(onHitPassives.thunderBonusDamage, true, areaOfEffectScale);
+                // Guaranteed-hit AoE around the impact point, styled as a crit popup (size/motion) but tinted to
+                // this character's own strike color instead of the default crit gold — scales with the player's
+                // current Area of Effect.
+                areaDamage?.Detonate(onHitPassives.thunderBonusDamage, true, areaOfEffectScale, onHitPassives.thunderStrikeColor);
             }
 
             if (onHitPassives.stunChancePercent > 0f && Random.value * 100f < onHitPassives.stunChancePercent)
@@ -203,6 +230,43 @@ private void OnEnable()
             {
                 enemy.ApplySlow(onHitPassives.slowMagnitudePercent, onHitPassives.slowDurationSeconds);
             }
+
+            if (onHitPassives.holyStrikeFxPrefab != null && onHitPassives.holyStrikeChancePercent > 0f && Random.value * 100f < onHitPassives.holyStrikeChancePercent)
+            {
+                GameObject holyFxInstance = Instantiate(onHitPassives.holyStrikeFxPrefab, enemy.transform.position, Quaternion.identity);
+                holyFxInstance.GetComponent<ProcAreaDamage>()?.Detonate(onHitPassives.holyStrikeBonusDamage, true, areaOfEffectScale, onHitPassives.holyStrikeColor);
+            }
+
+            if (onHitPassives.staticStrikeFxPrefab != null && onHitPassives.staticStrikeChancePercent > 0f && Random.value * 100f < onHitPassives.staticStrikeChancePercent)
+            {
+                GameObject staticFxInstance = Instantiate(onHitPassives.staticStrikeFxPrefab, enemy.transform.position, Quaternion.identity);
+                staticFxInstance.GetComponent<ProcAreaDamage>()?.Detonate(onHitPassives.staticStrikeBonusDamage, true, areaOfEffectScale, onHitPassives.staticStrikeColor);
+            }
+        }
+
+        /// <summary>Dark Fork's on-hit proc: forks this projectile into two children angled +/-45 degrees off its current heading, each carrying the same damage/pierce/passives (minus the split flag itself, so a fork can't fork again). Fires at most once per projectile no matter how many enemies it goes on to pierce.</summary>
+        private void TrySplitOnHit()
+        {
+            if (!onHitPassives.projectileSplitOnHit || hasSplitOnHit) return;
+
+            hasSplitOnHit = true;
+
+            SpawnFork(RotateDegrees(direction, 45f));
+            SpawnFork(RotateDegrees(direction, -45f));
+        }
+
+        /// <summary>Spawns a fresh child projectile from sourcePrefab (falling back to this GameObject if unset) rather than cloning this live instance — avoids double-baking the current Area of Effect scale and inheriting this instance's already-hit enemy set.</summary>
+        private void SpawnFork(Vector2 forkDirection)
+        {
+            GameObject prefabToSpawn = sourcePrefab != null ? sourcePrefab : gameObject;
+            GameObject instance = Instantiate(prefabToSpawn, transform.position, Quaternion.identity);
+
+            if (!instance.TryGetComponent(out Projectile fork)) return;
+
+            OnHitPassiveEffects forkPassives = onHitPassives;
+            forkPassives.projectileSplitOnHit = false;
+
+            fork.Launch(forkDirection, damage, speed, isCrit, remainingPierces, areaOfEffectScale, isRotatingProjectile, forkPassives, sourcePrefab);
         }
 
         /// <summary>
@@ -224,7 +288,10 @@ private void OnEnable()
         /// its own explosion in turn (recursively), so a single proc can chain through an entire
         /// pack. alreadyExploded is threaded through the recursion so no enemy explodes (or takes
         /// splash damage) more than once in the same chain. Enemies killed by any explosion in the
-        /// chain don't drop XP (only coins), so this can't be farmed for XP like a direct kill.
+        /// chain still don't grant direct XP (only coins, same as a direct kill would skip via
+        /// grantsExp: false) — instead each one independently rolls explodeOnKillBonusExpChance
+        /// (~33%) for a single bonus exp crystal, so a chain can't be farmed as reliably as direct
+        /// kills but isn't a total XP dead zone either.
         /// </summary>
         private void TriggerExplosion(ArenaEnemy killedEnemy, HashSet<ArenaEnemy> alreadyExploded)
         {
@@ -244,6 +311,11 @@ private void OnEnable()
 
                 if (other.HealthPercent01 <= 0f)
                 {
+                    if (Random.value < explodeOnKillBonusExpChance)
+                    {
+                        other.DropBonusExpCrystal();
+                    }
+
                     TriggerExplosion(other, alreadyExploded);
                 }
             }
@@ -259,6 +331,14 @@ private void OnEnable()
 
             direction = ((Vector2)chainTarget.transform.position - (Vector2)transform.position).normalized;
             transform.rotation = Quaternion.Euler(0f, 0f, -90 + Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg);
+        }
+
+        private static Vector2 RotateDegrees(Vector2 vector, float degrees)
+        {
+            float radians = degrees * Mathf.Deg2Rad;
+            float cos = Mathf.Cos(radians);
+            float sin = Mathf.Sin(radians);
+            return new Vector2(vector.x * cos - vector.y * sin, vector.x * sin + vector.y * cos);
         }
 
         /// <summary>Nearest enemy this projectile hasn't already hit, within chainRadius of fromPosition — the ChainOnHit jump target.</summary>

@@ -49,6 +49,8 @@ namespace TwinsDefense.Data
         public float procDurationSeconds;
         [Tooltip("ExplodeOnKill only: tint of the explosion particle burst (e.g. blue for an icy character).")]
         public Color explosionColor = new Color(1f, 0.55f, 0.1f, 1f);
+        [Tooltip("ThunderStrikeOnHit only: tint of this proc's damage popup text (e.g. light blue for a thunder bolt, light yellow for a holy bolt, pink for a heart).")]
+        public Color strikeColor = Color.white;
 
         [Header("Run-start flat bonus")]
         public RunStartStatType runStartStat;

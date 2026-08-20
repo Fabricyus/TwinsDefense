@@ -147,6 +147,15 @@ namespace TwinsDefense.Player
             OnHealthChanged?.Invoke(CurrentHP, stats.maxHP);
         }
 
+        /// <summary>Caps CurrentHP down to stats.maxHP if it now exceeds it — e.g. after a Max HP-reducing card like Glass Cannon shrinks the cap. Never heals up; a no-op while CurrentHP is already within the (possibly grown) max.</summary>
+        public void ClampToMaxHP()
+        {
+            if (CurrentHP <= stats.maxHP) return;
+
+            CurrentHP = stats.maxHP;
+            OnHealthChanged?.Invoke(CurrentHP, stats.maxHP);
+        }
+
         private void TriggerHitFlash()
         {
             if (spriteRenderer == null || flashMaterial == null) return;

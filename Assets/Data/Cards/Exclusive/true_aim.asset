@@ -15,7 +15,7 @@ MonoBehaviour:
   cardId: true_aim
   displayName: True Aim
   description: 
-  icon: {fileID: 0}
+  icon: {fileID: 2143726237, guid: cf5ab18e05429c44ab411069aee41dfd, type: 3}
   effectType: 6
   value: 2
   isPercentage: 0
@@ -27,8 +27,8 @@ MonoBehaviour:
   rarity: 2
   rollWeight: 1
   maxStacks: 1
-  restrictedToCharacterIds:
-  - izzy_3
+  restrictedToCharacterIds: []
   minStarsRequired: 0
   requiredChallengeCharacter: 0
   requiredChallengeTier: 3
+  requiresMegaMagpieKill: 0

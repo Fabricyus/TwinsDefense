@@ -1,4 +1,5 @@
 using UnityEngine;
+using TwinsDefense.Systems;
 
 namespace TwinsDefense.VFX
 {
@@ -6,7 +7,8 @@ namespace TwinsDefense.VFX
     /// One-shot radial particle burst for an explosion (BombEnemy's self-detonation,
     /// ReaperEnemy's hazard-circle detonation, ExplodeOnKill procs). Fully self-contained
     /// (no prefab/art asset needed) — reuses AttackCircleVFX's procedural circle sprite as
-    /// the particle texture, tinted per-caller (orange/fire by default).
+    /// the particle texture, tinted per-caller (orange/fire by default). Alpha is scaled by
+    /// ProjectileOpacitySettings.Value at spawn (same slider Projectile/StarProjectile use).
     /// </summary>
     public class ExplosionVFX : MonoBehaviour
     {
@@ -21,8 +23,15 @@ namespace TwinsDefense.VFX
             const float lifetime = 0.4f;
             const float burstDuration = 0.05f;
 
+            // Read once at spawn — this burst is done playing well before the player could
+            // realistically move the opacity slider mid-flight, unlike longer-lived FX
+            // (Projectile/StarProjectile/ProjectileTrailVFX) which subscribe to OnChanged instead.
+            float opacity = ProjectileOpacitySettings.Value;
+
             Color baseColor = color ?? DefaultColor;
+            baseColor.a *= opacity;
             Color brightColor = Color.Lerp(baseColor, Color.white, 0.35f);
+            brightColor.a = baseColor.a;
 
             GameObject obj = new GameObject("ExplosionVFX");
             obj.transform.position = position;
@@ -53,7 +62,7 @@ namespace TwinsDefense.VFX
             Gradient gradient = new Gradient();
             gradient.SetKeys(
                 new[] { new GradientColorKey(Color.white, 0f), new GradientColorKey(Color.white, 1f) },
-                new[] { new GradientAlphaKey(1f, 0f), new GradientAlphaKey(0f, 1f) });
+                new[] { new GradientAlphaKey(opacity, 0f), new GradientAlphaKey(0f, 1f) });
             colorOverLifetime.color = gradient;
 
             ParticleSystem.SizeOverLifetimeModule sizeOverLifetime = ps.sizeOverLifetime;

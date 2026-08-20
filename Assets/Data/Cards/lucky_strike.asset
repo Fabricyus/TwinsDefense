@@ -17,7 +17,7 @@ MonoBehaviour:
   description: 
   icon: {fileID: 0}
   effectType: 3
-  value: 5
+  value: 10
   isPercentage: 1
   isSpecial: 0
   secondEffectType: 0
@@ -31,3 +31,4 @@ MonoBehaviour:
   minStarsRequired: 0
   requiredChallengeCharacter: 0
   requiredChallengeTier: 0
+  requiresMegaMagpieKill: 0

@@ -30,7 +30,7 @@ namespace TwinsDefense.Player
         public float hpRegen = 0f;
         public float iFrameDuration = 0.5f;
         public float moveSpeed = 5f;
-        public float pickupRadius = 3f;
+        public float pickupRadius = 3.6f;
         public float xpGainMultiplier = 1f;
         public float coinGainMultiplier = 1f;
 
@@ -49,7 +49,7 @@ namespace TwinsDefense.Player
         /// <summary>Set by Star Round (see CardEffectType.StarCooldownReduction) — flat seconds subtracted from StarProjectileLauncher's own cooldown, never affecting the main attackFireRate stat above.</summary>
         public float starCooldownReductionSeconds = 0f;
 
-        /// <summary>Set by PlayerCharacterData.ApplyPurchasedStars and by Epic exclusive cards (Static Strike, Dark Chain, Holy Strike, Cute Strike — see CardEffectType.PassiveProcChanceBonus) — flat percentage points added to the character's own on-hit passive's proc chance (Stun/Slow/Thunder/Chain/ExplodeOnKill). Never affects card-granted procs (e.g. explodeOnKillChance above), only the character's native passive.</summary>
+        /// <summary>Set by PlayerCharacterData.ApplyPurchasedStars and by the Cute Stats Exclusive card (see CardEffectType.PassiveProcChanceBonus) — flat percentage points added to the character's own on-hit passive's proc chance (Stun/Slow/Thunder/Chain/ExplodeOnKill). Never affects card-granted procs (e.g. explodeOnKillChance above), only the character's native passive. Static Strike/Holy Strike/Dark Fork no longer route through this — they're their own independent-of-character procs, see holyStrikeChance/staticStrikeChance/hasProjectileSplitOnHit below.</summary>
         public float passiveProcChanceBonus = 0f;
 
         /// <summary>Set by PlayerCharacterData.ApplyPurchasedStars — percentage increase applied to the character's own on-hit passive's magnitude (slow%, stun/slow duration, Thunder/ExplodeOnKill damage multiplier).</summary>
@@ -61,5 +61,15 @@ namespace TwinsDefense.Player
 
         /// <summary>Set by PlayerCharacterData.ApplyPurchasedStars once all 5 stars are purchased for this character/tier — cosmetic-only sunburst aura at the player's feet (see PlayerStarAuraVFX), reusing CardRarityVFX's Epic card aura look.</summary>
         public bool hasFiveStarAura = false;
+
+        /// <summary>Set by the Holy Strike / Static Strike Exclusive cards (CardEffectType.HolyStrikeChance/StaticStrikeChance) — flat percentage chance (0-100) for any hit to proc the fixed holyFx/thunderFx strike, independent of the equipped character's own passives. See AutoAttack.ResolveOnHitPassives.</summary>
+        public float holyStrikeChance = 0f;
+        public float staticStrikeChance = 0f;
+
+        /// <summary>Set by the Dark Fork Exclusive card (CardEffectType.ProjectileSplitOnHit) — on hitting an enemy, the projectile forks into two children angled +/-45 degrees off its heading. See Projectile.TrySplitOnHit.</summary>
+        public bool hasProjectileSplitOnHit = false;
+
+        /// <summary>Set by the Rainbow Nova Exclusive card (CardEffectType.RainbowNova, unlocked by defeating the secret Mega Magpie) — periodic AoE pulse that damages every active enemy in the arena. See RainbowNovaController.</summary>
+        public bool hasRainbowNova = false;
     }
 }

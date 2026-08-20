@@ -27,6 +27,10 @@ namespace TwinsDefense.UI
         [SerializeField] private Sprite specialCardSprite;
         [Tooltip("Rarity glow/embers — shown for Rare (blue) and Epic (yellow), hidden for Common.")]
         [SerializeField] private CardRarityVFX rarityVFX;
+        [Tooltip("Small badge stuck to the card corner like a seal, shown only for Exclusive cards (card.requiredChallengeTier > 0) that have an icon assigned — lets the player recognize which challenge unlocked it at a glance.")]
+        [SerializeField] private Image exclusiveBadgeImage;
+        [Tooltip("Rainbow rim-glow sat behind exclusiveBadgeImage, shown only for the Rainbow Nova card specifically (see RainbowNovaCardId below) — reuses the same Mat_RainbowAuraInner look as the player/boss's own Rainbow Aura VFX.")]
+        [SerializeField] private Image cardIconRainbowAuraImage;
 
         [Header("Animation")]
         [SerializeField] private float hoverScale = 1.1f;
@@ -85,7 +89,32 @@ public void Show(CardData card, Action<CardData> pickedCallback)
             }
 
             rarityVFX?.SetRarity(card.rarity);
+
+            if (exclusiveBadgeImage != null)
+            {
+                bool showBadge = (card.requiredChallengeTier > 0 || card.requiresMegaMagpieKill) && card.icon != null;
+                exclusiveBadgeImage.gameObject.SetActive(showBadge);
+
+                if (showBadge)
+                {
+                    exclusiveBadgeImage.sprite = card.icon;
+                }
+            }
+
+            if (cardIconRainbowAuraImage != null)
+            {
+                bool showRainbowAura = card.cardId == RainbowNovaCardId;
+                cardIconRainbowAuraImage.gameObject.SetActive(showRainbowAura);
+
+                if (showRainbowAura)
+                {
+                    cardIconRainbowAuraImage.sprite = card.icon;
+                }
+            }
         }
+
+        /// <summary>Hardcoded on purpose — a one-off cosmetic tied to this exact secret card, not a data-driven flag on CardData like requiresMegaMagpieKill above.</summary>
+        private const string RainbowNovaCardId = "rainbow_nova";
 
         public void OnPointerEnter(PointerEventData eventData)
         {
@@ -203,6 +232,16 @@ public void OnPointerExit(PointerEventData eventData)
                 return $"Recover {amount} HP";
             }
 
+            if (effectType == CardEffectType.ProjectileSplitOnHit)
+            {
+                return "Projectiles fork in two on hit";
+            }
+
+            if (effectType == CardEffectType.RainbowNova)
+            {
+                return "Periodic rainbow nova hits every enemy";
+            }
+
             return $"{amount} {EffectLabel(effectType)}";
         }
 
@@ -235,6 +274,8 @@ public void OnPointerExit(PointerEventData eventData)
                 case CardEffectType.StarDamageBonus: return "Star Damage";
                 case CardEffectType.StarRangeBonus: return "Star Range";
                 case CardEffectType.StarCooldownReduction: return "Star Cooldown";
+                case CardEffectType.HolyStrikeChance: return "Chance for a Holy Strike";
+                case CardEffectType.StaticStrikeChance: return "Chance for a Lightning Strike";
                 default: return effectType.ToString();
             }
         }

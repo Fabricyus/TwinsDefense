@@ -19,6 +19,7 @@ namespace TwinsDefense.Systems
         private const string Level30UnlockedKey = "TwinsDefense.Campaign.Level30Unlocked";
         private const string SkullKillCountKey = "TwinsDefense.Campaign.SkullKillCount";
         private const string GameCompletedKey = "TwinsDefense.Campaign.GameCompleted";
+        private const string MegaMagpieKilledKey = "TwinsDefense.Campaign.MegaMagpieKilled";
 
         /// <summary>How many level-20 boss kills are needed to unlock level 30.</summary>
         public const int SkullKillsRequiredForLevel30 = 3;
@@ -27,6 +28,9 @@ namespace TwinsDefense.Systems
         public static bool Level30Unlocked => PlayerPrefs.GetInt(Level30UnlockedKey, 0) == 1;
         public static int SkullKillCount => PlayerPrefs.GetInt(SkullKillCountKey, 0);
         public static bool GameCompleted => PlayerPrefs.GetInt(GameCompletedKey, 0) == 1;
+
+        /// <summary>Global, character-independent: has the secret level-100 Mega Magpie ever been killed, with any character. Reached by out-leveling the regular level-30 Magpie fight before killing it — uncollected exp crystals from earlier in the run keep the level climbing even mid-fight — not by a normal bossSpawns-triggered ending, so this never interacts with Level20Unlocked/Level30Unlocked/GameCompleted above.</summary>
+        public static bool MegaMagpieKilled => PlayerPrefs.GetInt(MegaMagpieKilledKey, 0) == 1;
 
         /// <summary>Called once, the first time the player reaches level 10.</summary>
         public static void UnlockLevel20()
@@ -59,6 +63,15 @@ namespace TwinsDefense.Systems
             if (GameCompleted) return;
 
             PlayerPrefs.SetInt(GameCompletedKey, 1);
+            PlayerPrefs.Save();
+        }
+
+        /// <summary>Called once, when the secret level-100 Mega Magpie is defeated.</summary>
+        public static void ReportMegaMagpieKilled()
+        {
+            if (MegaMagpieKilled) return;
+
+            PlayerPrefs.SetInt(MegaMagpieKilledKey, 1);
             PlayerPrefs.Save();
         }
     }

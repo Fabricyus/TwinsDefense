@@ -1,4 +1,5 @@
 using UnityEngine;
+using TwinsDefense.Systems;
 
 namespace TwinsDefense.VFX
 {
@@ -26,16 +27,29 @@ namespace TwinsDefense.VFX
         [SerializeField] private float emissionRate = 30f;
 
         private static Material cachedMaterial;
+        private float baseAlpha;
 
         private void Awake()
         {
+            baseAlpha = trailColor.a;
             ApplySettings();
+        }
+
+        private void OnEnable()
+        {
+            ProjectileOpacitySettings.OnChanged += ApplyOpacity;
+        }
+
+        private void OnDisable()
+        {
+            ProjectileOpacitySettings.OnChanged -= ApplyOpacity;
         }
 
         /// <summary>Overrides the trail color and re-applies every particle module — used to dye a runtime-attached trail instead of relying on the Inspector default.</summary>
         public void Configure(Color color)
         {
             trailColor = color;
+            baseAlpha = trailColor.a;
             ApplySettings();
         }
 
@@ -49,7 +63,6 @@ namespace TwinsDefense.VFX
             main.startLifetime = startLifetime;
             main.startSpeed = 0.3f;
             main.startSize = startSize;
-            main.startColor = trailColor;
             main.simulationSpace = ParticleSystemSimulationSpace.World;
             main.maxParticles = 100;
 
@@ -62,11 +75,6 @@ namespace TwinsDefense.VFX
 
             ParticleSystem.ColorOverLifetimeModule colorOverLifetime = ps.colorOverLifetime;
             colorOverLifetime.enabled = true;
-            Gradient gradient = new Gradient();
-            gradient.SetKeys(
-                new[] { new GradientColorKey(Color.white, 0f), new GradientColorKey(Color.white, 1f) },
-                new[] { new GradientAlphaKey(trailColor.a, 0f), new GradientAlphaKey(0f, 1f) });
-            colorOverLifetime.color = gradient;
 
             ParticleSystem.SizeOverLifetimeModule sizeOverLifetime = ps.sizeOverLifetime;
             sizeOverLifetime.enabled = true;
@@ -76,7 +84,28 @@ namespace TwinsDefense.VFX
             particleRenderer.material = GetParticleMaterial();
             particleRenderer.sortingOrder = 4;
 
+            ApplyOpacity(ProjectileOpacitySettings.Value);
+
             ps.Play();
+        }
+
+        /// <summary>Scales trailColor's own alpha by the player's projectile-opacity preference (same ProjectileOpacitySettings slider Projectile/StarProjectile already use), and live-updates already-flying trails via OnChanged instead of only picking up the value on next spawn.</summary>
+        private void ApplyOpacity(float opacity)
+        {
+            ParticleSystem ps = GetComponent<ParticleSystem>();
+            float effectiveAlpha = baseAlpha * opacity;
+
+            ParticleSystem.MainModule main = ps.main;
+            Color effectiveColor = trailColor;
+            effectiveColor.a = effectiveAlpha;
+            main.startColor = effectiveColor;
+
+            ParticleSystem.ColorOverLifetimeModule colorOverLifetime = ps.colorOverLifetime;
+            Gradient gradient = new Gradient();
+            gradient.SetKeys(
+                new[] { new GradientColorKey(Color.white, 0f), new GradientColorKey(Color.white, 1f) },
+                new[] { new GradientAlphaKey(effectiveAlpha, 0f), new GradientAlphaKey(0f, 1f) });
+            colorOverLifetime.color = gradient;
         }
 
         private static Material GetParticleMaterial()
