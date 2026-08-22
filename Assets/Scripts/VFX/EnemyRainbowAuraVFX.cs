@@ -22,6 +22,8 @@ namespace TwinsDefense.VFX
         [SerializeField] private Material rainbowOutlineMaterial;
         [Tooltip("Kept below the host's own SpriteRenderer sortingOrder so the inner-glow ring only peeks through at the sprite's semi-transparent edge pixels instead of drawing on top of it.")]
         [SerializeField] private int sortingOrder = -1;
+        [Tooltip("Per-axis local scale applied to the aura relative to the host's own sprite. Keep at (1,1) for the inner-glow material (Mat_RainbowAuraInner) so the aura's footprint matches the sprite exactly; push slightly above 1 (e.g. the Mega Magpie's 1.1) to let a bit more of the ring peek past the silhouette edge.")]
+        [SerializeField] private Vector2 silhouetteScale = Vector2.one;
 
         [Header("Outline look (placeholders — tune in Inspector)")]
         [SerializeField] private float outlineThicknessTexels = 2f;
@@ -42,6 +44,7 @@ namespace TwinsDefense.VFX
 
             GameObject auraObject = new GameObject("RainbowAura");
             auraObject.transform.SetParent(transform, false);
+            auraObject.transform.localScale = new Vector3(silhouetteScale.x, silhouetteScale.y, 1f);
 
             auraRenderer = auraObject.AddComponent<SpriteRenderer>();
             auraRenderer.sortingOrder = sortingOrder;

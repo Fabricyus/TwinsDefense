@@ -242,6 +242,11 @@ public void OnPointerExit(PointerEventData eventData)
                 return "Periodic rainbow nova hits every enemy";
             }
 
+            if (effectType == CardEffectType.CupidsArrow)
+            {
+                return "Every 5th shot fires a piercing heart arrow that maxes Slow";
+            }
+
             return $"{amount} {EffectLabel(effectType)}";
         }
 

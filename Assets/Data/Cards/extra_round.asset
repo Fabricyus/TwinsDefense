@@ -34,7 +34,7 @@ MonoBehaviour:
     value: -1
     isPercentage: 0
   rarity: 2
-  rollWeight: 1
+  rollWeight: 0.4
   maxStacks: 5
   restrictedToCharacterIds: []
   minStarsRequired: 0

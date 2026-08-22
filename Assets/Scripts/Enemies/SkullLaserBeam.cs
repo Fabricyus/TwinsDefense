@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using TwinsDefense.Environment;
 using TwinsDefense.Player;
 using TwinsDefense.VFX;
 
@@ -10,9 +11,12 @@ namespace TwinsDefense.Enemies
     /// live position for trackDuration seconds, then locks in place for
     /// lockDuration seconds (pulsing as a final warning) before exploding —
     /// damaging the player anywhere along the locked line, not just at its
-    /// tip. Fully self-contained (no prefab/art asset needed), drawn with a
-    /// LineRenderer; reuses ExplosionVFX, spaced along the whole segment, for
-    /// the detonation.
+    /// tip. The beam's tip isn't the player itself — it's the point where the
+    /// origin->player ray exits the arena (see ArenaBounds), so it always
+    /// spans the full map instead of stopping short at wherever the player
+    /// happens to be standing. Fully self-contained (no prefab/art asset
+    /// needed), drawn with a LineRenderer; reuses ExplosionVFX, spaced along
+    /// the whole segment, for the detonation.
     /// </summary>
     public class SkullLaserBeam : MonoBehaviour
     {
@@ -65,12 +69,14 @@ namespace TwinsDefense.Enemies
                 yield return null;
             }
 
-            Vector2 lockedEnd = target.position;
+            // Locked direction (through wherever the player was standing when tracking ended),
+            // extended to the arena edge — not just the player's raw position.
+            Vector2 lockedEnd = ComputeEdgeEndpoint(target.position);
 
             float pulseTimer = 0f;
             while (pulseTimer < lockDuration)
             {
-                UpdateLine(lockedEnd);
+                UpdateLineToPoint(lockedEnd);
                 float pulse = Mathf.PingPong(pulseTimer * 12f, 1f);
                 Color pulseColor = Color.Lerp(Color.white, Color.red, 1f - pulse * 0.5f);
                 line.startColor = pulseColor;
@@ -83,10 +89,51 @@ namespace TwinsDefense.Enemies
             Destroy(gameObject);
         }
 
-        private void UpdateLine(Vector2 endPoint)
+        /// <summary>Aims the beam through aimPoint (the player's position), then extends it to the arena edge before drawing.</summary>
+        private void UpdateLine(Vector2 aimPoint)
+        {
+            UpdateLineToPoint(ComputeEdgeEndpoint(aimPoint));
+        }
+
+        private void UpdateLineToPoint(Vector2 endPoint)
         {
             line.SetPosition(0, origin.position);
             line.SetPosition(1, endPoint);
+        }
+
+        /// <summary>Extends the origin->aimPoint ray out to where it exits ArenaBounds.WorldBounds. Falls back to aimPoint itself (the old stops-at-the-player behavior) if ArenaBounds isn't in the scene or the ray is degenerate.</summary>
+        private Vector2 ComputeEdgeEndpoint(Vector2 aimPoint)
+        {
+            Vector2 originPos = origin.position;
+            Vector2 direction = aimPoint - originPos;
+
+            if (ArenaBounds.Instance == null || direction.sqrMagnitude < 0.0001f)
+            {
+                return aimPoint;
+            }
+
+            return ExtendToBoundsEdge(originPos, direction, ArenaBounds.Instance.WorldBounds);
+        }
+
+        /// <summary>Standard ray/AABB slab exit-point calculation, assuming origin sits inside bounds — returns where the origin->direction ray crosses the box edge.</summary>
+        private static Vector2 ExtendToBoundsEdge(Vector2 origin, Vector2 direction, Bounds bounds)
+        {
+            direction = direction.normalized;
+            float exitT = float.MaxValue;
+
+            if (Mathf.Abs(direction.x) > 0.0001f)
+            {
+                float exitXt = Mathf.Max((bounds.min.x - origin.x) / direction.x, (bounds.max.x - origin.x) / direction.x);
+                exitT = Mathf.Min(exitT, exitXt);
+            }
+
+            if (Mathf.Abs(direction.y) > 0.0001f)
+            {
+                float exitYt = Mathf.Max((bounds.min.y - origin.y) / direction.y, (bounds.max.y - origin.y) / direction.y);
+                exitT = Mathf.Min(exitT, exitYt);
+            }
+
+            return exitT > 0f && exitT < float.MaxValue ? origin + direction * exitT : origin + direction * 100f;
         }
 
         /// <summary>Damages the player anywhere along the beam (not just at the tip) and flashes an explosion burst spaced along the whole segment, so the whole line visibly detonates instead of just its endpoint.</summary>
@@ -111,7 +158,9 @@ namespace TwinsDefense.Enemies
         private void SpawnLineExplosion(Vector2 start, Vector2 end)
         {
             float length = Vector2.Distance(start, end);
-            int burstCount = Mathf.Max(2, Mathf.CeilToInt(length / (width * 3f)) + 1);
+            // Capped — the beam now reaches the arena edge instead of stopping at the player, so
+            // length is no longer naturally bounded by how close the boss and player are.
+            int burstCount = Mathf.Clamp(Mathf.CeilToInt(length / (width * 3f)) + 1, 2, 30);
 
             for (int i = 0; i < burstCount; i++)
             {

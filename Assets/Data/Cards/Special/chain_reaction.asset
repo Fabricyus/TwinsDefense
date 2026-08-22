@@ -26,7 +26,7 @@ MonoBehaviour:
   additionalEffects: []
   rarity: 2
   rollWeight: 1
-  maxStacks: 0
+  maxStacks: 3
   restrictedToCharacterIds: []
   minStarsRequired: 0
   requiredChallengeCharacter: 0

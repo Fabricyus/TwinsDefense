@@ -584,6 +584,8 @@ MonoBehaviour:
   knockbackForce: 6
   knockbackDuration: 0.15
   moveInStraightLine: 0
+  canLeashDespawn: 1
+  leashDistance: 40
 --- !u!114 &6274950964249964463
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -633,11 +635,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e0c7db01d9fe6e746acd3c610f2c2ba1, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TwinsDefense.VFX.EnemyRainbowAuraVFX
   hostRenderer: {fileID: 3540880822788974109}
   rainbowOutlineMaterial: {fileID: 2100000, guid: a0ce9443c45bf0744a834ae175032618, type: 2}
   sortingOrder: -1
+  silhouetteScale: {x: 1.1, y: 1.1}
   outlineThicknessTexels: 2
   rainbowBandCount: 6
   spinSpeed: 1.5

@@ -71,5 +71,8 @@ namespace TwinsDefense.Player
 
         /// <summary>Set by the Rainbow Nova Exclusive card (CardEffectType.RainbowNova, unlocked by defeating the secret Mega Magpie) — periodic AoE pulse that damages every active enemy in the arena. See RainbowNovaController.</summary>
         public bool hasRainbowNova = false;
+
+        /// <summary>Set by the Cupid's Arrow Exclusive card (CardEffectType.CupidsArrow, unlocked by Cute Ralph's Flawless Form challenge) — every Nth AutoAttack shot additionally fires a guaranteed piercing heart arrow at max slow. See AutoAttack.cupidsArrowShotInterval/FireCupidsArrow.</summary>
+        public bool hasCupidsArrow = false;
     }
 }

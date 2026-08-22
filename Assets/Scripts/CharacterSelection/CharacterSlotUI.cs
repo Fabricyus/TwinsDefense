@@ -23,6 +23,9 @@ namespace TwinsDefense.CharacterSelection
         [SerializeField] private Image auraImage;
         [SerializeField] private int auraRequiredLevel = 100;
 
+        [Tooltip("Child badge Image (star sprite) shown only once this slot's character has purchased every Attack Star (see CharacterStarUpgrades.MaxStars).")]
+        [SerializeField] private Image starImage;
+
         private Button button;
         private CharacterSlotData assignedData;
         private Action<CharacterSlotData> onClicked;
@@ -54,6 +57,12 @@ namespace TwinsDefense.CharacterSelection
                 {
                     auraImage.sprite = data.icon;
                 }
+            }
+
+            if (starImage != null)
+            {
+                bool hasMaxStars = CharacterStarUpgrades.Instance.GetStars(data.slotId) >= CharacterStarUpgrades.MaxStars;
+                starImage.gameObject.SetActive(hasMaxStars);
             }
         }
 

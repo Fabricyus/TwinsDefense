@@ -31,7 +31,8 @@ namespace TwinsDefense.Systems
             }
         }
 
-        private const string PersistenceKey = "TwinsDefense.CharacterProgress";
+        public const string PersistenceBaseKey = "TwinsDefense.CharacterProgress";
+        private static string PersistenceKey => SaveProfileManager.ScopedKey(PersistenceBaseKey);
 
         [System.Serializable]
         private class LevelEntry
@@ -92,9 +93,22 @@ namespace TwinsDefense.Systems
         }
 
         private SaveData data;
+        private int loadedForProfileIndex = int.MinValue;
 
-        /// <summary>Lazily loads on first access instead of relying solely on Awake() — AddComponent doesn't reliably run Awake() synchronously when Instance creates this outside Play mode (e.g. an Editor menu item), which left data null and NullReferenceException'd every accessor.</summary>
-        private SaveData Data => data ??= LoadData();
+        /// <summary>Lazily loads on first access instead of relying solely on Awake() — AddComponent doesn't reliably run Awake() synchronously when Instance creates this outside Play mode (e.g. an Editor menu item), which left data null and NullReferenceException'd every accessor. Also self-heals against SaveProfileManager.ActiveProfileIndex changing after this was first loaded — this singleton can be created (e.g. from a GameObject placed in the Save scene) before the player has picked a profile, so every access re-checks rather than trusting a one-time Awake() load.</summary>
+        private SaveData Data
+        {
+            get
+            {
+                if (data == null || loadedForProfileIndex != SaveProfileManager.ActiveProfileIndex)
+                {
+                    data = LoadData();
+                    loadedForProfileIndex = SaveProfileManager.ActiveProfileIndex;
+                }
+
+                return data;
+            }
+        }
 
         private void Awake()
         {
@@ -106,7 +120,6 @@ namespace TwinsDefense.Systems
 
             instance = this;
             DontDestroyOnLoad(gameObject);
-            data = LoadData();
         }
 
         public bool IsUnlocked(CharacterMetaData meta)

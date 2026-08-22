@@ -57,8 +57,8 @@ namespace TwinsDefense.Progression
             new ChallengeDefinition(CharacterId.Court, 2, "Never Melt", ChallengeRuleType.ForbiddenCards, new[] { "quick_feet", "sugar_rush" }),
             // Court Reader (10% 300%-damage beam) — never any Crit Chance/Crit Damage card, normal or special.
             new ChallengeDefinition(CharacterId.Court, 3, "Storm Reader", ChallengeRuleType.ForbiddenCards, new[] { "lucky_strike", "fatal_blow", "gamblers_coin", "focused_strikes" }),
-            // Dark Court (100% chain, +1 pierce base) — never Piercing Shot (no special Pierce card exists).
-            new ChallengeDefinition(CharacterId.Court, 4, "One True Chain", ChallengeRuleType.ForbiddenCards, new[] { "piercing_shot" }),
+            // Dark Court (100% chain, +1 pierce base) — flawless, never take damage.
+            new ChallengeDefinition(CharacterId.Court, 4, "One True Chain", ChallengeRuleType.Flawless),
 
             // Ralph (+2 Defense/level) — never Iron Skin (normal) or Guardian's Bargain (special), both +Defense.
             new ChallengeDefinition(CharacterId.Ralph, 1, "Iron Wall", ChallengeRuleType.ForbiddenCards, new[] { "iron_skin", "guardians_bargain" }),

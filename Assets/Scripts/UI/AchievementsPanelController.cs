@@ -29,16 +29,9 @@ namespace TwinsDefense.UI
         {
             AchievementDef[] achievements = AchievementRegistry.All;
 
-            int completeCount = 0;
-            for (int i = 0; i < achievements.Length; i++)
-            {
-                if (AchievementRegistry.IsComplete(i)) completeCount++;
-            }
-
             if (completionPercentLabel != null && achievements.Length > 0)
             {
-                int percent = Mathf.RoundToInt(100f * completeCount / achievements.Length);
-                completionPercentLabel.text = $"{percent}%";
+                completionPercentLabel.text = $"{AchievementRegistry.GetCompletionPercent()}%";
             }
 
             if (labels == null) return;

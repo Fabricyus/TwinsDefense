@@ -13,11 +13,11 @@ MonoBehaviour:
   m_Name: cute_strike
   m_EditorClassIdentifier: Assembly-CSharp::TwinsDefense.Data.CardData
   cardId: cute_strike
-  displayName: Cute Stats
-  description: 
+  displayName: Cupid's Arrow
+  description:
   icon: {fileID: 786287686, guid: cf5ab18e05429c44ab411069aee41dfd, type: 3}
-  effectType: 21
-  value: 25
+  effectType: 29
+  value: 1
   isPercentage: 0
   isSpecial: 0
   secondEffectType: 0
@@ -25,7 +25,7 @@ MonoBehaviour:
   secondIsPercentage: 0
   additionalEffects: []
   rarity: 2
-  rollWeight: 1
+  rollWeight: 0.4
   maxStacks: 1
   restrictedToCharacterIds: []
   minStarsRequired: 0

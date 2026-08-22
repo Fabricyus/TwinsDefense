@@ -31,6 +31,15 @@ namespace TwinsDefense.Player
         [Tooltip("Floor for the per-projectile damage multiplier, so heavily stacked multi-shot builds don't drop to near-zero per shot.")]
         [SerializeField] private float minExtraProjectileDamageMultiplier = 0.5f;
 
+        [Header("Exclusive Card Proc (Cupid's Arrow)")]
+        [Tooltip("Cupid's Arrow card: fired every cupidsArrowShotInterval-th shot, on top of the normal volley.")]
+        [SerializeField] private GameObject cupidsArrowProjectilePrefab;
+        [Tooltip("How many AutoAttack shots between each guaranteed Cupid's Arrow — 5th, 10th, 15th, etc.")]
+        [SerializeField] private int cupidsArrowShotInterval = 5;
+        [Tooltip("Extra pierce budget on top of the player's own Pierce stat — high enough to read as 'infinite' for a normal run's enemy density.")]
+        [SerializeField] private int cupidsArrowBonusPierce = 999;
+        [SerializeField] private float cupidsArrowSlowDurationSeconds = 2f;
+
         [Header("Exclusive Card Procs (Holy Strike / Static Strike)")]
         [Tooltip("Damage multiplier on the player's own damage stat for both Holy Strike and Static Strike procs — matches the native ThunderStrikeOnHit characters' own multiplier (see Paladin Ralph/Court Reader).")]
         [SerializeField] private float exclusiveStrikeDamageMultiplier = 3f;
@@ -44,6 +53,7 @@ namespace TwinsDefense.Player
         private PlayerStats stats;
         private PlayerCharacterData characterData;
         private float attackTimer;
+        private int cupidsArrowShotCounter;
 
         private void Awake()
         {
@@ -95,6 +105,35 @@ namespace TwinsDefense.Player
                 float projectileDamage = finalDamage * ExtraProjectileDamageMultiplier(i);
                 FireProjectile(prefab, fireDirection, projectileDamage, isCrit);
             }
+
+            TryFireCupidsArrow(direction, finalDamage, isCrit);
+        }
+
+        /// <summary>Cupid's Arrow Exclusive card — every cupidsArrowShotInterval-th shot, additionally fires a guaranteed heart arrow that pierces effectively everything and maxes Slow on every enemy it passes through. Fired on top of the normal volley, not in place of it, and always flies straight at the same target regardless of how many Extra Projectile shots just fanned out.</summary>
+        private void TryFireCupidsArrow(Vector2 direction, float damage, bool isCrit)
+        {
+            if (!stats.hasCupidsArrow || cupidsArrowProjectilePrefab == null) return;
+
+            cupidsArrowShotCounter++;
+            if (cupidsArrowShotCounter < cupidsArrowShotInterval) return;
+
+            cupidsArrowShotCounter = 0;
+
+            GameObject instance = Instantiate(cupidsArrowProjectilePrefab, firePoint.position, Quaternion.identity);
+            Projectile projectile = instance.GetComponent<Projectile>();
+            if (projectile == null) return;
+
+            int pierceCount = Mathf.Max(0, Mathf.RoundToInt(stats.pierceCount)) + cupidsArrowBonusPierce;
+
+            OnHitPassiveEffects maxSlow = default;
+            maxSlow.slowChancePercent = 100f;
+            maxSlow.slowMagnitudePercent = 100f;
+            maxSlow.slowDurationSeconds = cupidsArrowSlowDurationSeconds;
+
+            // Always upright/flat regardless of the equipped character's own isRotatingProjectile —
+            // matches Izzy PopStar's own locked-rotation heart-style shot (see LockRotationOnSpawn
+            // on the prefab, which handles the facing angle; this only controls the continuous spin).
+            projectile.Launch(direction, damage, stats.projectileSpeed, isCrit, pierceCount, stats.areaOfEffect, isRotatingProjectile: false, maxSlow, cupidsArrowProjectilePrefab);
         }
 
         /// <summary>Character-specific prefab (set per tier in Character Selection) takes priority over the inspector fallback.</summary>

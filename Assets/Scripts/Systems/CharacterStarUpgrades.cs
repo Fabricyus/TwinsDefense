@@ -33,7 +33,8 @@ namespace TwinsDefense.Systems
 
         public static int MaxStars => StarCosts.Length;
 
-        private const string PersistenceKey = "TwinsDefense.CharacterStarUpgrades";
+        public const string PersistenceBaseKey = "TwinsDefense.CharacterStarUpgrades";
+        private static string PersistenceKey => SaveProfileManager.ScopedKey(PersistenceBaseKey);
 
         [System.Serializable]
         private class StarEntry
@@ -49,6 +50,22 @@ namespace TwinsDefense.Systems
         }
 
         private SaveData data;
+        private int loadedForProfileIndex = int.MinValue;
+
+        /// <summary>Self-heals against SaveProfileManager.ActiveProfileIndex changing after this was first loaded — this singleton can be created before the player has picked a save profile.</summary>
+        private SaveData Data
+        {
+            get
+            {
+                if (data == null || loadedForProfileIndex != SaveProfileManager.ActiveProfileIndex)
+                {
+                    Load();
+                    loadedForProfileIndex = SaveProfileManager.ActiveProfileIndex;
+                }
+
+                return data;
+            }
+        }
 
         private void Awake()
         {
@@ -60,12 +77,11 @@ namespace TwinsDefense.Systems
 
             instance = this;
             DontDestroyOnLoad(gameObject);
-            Load();
         }
 
         public int GetStars(string slotId)
         {
-            StarEntry entry = data.entries.Find(e => e.slotId == slotId);
+            StarEntry entry = Data.entries.Find(e => e.slotId == slotId);
             return entry != null ? entry.stars : 0;
         }
 
@@ -84,11 +100,11 @@ namespace TwinsDefense.Systems
 
             PlayerWallet.SpendCoins(cost);
 
-            StarEntry entry = data.entries.Find(e => e.slotId == slotId);
+            StarEntry entry = Data.entries.Find(e => e.slotId == slotId);
             if (entry == null)
             {
                 entry = new StarEntry { slotId = slotId, stars = 0 };
-                data.entries.Add(entry);
+                Data.entries.Add(entry);
             }
 
             entry.stars++;

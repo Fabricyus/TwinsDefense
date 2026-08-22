@@ -124,6 +124,9 @@ namespace TwinsDefense.Systems
                 case CardEffectType.RainbowNova:
                     target.hasRainbowNova = true;
                     break;
+                case CardEffectType.CupidsArrow:
+                    target.hasCupidsArrow = true;
+                    break;
             }
         }
 

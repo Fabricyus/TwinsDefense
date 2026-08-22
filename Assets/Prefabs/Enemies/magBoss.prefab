@@ -583,6 +583,8 @@ MonoBehaviour:
   knockbackForce: 6
   knockbackDuration: 0.15
   moveInStraightLine: 0
+  canLeashDespawn: 1
+  leashDistance: 40
 --- !u!114 &6274950964249964463
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -597,7 +599,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::TwinsDefense.Enemies.MagBossPhaseController
   projectilePrefab: {fileID: 8553046789802213137, guid: 157b2377aed4c7b4f98403671647af40, type: 3}
   attackInterval: 4
-  crossProjectileSpeed: 6
+  crossProjectileSpeed: 3
   crossProjectileDamage: 10
   volleyCount: 100
   spinInterval: 0.1

@@ -45,7 +45,10 @@ namespace TwinsDefense.Data
         ProjectileSplitOnHit,
 
         /// <summary>Rainbow Nova: periodic AoE pulse that damages every active enemy in the arena — see RainbowNovaController. Value/isPercentage are unused for this effect; picking the card just flips PlayerStats.hasRainbowNova on.</summary>
-        RainbowNova // appended at the end — existing assets serialize this enum as an int, inserting earlier would remap them
+        RainbowNova,
+
+        /// <summary>Cupid's Arrow: every Nth AutoAttack shot additionally fires a guaranteed piercing heart arrow at max slow — see AutoAttack.cupidsArrowShotInterval/FireCupidsArrow. Value/isPercentage are unused for this effect; picking the card just flips PlayerStats.hasCupidsArrow on.</summary>
+        CupidsArrow // appended at the end — existing assets serialize this enum as an int, inserting earlier would remap them
     }
 
     /// <summary>One (effectType, value, isPercentage) tuple — see CardData.additionalEffects.</summary>

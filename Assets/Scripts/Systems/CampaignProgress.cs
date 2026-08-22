@@ -15,11 +15,17 @@ namespace TwinsDefense.Systems
     /// </summary>
     public static class CampaignProgress
     {
-        private const string Level20UnlockedKey = "TwinsDefense.Campaign.Level20Unlocked";
-        private const string Level30UnlockedKey = "TwinsDefense.Campaign.Level30Unlocked";
-        private const string SkullKillCountKey = "TwinsDefense.Campaign.SkullKillCount";
-        private const string GameCompletedKey = "TwinsDefense.Campaign.GameCompleted";
-        private const string MegaMagpieKilledKey = "TwinsDefense.Campaign.MegaMagpieKilled";
+        public const string Level20UnlockedBaseKey = "TwinsDefense.Campaign.Level20Unlocked";
+        public const string Level30UnlockedBaseKey = "TwinsDefense.Campaign.Level30Unlocked";
+        public const string SkullKillCountBaseKey = "TwinsDefense.Campaign.SkullKillCount";
+        public const string GameCompletedBaseKey = "TwinsDefense.Campaign.GameCompleted";
+        public const string MegaMagpieKilledBaseKey = "TwinsDefense.Campaign.MegaMagpieKilled";
+
+        private static string Level20UnlockedKey => SaveProfileManager.ScopedKey(Level20UnlockedBaseKey);
+        private static string Level30UnlockedKey => SaveProfileManager.ScopedKey(Level30UnlockedBaseKey);
+        private static string SkullKillCountKey => SaveProfileManager.ScopedKey(SkullKillCountBaseKey);
+        private static string GameCompletedKey => SaveProfileManager.ScopedKey(GameCompletedBaseKey);
+        private static string MegaMagpieKilledKey => SaveProfileManager.ScopedKey(MegaMagpieKilledBaseKey);
 
         /// <summary>How many level-20 boss kills are needed to unlock level 30.</summary>
         public const int SkullKillsRequiredForLevel30 = 3;

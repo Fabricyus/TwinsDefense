@@ -1,4 +1,5 @@
 using System;
+using UnityEngine;
 using TwinsDefense.Data;
 
 namespace TwinsDefense.Systems
@@ -105,7 +106,7 @@ namespace TwinsDefense.Systems
                 () => CharacterProgressTracker.Instance.HasCompletedChallenge(CharacterId.Court, 2) ? 1 : 0),
             new AchievementDef("Storm Reader: kill the Magpie as Court Reader without ever picking a Crit Chance or Crit Damage card", 1,
                 () => CharacterProgressTracker.Instance.HasCompletedChallenge(CharacterId.Court, 3) ? 1 : 0),
-            new AchievementDef("One True Chain: kill the Magpie as Dark Court without ever picking Piercing Shot", 1,
+            new AchievementDef("One True Chain: kill the Magpie as Dark Court without ever taking damage", 1,
                 () => CharacterProgressTracker.Instance.HasCompletedChallenge(CharacterId.Court, 4) ? 1 : 0),
 
             new AchievementDef("Iron Wall: kill the Magpie as Ralph without ever picking Iron Skin or Guardian's Bargain", 1,
@@ -129,6 +130,20 @@ namespace TwinsDefense.Systems
         {
             AchievementDef def = All[index];
             return def.getCurrent() >= def.required;
+        }
+
+        /// <summary>Overall completion percentage (0-100) against whichever save profile is currently active — see SaveProfileManager.ActiveProfileIndex/PeekAchievementPercent for reading this against a non-active save.</summary>
+        public static int GetCompletionPercent()
+        {
+            if (All.Length == 0) return 0;
+
+            int completeCount = 0;
+            for (int i = 0; i < All.Length; i++)
+            {
+                if (IsComplete(i)) completeCount++;
+            }
+
+            return Mathf.RoundToInt(100f * completeCount / All.Length);
         }
     }
 }

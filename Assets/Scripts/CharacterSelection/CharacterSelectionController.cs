@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 using TwinsDefense.Systems;
 
 namespace TwinsDefense.CharacterSelection
@@ -21,6 +22,13 @@ namespace TwinsDefense.CharacterSelection
 
         [SerializeField] private CharacterDetailPanelUI detailPanel;
 
+        [Header("Achievements")]
+        [Tooltip("Top-middle button that opens achievementsPanel centered over the screen.")]
+        [SerializeField] private Button achievementsButton;
+        [SerializeField] private GameObject achievementsPanel;
+        [Tooltip("The panel's own in-place Back button (closes the panel, doesn't leave the scene).")]
+        [SerializeField] private Button achievementsBackButton;
+
         private ICharacterProgressionProvider provider;
         private List<CharacterSlotData> slots;
         private int selectedIndex = -1;
@@ -28,6 +36,10 @@ namespace TwinsDefense.CharacterSelection
         private void Awake()
         {
             provider = progressionProviderSource as ICharacterProgressionProvider;
+
+            if (achievementsButton != null) achievementsButton.onClick.AddListener(OnAchievementsClicked);
+            if (achievementsBackButton != null) achievementsBackButton.onClick.AddListener(OnAchievementsBackClicked);
+            if (achievementsPanel != null) achievementsPanel.SetActive(false);
         }
 
         private void Start()
@@ -44,10 +56,27 @@ namespace TwinsDefense.CharacterSelection
 private void Update()
         {
             Keyboard keyboard = Keyboard.current;
-            if (keyboard != null && keyboard.escapeKey.wasPressedThisFrame)
+            if (keyboard == null || !keyboard.escapeKey.wasPressedThisFrame) return;
+
+            // Escape closes the Achievements overlay first if it's open, rather than
+            // leaving the whole scene while the player is looking at it.
+            if (achievementsPanel != null && achievementsPanel.activeSelf)
             {
-                OnBackClicked();
+                OnAchievementsBackClicked();
+                return;
             }
+
+            OnBackClicked();
+        }
+
+        private void OnAchievementsClicked()
+        {
+            if (achievementsPanel != null) achievementsPanel.SetActive(true);
+        }
+
+        private void OnAchievementsBackClicked()
+        {
+            if (achievementsPanel != null) achievementsPanel.SetActive(false);
         }
 
 
@@ -104,7 +133,7 @@ private void Update()
 
         public void OnBackClicked()
         {
-            SceneManager.LoadScene("Menu");
+            SceneManager.LoadScene("Save");
         }
     }
 }

@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using TwinsDefense.Systems;
 
 namespace TwinsDefense.Economy
 {
@@ -8,11 +9,12 @@ namespace TwinsDefense.Economy
     /// summary total and later spent on character upgrades in Character
     /// Selection. Backed directly by PlayerPrefs since no project save system
     /// exists yet — same placeholder-persistence rationale as
-    /// CharacterProgressTracker.
+    /// CharacterProgressTracker. Scoped per save profile via SaveProfileManager.
     /// </summary>
     public static class PlayerWallet
     {
-        private const string TotalCoinsKey = "TwinsDefense.TotalCoins";
+        public const string PersistenceBaseKey = "TwinsDefense.TotalCoins";
+        private static string TotalCoinsKey => SaveProfileManager.ScopedKey(PersistenceBaseKey);
 
         public static int TotalCoins => PlayerPrefs.GetInt(TotalCoinsKey, 0);
 
